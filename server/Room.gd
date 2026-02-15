@@ -29,3 +29,13 @@ func player_info() -> Dictionary:
 					  "logged_in": players.getv(player_id).logged_in,
 					  "profile": players.getv(player_id).profile}
 	return l
+
+
+func to_json() -> Dictionary:
+	return {
+		"name": name,
+		"description": description,
+		"player_count": players.size(),
+		"player_limit": player_limit,
+		"password_protected": not password.is_empty()
+	}

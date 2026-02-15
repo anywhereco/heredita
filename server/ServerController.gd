@@ -7,7 +7,11 @@ var rooms: Dictionary[int, RoomServer]
 var peer_rooms: Dictionary[int, int]
 var ws_server := WSServer.new()
 
+var bridge: Server2ServerBridge
+
 func _ready() -> void:
+	bridge = Server2ServerBridge.new(self)
+	add_child(bridge)
 	add_child(ws_server)
 	ws_server.text_data.connect(_text_data)
 	ws_server.binary_data.connect(_binary_data)

@@ -49,7 +49,8 @@ func _set_details(result: int, response_code: int, headers: PackedStringArray, b
 		return
 	
 	if response_code == HTTPClient.RESPONSE_UNAUTHORIZED:
-		return # TODO: say we arent logged in
+		State.user = null # When we have time, reconsider if this is what we want to do
+		return
 	
 	var json := JSON.new()
 	json.parse(body.get_string_from_utf8())

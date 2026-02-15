@@ -55,6 +55,7 @@ folder_colors={
 "res://assets/": "blue",
 "res://libraries/": "purple",
 "res://scenes/": "orange",
+"res://server/": "yellow",
 "res://singletons/": "pink",
 "res://types/": "red"
 }

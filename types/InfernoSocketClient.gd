@@ -127,7 +127,7 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
 		if i == chunk_count-1:
-			flags &= BinaryFlags.LAST_CHUNK
+			flags &= BinaryFlags.LAST_CHUNK as BinaryFlags
 		send_binary(event, target, flags, bytes, false)
 	
 func get_message_raw() -> Variant:
