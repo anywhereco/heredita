@@ -95,3 +95,9 @@ func _input(event: InputEvent) -> void:
 	else:
 		if event is InputEventMouseButton and event.pressed:
 			unhide_mouse()
+
+func _notification(what: int) -> void:
+	match what:
+		MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN:
+			if OS.get_name() == "macOS":
+				unhide_mouse()
