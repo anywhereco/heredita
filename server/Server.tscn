@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://btgbjxwalnvhy"]
 
-[ext_resource type="Script" uid="uid://dai60gxu0allx" path="res://scenes/server/ServerController.gd" id="1_tov25"]
+[ext_resource type="Script" uid="uid://dai60gxu0allx" path="res://server/ServerController.gd" id="1_tov25"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oxt17"]
 content_margin_left = 5.0
@@ -31,6 +31,7 @@ grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_oxt17")
 
 [node name="OptionsButton" type="Button" parent="LocalServerOverlay/PulldownPanel" unique_id=1095306010]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Local server options"

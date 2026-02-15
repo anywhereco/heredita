@@ -11,8 +11,10 @@ var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
 var last_peer_id := 1
 
 func _ready() -> void:
-	if "--test" in OS.get_cmdline_user_args():
-		PORT = 9000
+	var args := OS.get_cmdline_user_args()
+	for arg in args:
+		if arg.begins_with("--server-port="):
+			PORT = int(arg.split("=")[1])
 	print(PORT)
 	var err := _tcp_server.listen(PORT)
 	if err == OK:
