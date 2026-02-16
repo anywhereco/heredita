@@ -1,21 +1,20 @@
 [gd_scene format=3 uid="uid://beoi88qrdnbyd"]
 
-[ext_resource type="Texture2D" uid="uid://bxvv8vk8m61si" path="res://assets/eso0932a.jpg" id="1_xys62"]
+[ext_resource type="Shader" uid="uid://sqjo8mwr0gkx" path="res://scenes/main_menu/background/star_shader.gdshader" id="1_xys62"]
 [ext_resource type="Script" uid="uid://ync5e0etemc6" path="res://scenes/main_menu/background/earth.gd" id="2_3v255"]
 [ext_resource type="Texture2D" uid="uid://ccdfjouxn2qf0" path="res://assets/map/globe_terrain.png" id="3_h7lsc"]
 [ext_resource type="Texture2D" uid="uid://bv3ci7lpwsojy" path="res://assets/map/earth-normal.png" id="4_xys62"]
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_vc7y1"]
-panorama = ExtResource("1_xys62")
-energy_multiplier = 1.1
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3v255"]
+shader = ExtResource("1_xys62")
 
-[sub_resource type="Sky" id="Sky_mvgh1"]
-sky_material = SubResource("PanoramaSkyMaterial_vc7y1")
+[sub_resource type="Sky" id="Sky_h7lsc"]
+sky_material = SubResource("ShaderMaterial_3v255")
 
 [sub_resource type="Environment" id="Environment_p1u3q"]
 background_mode = 2
 background_energy_multiplier = 1.37
-sky = SubResource("Sky_mvgh1")
+sky = SubResource("Sky_h7lsc")
 ambient_light_source = 3
 reflected_light_source = 2
 glow_enabled = true
