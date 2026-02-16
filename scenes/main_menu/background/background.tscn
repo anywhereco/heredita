@@ -7,7 +7,6 @@
 
 [sub_resource type="Environment" id="Environment_p1u3q"]
 background_mode = 2
-background_energy_multiplier = 1.37
 ambient_light_source = 3
 reflected_light_source = 2
 glow_enabled = true
@@ -101,6 +100,6 @@ rings = 30
 material = SubResource("StandardMaterial3D_ucpg8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1445079004]
-transform = Transform3D(30, 0, 0, 0, -1.3113416e-06, -30, 0, 30, -1.3113416e-06, -5.6754465, -0.49637318, -1.8694592)
+transform = Transform3D(30, 0, 0, 0, -1.3113416e-06, -30, 0, 30, -1.3113416e-06, -5.6754465, -0.49637318, -6.8814855)
 mesh = SubResource("PlaneMesh_xys62")
 surface_material_override/0 = SubResource("ShaderMaterial_3v255")

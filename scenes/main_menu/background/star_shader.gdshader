@@ -53,7 +53,7 @@ vec2 rotate(vec2 uv, float add_theta) {
 }
 
 void fragment() {
-    vec3 color = background_color;
+    vec3 color = vec3(0, 0, 0);
 
     vec2 st = UV;
 	if (pixelate_enabled) {
@@ -105,6 +105,6 @@ void fragment() {
         color = max(color + (snowflake * brightness) * color_type, color);
     }
 
-    ALBEDO = color;
+    ALBEDO = background_color + (color * 0.2);
     ALPHA = 1.0;
 }

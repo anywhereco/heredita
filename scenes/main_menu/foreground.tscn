@@ -6,8 +6,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_crsvy"]
 shader = ExtResource("1_t71vb")
-shader_parameter/strength = 3.3
-shader_parameter/mix_percentage = 0.3
+shader_parameter/blur_size = Vector2(0.5, 0.5)
 
 [node name="Foreground" type="CanvasLayer" unique_id=986715501]
 script = ExtResource("1_hbrfk")
