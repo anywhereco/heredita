@@ -15,6 +15,7 @@ uniform float twinkle_effect : hint_range(0.0, 1.0, 0.01) = 0.6;
 uniform float twinkle_speed : hint_range(0.0, 100.0, 0.01) = 0.3;
 uniform bool pixelate_enabled = false;
 uniform float pixelate_count = 1000.0;
+uniform float appearance_speed : hint_range(0.0, 20.0, 0.01) = 1.0;
 
 float one_div_x(float x) {
     return (abs(x) < 0.0001) ? 1.0 : (1.0/x);
@@ -95,7 +96,8 @@ void fragment() {
         float snowflake = m * 0.5 * (get_i(fst, 0.8 - (dist * 42.0), vec2(1.0 / snow_size)) + 1.0);
 
         // Twinkle effect
-        float twinkle = (1.0 - twinkle_effect) + twinkle_effect * (sin(rand_seed * 100.0 + TIME * twinkle_speed) * cos(rand_seed * 120.0 + TIME * (twinkle_speed + 2.0)));
+		float t = TIME;
+        float twinkle = (1.0 - twinkle_effect) + twinkle_effect * (sin(rand_seed * 100.0 + t * twinkle_speed) * cos(rand_seed * 120.0 + t * (twinkle_speed + 2.0)));
         snowflake *= twinkle;
 
         vec3 color_type = vec3(random(grid_id - 3.0), random(grid_id + 7.0), random(grid_id + 5.0));

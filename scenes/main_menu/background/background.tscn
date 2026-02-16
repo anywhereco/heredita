@@ -59,17 +59,18 @@ stencil_outline_thickness = 0.05
 render_priority = 0
 shader = ExtResource("1_xys62")
 shader_parameter/background_color = Color(0.02, 0.04, 0.12, 1)
-shader_parameter/aspect_ratio = 1.0
-shader_parameter/density = 1.3
-shader_parameter/layer_parascale = 4
+shader_parameter/aspect_ratio = 2.0
+shader_parameter/density = 1.49999996205
+shader_parameter/layer_parascale = 5
 shader_parameter/star_speed = Vector2(0, 0)
 shader_parameter/star_wave = Vector2(0, 0)
-shader_parameter/star_size = 3.0
-shader_parameter/star_rotate_speed = 0.5
-shader_parameter/twinkle_effect = 0.6
+shader_parameter/star_size = 1.0999999754128
+shader_parameter/star_rotate_speed = 0.40000016149999995
+shader_parameter/twinkle_effect = 0.0
 shader_parameter/twinkle_speed = 0.3
 shader_parameter/pixelate_enabled = false
-shader_parameter/pixelate_count = 1000.0
+shader_parameter/pixelate_count = 2000.0
+shader_parameter/appearance_speed = 0.999999977648
 
 [node name="Background" type="Node3D" unique_id=1274816172]
 
@@ -100,6 +101,6 @@ rings = 30
 material = SubResource("StandardMaterial3D_ucpg8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1445079004]
-transform = Transform3D(40, 0, 0, 0, -1.7484556e-06, -40, 0, 40, -1.7484556e-06, 0, 0, -9.669354)
+transform = Transform3D(30, 0, 0, 0, -1.3113416e-06, -30, 0, 30, -1.3113416e-06, -5.6754465, -0.49637318, -1.8694592)
 mesh = SubResource("PlaneMesh_xys62")
 surface_material_override/0 = SubResource("ShaderMaterial_3v255")
