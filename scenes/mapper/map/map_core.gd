@@ -32,6 +32,8 @@ var map_world_bounds: Rect2
 
 var map_pos: ReactiveVector2 = ReactiveVector2.new(Vector2.INF)
 
+var brush_shape_map: BrushShapeMap = BrushShapeMap.new()
+
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:
 	return (test_point.x >= min_corner.x and 
 			test_point.x <= max_corner.x and
@@ -196,6 +198,15 @@ func update_brush_preview() -> void:
 	clipped = clipped + Vector2(pixel_size*1/2, pixel_size*1/2)
 	preview_plane.position = Vector3(clipped.x, 0, clipped.y)
 	MapperRoot._instance.brush._update_brush()
+
+func get_map_update(details: Dictionary) -> void:
+	var type: String = details["type"]
+	if type == "brush":
+		Map._instance.set_pixels_at_targeted(
+			brush_shape_map.get_vec2s(details["size"]),
+			ISUtil.to_color(details["paint_color"]),
+			ISUtil.to_color(details["target_color"]),
+			ISUtil.to_vec2(details["pos"]))
 
 func _process(_delta: float) -> void:
 	update_map_pos()

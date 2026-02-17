@@ -56,6 +56,4 @@ func process_tool_use(event: InputEvent) -> void:
 
 func get_map_update(event: String, player_id: int, details: Variant) -> void:
 	if event == "map_update":
-		var type: String = details["type"]
-		if type == "brush":
-			brush.brush_action(details["size"], ISUtil.to_color(details["paint_color"]), ISUtil.to_color(details["target_color"]), ISUtil.to_vec2(details["pos"]))
+		Map._instance.get_map_update(details as Dictionary)

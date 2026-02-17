@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://bsvdn8owdbv8m" path="res://scenes/mapper/player/network_players.gd" id="3_sm41v"]
 [ext_resource type="Script" uid="uid://clxj0fu6d2g3r" path="res://scenes/mapper/map/map_core.gd" id="6_sm41v"]
 [ext_resource type="Script" path="res://scenes/mapper/map_markings.gd" id="9_l0uxc"]
-[ext_resource type="ArrayMesh" uid="uid://bc25bnwd711e8" path="res://assets/map/markings/city_mesh.tres" id="10_0kc0x"]
+[ext_resource type="ArrayMesh" uid="uid://dtef8pb44sygw" path="res://assets/map/markings/city_mesh.tres" id="10_0kc0x"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wvm7y"]
 plane = Plane(0, 1, 0, -0.5)
@@ -33,8 +33,6 @@ uv1_scale = Vector3(24, 12, 2)
 script = ExtResource("1_htv7j")
 
 [node name="LocalPlayer" parent="." unique_id=1173620926 instance=ExtResource("2_c4ga5")]
-collision_layer = 2
-collision_mask = 1
 
 [node name="NetworkPlayers" type="Node3D" parent="." unique_id=1615541302]
 script = ExtResource("3_sm41v")

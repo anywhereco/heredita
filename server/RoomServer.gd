@@ -114,6 +114,12 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
+func parse_event(data: Dictionary) -> bool:
+	if data["event"] == "map_update":
+		room.map.get_map_update(data["details"])
+	#return value is true if it should be broadcasted to the rest of the server
+	return true
+
 func _closed(peer_id: int, code: int, reason: String) -> void:
 	_on_peer_close(peer_id)
 
@@ -121,7 +127,8 @@ func _text_data(peer_id: int, data: String) -> void:
 	if peer_id in connected_peers:
 		var data_json := parse_json(data)
 		if ISUtil.valid_event(data_json):
-			send_event(data_json.val()["event"], data_json.val()["details"], peer_player_id(peer_id))
+			if parse_event(data_json.val()):
+				send_event(data_json.val()["event"], data_json.val()["details"], peer_player_id(peer_id))
 
 func _binary_data(peer_id: int, data: PackedByteArray) -> void:
 	pass
