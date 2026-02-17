@@ -90,7 +90,8 @@ func send(event: String, message: Variant = null) -> int:
 enum BinaryFlags {
 	NONE = 0,
 	COMPRESSED = 1,
-	LAST_CHUNK = 2
+	CHUNKED = 2,
+	LAST_CHUNK = 4
 }
 
 func send_binary(event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> int:
