@@ -1,12 +1,31 @@
 [gd_scene format=3 uid="uid://beoi88qrdnbyd"]
 
-[ext_resource type="Shader" uid="uid://sqjo8mwr0gkx" path="res://scenes/main_menu/background/star_shader.gdshader" id="1_xys62"]
+[ext_resource type="Shader" uid="uid://cpgiv4r7ixsq6" path="res://scenes/main_menu/background/star_shader.gdshader" id="1_xys62"]
 [ext_resource type="Script" uid="uid://ync5e0etemc6" path="res://scenes/main_menu/background/earth.gd" id="2_3v255"]
 [ext_resource type="Texture2D" uid="uid://ccdfjouxn2qf0" path="res://assets/map/globe_terrain.png" id="3_h7lsc"]
 [ext_resource type="Texture2D" uid="uid://bv3ci7lpwsojy" path="res://assets/map/earth-normal.png" id="4_xys62"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3v255"]
+shader = ExtResource("1_xys62")
+shader_parameter/background_color = Color(0.02, 0.04, 0.12, 1)
+shader_parameter/sky_zoom = 5.0
+shader_parameter/density = 2.9999999241
+shader_parameter/layer_parascale = 4
+shader_parameter/star_speed = Vector2(0.1, 0)
+shader_parameter/star_wave = Vector2(0, 0)
+shader_parameter/star_size = 3.0
+shader_parameter/star_rotate_speed = 0.5
+shader_parameter/twinkle_effect = 0.6
+shader_parameter/twinkle_speed = 0.3
+shader_parameter/pixelate_enabled = false
+shader_parameter/pixelate_count = 1000.0
+
+[sub_resource type="Sky" id="Sky_h7lsc"]
+sky_material = SubResource("ShaderMaterial_3v255")
+
 [sub_resource type="Environment" id="Environment_p1u3q"]
 background_mode = 2
+sky = SubResource("Sky_h7lsc")
 ambient_light_source = 3
 reflected_light_source = 2
 glow_enabled = true
@@ -52,25 +71,6 @@ stencil_flags = 2
 stencil_color = Color(0.7418741, 1.9757422, 5.368884, 1)
 stencil_outline_thickness = 0.05
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_xys62"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3v255"]
-render_priority = 0
-shader = ExtResource("1_xys62")
-shader_parameter/background_color = Color(0.02, 0.04, 0.12, 1)
-shader_parameter/aspect_ratio = 2.0
-shader_parameter/density = 1.49999996205
-shader_parameter/layer_parascale = 5
-shader_parameter/star_speed = Vector2(0, 0)
-shader_parameter/star_wave = Vector2(0, 0)
-shader_parameter/star_size = 1.0999999754128
-shader_parameter/star_rotate_speed = 0.40000016149999995
-shader_parameter/twinkle_effect = 0.0
-shader_parameter/twinkle_speed = 0.3
-shader_parameter/pixelate_enabled = false
-shader_parameter/pixelate_count = 2000.0
-shader_parameter/appearance_speed = 0.999999977648
-
 [node name="Background" type="Node3D" unique_id=1274816172]
 
 [node name="Camera" type="Camera3D" parent="." unique_id=1255082142]
@@ -98,8 +98,3 @@ radius = 5.005
 radial_segments = 48
 rings = 30
 material = SubResource("StandardMaterial3D_ucpg8")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1445079004]
-transform = Transform3D(30, 0, 0, 0, -1.3113416e-06, -30, 0, 30, -1.3113416e-06, -5.6754465, -0.49637318, -6.8814855)
-mesh = SubResource("PlaneMesh_xys62")
-surface_material_override/0 = SubResource("ShaderMaterial_3v255")
