@@ -30,6 +30,8 @@ var _attempts := 5
 var room: Room
 var creating_room := {}
 
+const TIMEOUT: int = 10000 #ms
+
 signal connected_to_server()
 signal connection_closed()
 
@@ -130,7 +132,40 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 		if i == chunk_count-1:
 			flags &= BinaryFlags.LAST_CHUNK as BinaryFlags
 		send_binary(event, target, flags, bytes, false)
-	
+		
+
+#region Receiving Chunked Binary
+func get_chunked_binary_data() -> PackedByteArray:
+	var data := []
+	var data_length := 0
+	var chunks_recieved := 0
+	var event := -1
+	var target := -2
+	while true:
+		var timer := get_tree().create_timer(TIMEOUT)
+		var chunk: PackedByteArray = await TimedPromise.new(timer, self.socket.binary_data).done
+		if not chunk:
+			return PackedByteArray([])
+		if event > -1 and chunk.decode_u16(0) != event:
+			continue
+		elif event == -1:
+			event = chunk.decode_u16(0)
+		if target > -2 and chunk.decode_s16(2) != target:
+			continue
+		elif event == -2:
+			target = chunk.decode_s16(2)
+		var last_flag := chunk.decode_u8(4) & InfernoSocketClient.BinaryFlags.LAST_CHUNK
+		data_length = chunk.decode_u8(5)
+		data.append(chunk.slice(1))
+		chunks_recieved += 1
+		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
+		if end_hint == 1: #end signal mismatch
+			return PackedByteArray([])
+		elif end_hint == 2:
+			break
+	return data
+#endregion
+
 func get_message_raw() -> Variant:
 	if socket.get_available_packet_count() < 1:
 		return null
