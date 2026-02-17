@@ -38,6 +38,7 @@ gdscript/warnings/unsafe_call_argument=1
 window/size/viewport_width=720
 window/size/viewport_height=480
 window/stretch/aspect="ignore"
+window/vsync/vsync_mode=0
 
 [editor]
 
