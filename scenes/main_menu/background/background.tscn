@@ -1,21 +1,33 @@
 [gd_scene format=3 uid="uid://beoi88qrdnbyd"]
 
-[ext_resource type="Texture2D" uid="uid://bxvv8vk8m61si" path="res://assets/eso0932a.jpg" id="1_xys62"]
+[ext_resource type="Shader" uid="uid://cpgiv4r7ixsq6" path="res://scenes/main_menu/background/star_shader.gdshader" id="1_xys62"]
 [ext_resource type="Script" uid="uid://ync5e0etemc6" path="res://scenes/main_menu/background/earth.gd" id="2_3v255"]
+[ext_resource type="Script" uid="uid://b3jln2dywhwsi" path="res://addons/zylann.atmosphere/planet_atmosphere.gd" id="2_h7lsc"]
 [ext_resource type="Texture2D" uid="uid://ccdfjouxn2qf0" path="res://assets/map/globe_terrain.png" id="3_h7lsc"]
 [ext_resource type="Texture2D" uid="uid://bv3ci7lpwsojy" path="res://assets/map/earth-normal.png" id="4_xys62"]
+[ext_resource type="Shader" uid="uid://c51h02jcm22ty" path="res://addons/zylann.atmosphere/shaders/planet_atmosphere_no_clouds.gdshader" id="6_h7lsc"]
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_vc7y1"]
-panorama = ExtResource("1_xys62")
-energy_multiplier = 1.1
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3v255"]
+shader = ExtResource("1_xys62")
+shader_parameter/background_color = Color(0.019607844, 0.039215688, 0.07450981, 1)
+shader_parameter/sky_zoom = 5.0
+shader_parameter/density = 2.9999999241
+shader_parameter/layer_parascale = 4
+shader_parameter/star_speed = Vector2(0.1, 0)
+shader_parameter/star_wave = Vector2(0, 0)
+shader_parameter/star_size = 3.0
+shader_parameter/star_rotate_speed = 0.5
+shader_parameter/twinkle_effect = 0.6
+shader_parameter/twinkle_speed = 0.3
+shader_parameter/pixelate_enabled = false
+shader_parameter/pixelate_count = 1000.0
 
-[sub_resource type="Sky" id="Sky_mvgh1"]
-sky_material = SubResource("PanoramaSkyMaterial_vc7y1")
+[sub_resource type="Sky" id="Sky_h7lsc"]
+sky_material = SubResource("ShaderMaterial_3v255")
 
 [sub_resource type="Environment" id="Environment_p1u3q"]
 background_mode = 2
-background_energy_multiplier = 1.37
-sky = SubResource("Sky_mvgh1")
+sky = SubResource("Sky_h7lsc")
 ambient_light_source = 3
 reflected_light_source = 2
 glow_enabled = true
@@ -33,20 +45,7 @@ rim_tint = 0.3
 stencil_mode = 3
 stencil_flags = 2
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xys62"]
-render_priority = 1
-transparency = 1
-shading_mode = 0
-albedo_color = Color(0.7418741, 1.9757422, 5.368884, 1)
-grow = true
-grow_amount = 0.05
-stencil_mode = 3
-stencil_flags = 1
-stencil_compare = 5
-metadata/_stencil_owned = true
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ucpg8"]
-next_pass = SubResource("StandardMaterial3D_xys62")
 transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
@@ -56,7 +55,6 @@ albedo_texture = ExtResource("3_h7lsc")
 roughness = 0.04
 normal_enabled = true
 normal_texture = ExtResource("4_xys62")
-stencil_mode = 1
 stencil_flags = 2
 stencil_color = Color(0.7418741, 1.9757422, 5.368884, 1)
 stencil_outline_thickness = 0.05
@@ -69,8 +67,8 @@ environment = SubResource("Environment_p1u3q")
 near = 0.15
 
 [node name="The Sun" type="DirectionalLight3D" parent="." unique_id=1116034466]
-transform = Transform3D(-3.7855173e-08, 0.17364821, -0.98480785, -2.18557e-08, 0.98480785, 0.17364821, 1, 2.8097139e-08, -3.348487e-08, 0, 6.882904, 0)
-light_color = Color(1, 0.9666667, 0.9, 1)
+transform = Transform3D(-3.7855173e-08, 0.1736482, -0.9848077, -2.18557e-08, 0.9848077, 0.17364821, 1, 2.8097144e-08, -3.3484863e-08, -29.082283, 6.882904, 0)
+light_color = Color(0.9999998, 0.9075061, 0.7100272, 1)
 directional_shadow_max_distance = 256.0
 
 [node name="Earth" type="Node3D" parent="." unique_id=1809125386]
@@ -88,3 +86,18 @@ radius = 5.005
 radial_segments = 48
 rings = 30
 material = SubResource("StandardMaterial3D_ucpg8")
+
+[node name="PlanetAtmosphere" type="Node3D" parent="Earth" unique_id=1731290241]
+transform = Transform3D(0.13917327, 0, 0.99026805, -0.3789592, 0.92387956, 0.05325931, -0.9148884, -0.3826835, 0.12857933, 0, 0, 0)
+script = ExtResource("2_h7lsc")
+planet_radius = 5.0
+atmosphere_height = 0.555
+sun_path = NodePath("../../The Sun")
+custom_shader = ExtResource("6_h7lsc")
+shader_params/u_density = 1.175
+shader_params/u_scattering_strength = 1.195
+shader_params/u_scattering_wavelengths = Vector3(700, 530, 440)
+shader_params/u_atmosphere_modulate = Color(0.9137255, 0.9137255, 0.9137255, 1)
+shader_params/u_atmosphere_ambient_color = Color(0, 0, 0, 1)
+shader_params/u_sphere_depth_factor = 0.8
+metadata/_custom_type_script = "uid://b3jln2dywhwsi"
