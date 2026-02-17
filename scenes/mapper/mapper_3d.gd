@@ -39,6 +39,7 @@ func _ready() -> void:
 	brush._map_ready()
 	if State.client:
 		State.client.message_received.connect(get_map_update)
+		State.client.connection_closed.connect(closed)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -57,3 +58,15 @@ func process_tool_use(event: InputEvent) -> void:
 func get_map_update(event: String, player_id: int, details: Variant) -> void:
 	if event == "map_update":
 		Map._instance.get_map_update(details as Dictionary)
+
+func closed() -> void:
+	if not is_inside_tree(): #if we exited manually
+		return
+	VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
+	var menu: Node2D = preload("res://scenes/main_menu/main.tscn").instantiate()
+	get_tree().current_scene.queue_free()
+	get_tree().root.add_child(menu)
+	Prompts.override_ui = menu.get_node("Foreground") #do this manually since it hasn't loaded yet
+	InfoPrompt.prompt("The room was closed.")
+	#eventually have a more detailed message if you're kicked/banned/etc though idk how they'd send that
+	get_tree().current_scene = menu

@@ -13,10 +13,10 @@ func _ready() -> void:
 		State.user.user_initialized.connect(_update_user)
 		if State.user.initialized:
 			_update_user()
-		else:
-			player_welcome.hide()
-			search_bar.get_node("Button").disabled = true
-			search_bar.get_node("LineEdit").placeholder_text = "Sign in to add friends!"
+			return
+	player_welcome.hide()
+	search_bar.get_node("Button").disabled = true
+	search_bar.get_node("LineEdit").placeholder_text = "Sign in to add friends!"
 
 func _update_user() -> void:
 	player_name.text = State.user.username

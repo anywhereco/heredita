@@ -6,4 +6,4 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _pressed() -> void:
-	MainMenuForeground._instance.swap_page(MainMenuForeground.Page.GALLERY)
+	MainMenuForeground._instance.swap_page(MainMenuForeground.Page.ROOM_LIST)
