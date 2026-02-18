@@ -111,6 +111,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	send_event("_is2_player_join", {"player_id": player_id, "details": {"username": player.username, "logged_in": player.logged_in, "profile": player.profile}})
 	room.players.setv(player_id, player)
 	ws_server.send_targeted_event(peer_id, "_is2_handshake_complete", {"name": room.name, "description": room.description, "players": room.player_info()})
+	# send map here :3
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 

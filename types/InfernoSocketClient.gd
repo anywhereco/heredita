@@ -92,7 +92,7 @@ func send(event: String, message: Variant = null) -> int:
 enum BinaryFlags {
 	NONE = 0,
 	COMPRESSED = 1,
-	CHUNKED = 2,
+	BEGIN_CHUNK = 2,
 	LAST_CHUNK = 4
 }
 
