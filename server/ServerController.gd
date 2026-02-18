@@ -97,8 +97,7 @@ func get_chunked_binary_data(peer_id: int) -> PackedByteArray:
 			break
 	return data
 
-
-func send_binary(peer: int, event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> int:
+func send_binary(peer: int, event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> void:
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
 	
@@ -116,7 +115,7 @@ func send_binary(peer: int, event: int, target: int, flags: int, message: Packed
 	if compress:
 		bytes.encode_u32(5, compression_size)
 	bytes.append_array(message)
-	return self.ws_server.send_binary(peer, message)
+	self.ws_server.send_raw_binary(peer, message)
 
 func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArray) -> void:
 	#Compression is built into this method. If it's this big we're compressing it
@@ -127,7 +126,7 @@ func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArr
 	var chunk_count := ceili(compression_size / float(0x10000))
 	var flags := InfernoSocketClient.BinaryFlags.NONE
 	for i in chunk_count:
-		if i == 1:
+		if i == 0:
 			flags &= InfernoSocketClient.BinaryFlags.BEGIN_CHUNK
 		var chunk := data.slice(i*0x10000,(i+1)*0x10000)
 		var bytes := PackedByteArray()

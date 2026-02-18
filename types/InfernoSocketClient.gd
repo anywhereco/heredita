@@ -56,7 +56,7 @@ func _ready() -> void:
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
-	
+	raw_message_received.connect(self.handle_chunked_binary_events)
 
 #region Encode and Decode
 func _encode_data(value: Variant) -> String:
@@ -100,6 +100,7 @@ func send_binary(event: int, target: int, flags: int, message: PackedByteArray =
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
 	raw_message_sent.emit("<Binary event %d>" % event)
+	socket.send_text("<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
 		flags &= BinaryFlags.COMPRESSED
@@ -124,18 +125,37 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 	var chunk_count := ceili(compression_size / float(0x10000))
 	var flags := BinaryFlags.NONE
 	for i in chunk_count:
+		if i == 0:
+			flags &= BinaryFlags.BEGIN_CHUNK
 		var chunk := data.slice(i*0x10000,(i+1)*0x10000)
 		var bytes := PackedByteArray()
 		bytes.resize(1)
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
 		if i == chunk_count-1:
-			flags &= BinaryFlags.LAST_CHUNK as BinaryFlags
+			flags &= BinaryFlags.LAST_CHUNK
 		send_binary(event, target, flags, bytes, false)
+		
+func handle_chunked_binary_events(string: String) -> void:
+	if string.contains("Binary event"):
+		print(string)
+		var data := await get_chunked_binary_data()
+		if data.event == 1: # map event
+			print("Updating maps with %s" % data.array)
+			pass # update map
 		
 
 #region Receiving Chunked Binary
-func get_chunked_binary_data() -> PackedByteArray:
+
+class ChunkedBinaryData:
+	var array: PackedByteArray
+	var event: int
+	
+	func _init(array: PackedByteArray, event: int) -> void:
+		self.array = array
+		self.event = event
+
+func get_chunked_binary_data() -> ChunkedBinaryData:
 	var data := []
 	var data_length := 0
 	var chunks_recieved := 0
@@ -145,7 +165,7 @@ func get_chunked_binary_data() -> PackedByteArray:
 		var timer := get_tree().create_timer(TIMEOUT)
 		var chunk: PackedByteArray = await TimedPromise.new(timer, self.socket.binary_data).done
 		if not chunk:
-			return PackedByteArray([])
+			return ChunkedBinaryData.new(PackedByteArray([]), event)
 		if event > -1 and chunk.decode_u16(0) != event:
 			continue
 		elif event == -1:
@@ -156,14 +176,14 @@ func get_chunked_binary_data() -> PackedByteArray:
 			target = chunk.decode_s16(2)
 		var last_flag := chunk.decode_u8(4) & InfernoSocketClient.BinaryFlags.LAST_CHUNK
 		data_length = chunk.decode_u8(5)
-		data.append(chunk.slice(1))
+		data.append(chunk.slice(6))
 		chunks_recieved += 1
 		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
 		if end_hint == 1: #end signal mismatch
-			return PackedByteArray([])
+			return ChunkedBinaryData.new(PackedByteArray([]), event)
 		elif end_hint == 2:
 			break
-	return data
+	return ChunkedBinaryData.new(data, event)
 #endregion
 
 func get_message_raw() -> Variant:
