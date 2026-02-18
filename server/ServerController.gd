@@ -101,39 +101,41 @@ func send_binary(peer: int, event: int, target: int, flags: int, message: Packed
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
 	
-	self.ws_server.send_text(peer, "<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
 		flags &= InfernoSocketClient.BinaryFlags.COMPRESSED
 		compression_size = len(message)
 		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
 	var bytes := PackedByteArray()
-	bytes.resize(6)
+	bytes.resize(5)
 	bytes.encode_u16(0, event)
 	bytes.encode_s16(2, target)
 	bytes.encode_u8(4, flags)
 	if compress:
+		bytes.resize(9)
 		bytes.encode_u32(5, compression_size)
 	bytes.append_array(message)
-	self.ws_server.send_raw_binary(peer, message)
+	var r := self.ws_server.send_raw_binary(peer, bytes)
 
 func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArray) -> void:
 	#Compression is built into this method. If it's this big we're compressing it
+	# actually lets not
+	
+	self.ws_server.send_text(peer, "<Chunked binary event incoming>")
 	var compression_size := len(data)
 	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
 		
-	data = data.compress(FileAccess.COMPRESSION_FASTLZ)
-	var chunk_count := ceili(compression_size / float(0x10000))
+	var chunk_count := ceili(compression_size / float(0x1000))
 	var flags := InfernoSocketClient.BinaryFlags.NONE
 	for i in chunk_count:
 		if i == 0:
 			flags &= InfernoSocketClient.BinaryFlags.BEGIN_CHUNK
-		var chunk := data.slice(i*0x10000,(i+1)*0x10000)
+		var chunk := data.slice(i*0x1000,(i+1)*0x1000)
 		var bytes := PackedByteArray()
 		bytes.resize(1)
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
-		if i == chunk_count-1:
+		if i == (chunk_count - 1):
 			flags &= InfernoSocketClient.BinaryFlags.LAST_CHUNK
 		send_binary(peer, event, target, flags, bytes, false)
 

@@ -39,7 +39,7 @@ signal handshake_complete()
 
 signal message_received(event: String, player_id: int, details: Variant)
 
-signal binary_message_received(event: int, player_id: int, details: PackedByteArray)
+signal binary_message_received(event: int, player_id: int, flags: int, details: PackedByteArray)
 
 ## Same as [code]message_recieved[/code], but shows handshake events and is not parsed.
 signal raw_message_received(string: String)
@@ -100,7 +100,6 @@ func send_binary(event: int, target: int, flags: int, message: PackedByteArray =
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
 	raw_message_sent.emit("<Binary event %d>" % event)
-	socket.send_text("<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
 		flags &= BinaryFlags.COMPRESSED
@@ -137,8 +136,7 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 		send_binary(event, target, flags, bytes, false)
 		
 func handle_chunked_binary_events(string: String) -> void:
-	if string.contains("Binary event"):
-		print(string)
+	if string.begins_with("<Chunked binary event incoming>"):
 		var data := await get_chunked_binary_data()
 		if data.event == 1: # map event
 			print("Updating maps with %s" % data.array)
@@ -159,30 +157,24 @@ func get_chunked_binary_data() -> ChunkedBinaryData:
 	var data := []
 	var data_length := 0
 	var chunks_recieved := 0
-	var event := -1
-	var target := -2
+	var event := 0
+	var target := 0
 	while true:
-		var timer := get_tree().create_timer(TIMEOUT)
-		var chunk: PackedByteArray = await TimedPromise.new(timer, self.socket.binary_data).done
+		var sig_data: Variant = await self.binary_message_received
+		target = sig_data[1]
+		var flags: int = sig_data[2]
+		var chunk: PackedByteArray = sig_data[3]
 		if not chunk:
 			return ChunkedBinaryData.new(PackedByteArray([]), event)
-		if event > -1 and chunk.decode_u16(0) != event:
-			continue
-		elif event == -1:
-			event = chunk.decode_u16(0)
-		if target > -2 and chunk.decode_s16(2) != target:
-			continue
-		elif event == -2:
-			target = chunk.decode_s16(2)
-		var last_flag := chunk.decode_u8(4) & InfernoSocketClient.BinaryFlags.LAST_CHUNK
-		data_length = chunk.decode_u8(5)
-		data.append(chunk.slice(6))
+		var last_flag := flags & InfernoSocketClient.BinaryFlags.LAST_CHUNK
+		data_length = chunk.decode_u8(0)
+		data.append_array(chunk.slice(1))
 		chunks_recieved += 1
 		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
-		if end_hint == 1: #end signal mismatch
-			return ChunkedBinaryData.new(PackedByteArray([]), event)
-		elif end_hint == 2:
+		if end_hint == 1:
 			break
+		elif end_hint == 2:
+			return ChunkedBinaryData.new(PackedByteArray([]), event)
 	return ChunkedBinaryData.new(data, event)
 #endregion
 
@@ -320,12 +312,15 @@ func _poll_string(message: Dictionary) -> void:
 func _poll_binary(message: PackedByteArray) -> void:
 	var event := message.decode_u16(0)
 	var uid := message.decode_s16(2)
-	var size := message.decode_u16(4)
-	var data := message.slice(6)
+	var flags := message.decode_u8(4)
+	var compressed := flags & BinaryFlags.COMPRESSED >= 1
+	var data := message.slice(9 if compressed else 5)
+	if compressed:
+		var compression_size := message.decode_u32(5)
+		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
+		
 	raw_message_received.emit("<Binary event %d, \"playerid\"=%d>" % [event, uid])
-	if size != 0xFFFF:
-		data = data.decompress(size, FileAccess.COMPRESSION_FASTLZ)
-	binary_message_received.emit(event, uid, data)
+	binary_message_received.emit(event, uid, flags, data)
 
 func _process(delta: float) -> void:
 	poll()
