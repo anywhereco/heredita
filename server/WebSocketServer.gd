@@ -39,6 +39,11 @@ func send_text(peer_id: int, message: String) -> Error:
 	var error := peer.send_text(message)
 	return error
 	
+func send_raw_binary(peer_id: int, message: PackedByteArray) -> Error:
+	var peer := _peers[peer_id]
+	var error := peer.send(message)
+	return error
+	
 func send_targeted_event(peer_id: int, event: String, details: Variant = {}, origin_id := -1) -> Error:
 	if details:
 		return send_text(peer_id, JSON.stringify({"event": event, "player_id": origin_id, "details": details}))

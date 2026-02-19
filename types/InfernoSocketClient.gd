@@ -31,6 +31,8 @@ var room: Room
 var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
+const TIMEOUT: int = 10000 #ms
+
 signal connected_to_server()
 signal connection_closed()
 
@@ -38,7 +40,7 @@ signal handshake_complete()
 
 signal message_received(event: String, player_id: int, details: Variant)
 
-signal binary_message_received(event: int, player_id: int, details: PackedByteArray)
+signal binary_message_received(event: int, player_id: int, flags: int, details: PackedByteArray)
 
 ## Same as [code]message_recieved[/code], but shows handshake events and is not parsed.
 signal raw_message_received(string: String)
@@ -56,7 +58,7 @@ func _ready() -> void:
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
-	
+	raw_message_received.connect(self.handle_chunked_binary_events)
 
 #region Encode and Decode
 func _encode_data(value: Variant) -> String:
@@ -92,7 +94,7 @@ func send(event: String, message: Variant = null) -> int:
 enum BinaryFlags {
 	NONE = 0,
 	COMPRESSED = 1,
-	CHUNKED = 2,
+	BEGIN_CHUNK = 2,
 	LAST_CHUNK = 4
 }
 
@@ -124,15 +126,60 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 	var chunk_count := ceili(compression_size / float(0x10000))
 	var flags := BinaryFlags.NONE
 	for i in chunk_count:
+		if i == 0:
+			flags &= BinaryFlags.BEGIN_CHUNK
 		var chunk := data.slice(i*0x10000,(i+1)*0x10000)
 		var bytes := PackedByteArray()
 		bytes.resize(1)
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
 		if i == chunk_count-1:
-			flags &= BinaryFlags.LAST_CHUNK as BinaryFlags
+			flags &= BinaryFlags.LAST_CHUNK
 		send_binary(event, target, flags, bytes, false)
+		
+func handle_chunked_binary_events(string: String) -> void:
+	if string.begins_with("<Chunked binary event incoming>"):
+		var data := await get_chunked_binary_data()
+		if data.event == 1: # map event
+			print("Updating maps with %s" % data.array)
+			pass # update map
+		
+
+#region Receiving Chunked Binary
+
+class ChunkedBinaryData:
+	var array: PackedByteArray
+	var event: int
 	
+	func _init(array: PackedByteArray, event: int) -> void:
+		self.array = array
+		self.event = event
+
+func get_chunked_binary_data() -> ChunkedBinaryData:
+	var data := []
+	var data_length := 0
+	var chunks_recieved := 0
+	var event := 0
+	var target := 0
+	while true:
+		var sig_data: Variant = await self.binary_message_received
+		target = sig_data[1]
+		var flags: int = sig_data[2]
+		var chunk: PackedByteArray = sig_data[3]
+		if not chunk:
+			return ChunkedBinaryData.new(PackedByteArray([]), event)
+		var last_flag := flags & InfernoSocketClient.BinaryFlags.LAST_CHUNK
+		data_length = chunk.decode_u8(0)
+		data.append_array(chunk.slice(1))
+		chunks_recieved += 1
+		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
+		if end_hint == 1:
+			break
+		elif end_hint == 2:
+			return ChunkedBinaryData.new(PackedByteArray([]), event)
+	return ChunkedBinaryData.new(data, event)
+#endregion
+
 func get_message_raw() -> Variant:
 	if socket.get_available_packet_count() < 1:
 		return null
@@ -267,12 +314,15 @@ func _poll_string(message: Dictionary) -> void:
 func _poll_binary(message: PackedByteArray) -> void:
 	var event := message.decode_u16(0)
 	var uid := message.decode_s16(2)
-	var size := message.decode_u16(4)
-	var data := message.slice(6)
+	var flags := message.decode_u8(4)
+	var compressed := flags & BinaryFlags.COMPRESSED >= 1
+	var data := message.slice(9 if compressed else 5)
+	if compressed:
+		var compression_size := message.decode_u32(5)
+		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
+		
 	raw_message_received.emit("<Binary event %d, \"playerid\"=%d>" % [event, uid])
-	if size != 0xFFFF:
-		data = data.decompress(size, FileAccess.COMPRESSION_FASTLZ)
-	binary_message_received.emit(event, uid, data)
+	binary_message_received.emit(event, uid, flags, data)
 
 func _process(delta: float) -> void:
 	poll()
