@@ -32,6 +32,7 @@ var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
 const TIMEOUT: int = 10000 #ms
+const BUFFER_SIZE_KB: int = 2048
 
 signal connected_to_server()
 signal connection_closed()
@@ -54,6 +55,8 @@ func _init(url: String = "", _room: int = 0, creating: Dictionary = {}, map: Pac
 	creating_map = map
 
 func _ready() -> void:
+	socket.outbound_buffer_size = BUFFER_SIZE_KB * 1024
+	socket.inbound_buffer_size = BUFFER_SIZE_KB * 1024
 	var err := self.connect_to_url(websocket_url)
 	if err != OK:
 		print("Unable to connect")
@@ -98,6 +101,11 @@ enum BinaryFlags {
 	LAST_CHUNK = 4
 }
 
+enum BinaryEvents {
+	#chunked events start at 0x80
+	SYNC_MAP = 0x80
+}
+
 func send_binary(event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> int:
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
@@ -121,9 +129,8 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 	#Compression is built into this method. If it's this big we're compressing it
 	var compression_size := len(data)
 	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
-		
 	data = data.compress(FileAccess.COMPRESSION_FASTLZ)
-	var chunk_count := ceili(compression_size / float(0x10000))
+	var chunk_count := ceili(data.size() / float(0x10000))
 	var flags := BinaryFlags.NONE
 	for i in chunk_count:
 		if i == 0:
@@ -247,6 +254,7 @@ func _poll_string(message: Dictionary) -> void:
 			"_is2_handshake":
 				if creating_room:
 					send("_is2_create_room", creating_room)
+					send_chunked_binary(BinaryEvents.SYNC_MAP, -1, creating_map)
 					return
 				send("_is2_room_info", room_id)
 				return

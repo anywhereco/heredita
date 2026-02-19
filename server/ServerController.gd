@@ -24,10 +24,11 @@ func new_room_id() -> int:
 		id = randi()
 	return id
 
-func create_room(data: Dictionary = {}) -> int:
+func create_room(data: Dictionary = {}, map_data: PackedByteArray = PackedByteArray()) -> int:
 	var id := new_room_id()
 	var room := Room.new()
 	room.map = Map.new()
+	room.map.deserialize(map_data)
 	for key: String in data:
 		if key == "name":
 			room.name = data[key]
@@ -37,8 +38,6 @@ func create_room(data: Dictionary = {}) -> int:
 			room.password = data[key]
 		if key == "player_cap":
 			room.player_limit = data[key]
-		if key == "map":
-			pass
 	var room_server := RoomServer.new()
 	room_server.room = room
 	rooms[id] = room_server
@@ -168,10 +167,9 @@ func _connected(peer_id: int) -> void:
 		r._connected(peer_id)
 		return
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
-		var map_data: PackedByteArray = PackedByteArray([])
-		if "map" in json.val()["details"]:
-			map_data = await get_binary_data(peer_id)
-		var rid := create_room(json.val()["details"])
+		var map_data: PackedByteArray = PackedByteArray()
+		map_data = await get_chunked_binary_data(peer_id)
+		var rid := create_room(json.val()["details"], map_data)
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
 		r._connected(peer_id, true)
@@ -182,7 +180,7 @@ func _text_data(peer_id: int, data: String) -> void:
 	if peer_id in peer_rooms:
 		rooms[peer_rooms[peer_id]]._text_data(peer_id, data)
 	else:
-		var data_json := await parse_json(data)
+		var data_json := parse_json(data)
 		if not (ISUtil.valid_event_is(data_json, "_is2_room_info") or ISUtil.valid_event_is(data_json, "_is2_create_room")):
 			ws_server.close(peer_id, 4096, "Protocol failure")
 

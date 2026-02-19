@@ -8,5 +8,4 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _pressed() -> void:
-	print(Prompts.prompts)
-	print(Prompts.close_prompt(Prompts.prompts.size()-1))
+	Prompts.close_top_prompt()

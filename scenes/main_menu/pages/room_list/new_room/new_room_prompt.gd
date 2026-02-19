@@ -24,11 +24,13 @@ func change_map() -> void:
 	
 func create_room() -> void:
 	var create_dict: Dictionary = {}
+	if not $Name.text:
+		InfoPrompt.prompt("Cannot create a room with an empty name!")
+		return
 	create_dict["name"] = $Name.text
 	create_dict["description"] = $Description.text
 	create_dict["password"] = $Password.text
 	create_dict["player_cap"] = $PlayerCapBox/PlayerCap.value
-	var map_object := Map.new()
-	map_object.original_map = map.value
-	var map_data: PackedByteArray = map_object.serialize()
-	RoomHandler._instance.join_room("", create_dict, map_data)
+	var map_object := MapData.new()
+	map_object.image = map.value
+	RoomHandler._instance.join_room("", create_dict, map_object)

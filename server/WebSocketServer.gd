@@ -2,6 +2,7 @@ extends Node
 class_name WSServer
 
 var PORT := 443
+const BUFFER_SIZE_KB := 2048
 
 var _tcp_server: TCPServer = TCPServer.new()
 
@@ -65,6 +66,8 @@ func _process(_delta: float) -> void:
 		last_peer_id += 1
 		print("peer %d connected" % last_peer_id)
 		var ws := WebSocketPeer.new()
+		ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
+		ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
 		ws.accept_stream(_tcp_server.take_connection())
 		_peers[last_peer_id] = ws
 		_peer_status[last_peer_id] = WebSocketPeer.STATE_CONNECTING

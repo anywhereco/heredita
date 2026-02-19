@@ -84,6 +84,12 @@ func close_prompt(idx: int) -> PromptActionResult:
 	_update_prompt_ids()
 	return PromptActionResult.SUCCESSFUL
 	
+func close_top_prompt() -> PromptActionResult:
+	if prompts.size() == 0:
+		return PromptActionResult.NOT_IN_PROMPT
+	close_prompt(prompts.size()-1)
+	return PromptActionResult.SUCCESSFUL
+	
 func _update_prompt_ids() -> void:
 	for idx in range(prompts.size()):
 		prompts[idx].idx = idx

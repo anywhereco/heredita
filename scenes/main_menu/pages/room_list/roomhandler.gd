@@ -44,20 +44,20 @@ func _load_rooms() -> void:
 	move_child(create, -1)
 	loading_placeholder.hide()
 
-func enter_mapper(map: PackedByteArray = PackedByteArray()) -> void:
+func enter_mapper(map: MapData = null) -> void:
 	const MAPPER_3D = preload("uid://bmfinmmve5h47")
 	var mapper: MapperRoot = MAPPER_3D.instantiate()
-	if map:
-		Map._instance.deserialize(map)
+	if map != null:
+		Map._instance.set_data(map)
 	get_tree().current_scene.queue_free()
 	get_tree().root.add_child(mapper)
 	get_tree().current_scene = mapper
 	VirtualMouse._instance.enabled = true
 
-func join_room(_id: String, creation: Dictionary = {}, map: PackedByteArray = PackedByteArray()) -> void:
-	if creation:
-		assert(map, "Attempted to create room with no map")
-		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, creation, map)
+func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> void:
+	if creation != null:
+		assert(map != null, "Attempted to create room with no map")
+		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, creation, map.serialize())
 	else:
 		State.client = InfernoSocketClient.new(Statics.SERVER_URL, int(_id))
 	get_tree().root.add_child(State.client)

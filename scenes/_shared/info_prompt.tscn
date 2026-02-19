@@ -12,3 +12,4 @@ layout_mode = 2
 
 [node name="Button" type="Button" parent="." unique_id=1881394387]
 layout_mode = 2
+size_flags_horizontal = 4
