@@ -55,7 +55,7 @@ func enter_mapper(map: MapData = null) -> void:
 	VirtualMouse._instance.enabled = true
 
 func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> void:
-	if creation != null:
+	if creation:
 		assert(map != null, "Attempted to create room with no map")
 		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, creation, map.serialize())
 	else:

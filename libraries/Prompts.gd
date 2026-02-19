@@ -91,5 +91,11 @@ func close_top_prompt() -> PromptActionResult:
 	return PromptActionResult.SUCCESSFUL
 	
 func _update_prompt_ids() -> void:
+	var to_be_erased: Array[int] = []
 	for idx in range(prompts.size()):
+		if not is_instance_valid(prompts[idx]):
+			to_be_erased.append(idx)
+			continue
 		prompts[idx].idx = idx
+	for idx in to_be_erased:
+		prompts.erase(idx)

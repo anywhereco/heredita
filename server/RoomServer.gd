@@ -33,7 +33,6 @@ func peer_player_id(peer_id: int) -> int:
 	return -1
 
 func _on_peer_close(peer_id: int) -> void:
-	print("on_peer_close")
 	var player_id := peer_player_id(peer_id)
 	room.players.erase(player_id)
 	send_event("_is2_player_exit", player_id)
@@ -112,11 +111,13 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	send_event("_is2_player_join", {"player_id": player_id, "details": {"username": player.username, "logged_in": player.logged_in, "profile": player.profile}})
 	room.players.setv(player_id, player)
 	ws_server.send_targeted_event(peer_id, "_is2_handshake_complete", {"name": room.name, "description": room.description, "players": room.player_info()})
+	if not created:
+		ws_server.send_targeted_binary(peer_id, ISUtil.BinaryEvents.SYNC_MAP, room.map.serialize())
 	# TODO: fix self.room.map.get_map_as_image().data not being EMPTY ):
 	var data := []
 	for v in 3:
 		data.append(5)
-	self.server_controller.send_chunked_binary(peer_id, 1, 1, PackedByteArray(data))
+	#self.server_controller.send_chunked_binary(peer_id, 1, 1, PackedByteArray(data))
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
@@ -136,5 +137,5 @@ func _text_data(peer_id: int, data: String) -> void:
 			if parse_event(data_json.val()):
 				send_event(data_json.val()["event"], data_json.val()["details"], peer_player_id(peer_id))
 
-func _binary_data(peer_id: int, data: PackedByteArray) -> void:
+func _binary_data(peer_id: int, data: Dictionary) -> void:
 	pass

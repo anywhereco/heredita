@@ -122,15 +122,14 @@ func get_data() -> MapData:
 	return data
 	
 func set_data(data: MapData) -> void:
-	#only functions before _ready()
 	original_map = data.image
+	original_map_size = original_map.get_size()
+	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 
 func _init() -> void:
 	_instance = self
 
-func _ready() -> void:
-	preview_plane.texture.set_image(preview_texture)
-	
+func reset_chunks() -> void:
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	for x: int in range(0, original_map_size.x, CHUNK_SIZE):
@@ -161,6 +160,10 @@ func _ready() -> void:
 			chunks.get(x_idx).insert(y_idx, chunk)
 			chunks_edited.get(x_idx).insert(y_idx, false)
 			chunk_images.get(x_idx).insert(y_idx, img)
+
+func _ready() -> void:
+	preview_plane.texture.set_image(preview_texture)
+	reset_chunks()
 	water.mesh.size = map_space_to_world_space(Vector2.ZERO).abs() * 2
 	map_world_bounds = Rect2(map_space_to_world_space(Vector2.ZERO), map_space_to_world_space(Vector2.ZERO).abs() * 2)
 

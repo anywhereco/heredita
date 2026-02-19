@@ -1,6 +1,18 @@
 extends Node
 class_name ISUtil
 
+enum BinaryFlags {
+	NONE = 0,
+	COMPRESSED = 1,
+	BEGIN_CHUNK = 2,
+	LAST_CHUNK = 4
+}
+
+enum BinaryEvents {
+	#chunked events start at 0x80
+	SYNC_MAP = 0x80
+}
+
 static func json_event(dict: Dictionary) -> Variant:
 	return dict.get("event")
 

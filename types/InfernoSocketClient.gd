@@ -94,33 +94,22 @@ func send(event: String, message: Variant = null) -> int:
 	raw_message_sent.emit(data)
 	return socket.send_text(data)
 
-enum BinaryFlags {
-	NONE = 0,
-	COMPRESSED = 1,
-	BEGIN_CHUNK = 2,
-	LAST_CHUNK = 4
-}
-
-enum BinaryEvents {
-	#chunked events start at 0x80
-	SYNC_MAP = 0x80
-}
-
 func send_binary(event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> int:
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
 	raw_message_sent.emit("<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
-		flags &= BinaryFlags.COMPRESSED
+		flags |= ISUtil.BinaryFlags.COMPRESSED
 		compression_size = len(message)
 		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
 	var bytes := PackedByteArray()
-	bytes.resize(6)
+	bytes.resize(5)
 	bytes.encode_u16(0, event)
 	bytes.encode_s16(2, target)
 	bytes.encode_u8(4, flags)
 	if compress:
+		bytes.resize(9)
 		bytes.encode_u32(5, compression_size)
 	bytes.append_array(message)
 	return socket.send(bytes)
@@ -131,17 +120,17 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
 	data = data.compress(FileAccess.COMPRESSION_FASTLZ)
 	var chunk_count := ceili(data.size() / float(0x10000))
-	var flags := BinaryFlags.NONE
+	var flags := ISUtil.BinaryFlags.NONE
 	for i in chunk_count:
 		if i == 0:
-			flags &= BinaryFlags.BEGIN_CHUNK
+			flags |= ISUtil.BinaryFlags.BEGIN_CHUNK
 		var chunk := data.slice(i*0x10000,(i+1)*0x10000)
 		var bytes := PackedByteArray()
 		bytes.resize(1)
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
 		if i == chunk_count-1:
-			flags &= BinaryFlags.LAST_CHUNK
+			flags &= ISUtil.BinaryFlags.LAST_CHUNK
 		send_binary(event, target, flags, bytes, false)
 		
 func handle_chunked_binary_events(string: String) -> void:
@@ -175,7 +164,7 @@ func get_chunked_binary_data() -> ChunkedBinaryData:
 		var chunk: PackedByteArray = sig_data[3]
 		if not chunk:
 			return ChunkedBinaryData.new(PackedByteArray([]), event)
-		var last_flag := flags & InfernoSocketClient.BinaryFlags.LAST_CHUNK
+		var last_flag := flags & ISUtil.BinaryFlags.LAST_CHUNK
 		data_length = chunk.decode_u8(0)
 		data.append_array(chunk.slice(1))
 		chunks_recieved += 1
@@ -254,7 +243,8 @@ func _poll_string(message: Dictionary) -> void:
 			"_is2_handshake":
 				if creating_room:
 					send("_is2_create_room", creating_room)
-					send_chunked_binary(BinaryEvents.SYNC_MAP, -1, creating_map)
+					#send_chunked_binary(BinaryEvents.SYNC_MAP, -1, creating_map)
+					send_binary(ISUtil.BinaryEvents.SYNC_MAP, -1, ISUtil.BinaryFlags.COMPRESSED, creating_map)
 					return
 				send("_is2_room_info", room_id)
 				return
@@ -323,12 +313,13 @@ func _poll_binary(message: PackedByteArray) -> void:
 	var event := message.decode_u16(0)
 	var uid := message.decode_s16(2)
 	var flags := message.decode_u8(4)
-	var compressed := flags & BinaryFlags.COMPRESSED >= 1
+	var compressed := flags & ISUtil.BinaryFlags.COMPRESSED
 	var data := message.slice(9 if compressed else 5)
 	if compressed:
 		var compression_size := message.decode_u32(5)
 		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-		
+	print("received event %d!!" % event)
+
 	raw_message_received.emit("<Binary event %d, \"playerid\"=%d>" % [event, uid])
 	binary_message_received.emit(event, uid, flags, data)
 

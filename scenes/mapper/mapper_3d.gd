@@ -39,6 +39,7 @@ func _ready() -> void:
 	brush._map_ready()
 	if State.client:
 		State.client.message_received.connect(get_map_update)
+		State.client.binary_message_received.connect(sync_map)
 		State.client.connection_closed.connect(closed)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -58,6 +59,12 @@ func process_tool_use(event: InputEvent) -> void:
 func get_map_update(event: String, player_id: int, details: Variant) -> void:
 	if event == "map_update":
 		Map._instance.get_map_update(details as Dictionary)
+
+func sync_map(event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
+	if event == ISUtil.BinaryEvents.SYNC_MAP:
+		print("AAAAAAA")
+		print(details.count(0))
+		Map._instance.set_data(MapData.deserialize(details))
 
 func closed() -> void:
 	if not is_inside_tree(): #if we exited manually

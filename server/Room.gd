@@ -5,7 +5,7 @@ var description := ""
 var player_limit := 8
 var password := ""
 
-var map: Map
+var map: MapData
 
 var players: ReactiveDictionary = ReactiveDictionary.new({})
 var player_ids_chronological: Array[int] = []
