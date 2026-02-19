@@ -78,7 +78,7 @@ func show_prompt(idx: int) -> Result:
 	
 ## Closes the prompt.
 func close_prompt(idx: int) -> PromptActionResult:
-	if not in_prompt:
+	if prompts.size() <= idx:
 		return PromptActionResult.NOT_IN_PROMPT
 	prompts[idx].close()
 	_update_prompt_ids()

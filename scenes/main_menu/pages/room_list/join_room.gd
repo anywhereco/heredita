@@ -8,6 +8,7 @@ func enter_mapper() -> void:
 	get_tree().current_scene.queue_free()
 	get_tree().root.add_child(mapper)
 	get_tree().current_scene = mapper
+	VirtualMouse._instance.enabled = true
 
 func _pressed() -> void:
 	if create:

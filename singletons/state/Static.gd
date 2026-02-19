@@ -3,7 +3,7 @@ class_name Statics
 extends Object
 
 static var HEREDITA_URL := "https://demo.heredita.net"
-static var SERVER_URL := "wss://demo.heredita.net/ws"
+static var SERVER_URL := "wss://gameserver.heredita.net"
 
 static func initialize() -> void:
 	var user_args := OS.get_cmdline_user_args()

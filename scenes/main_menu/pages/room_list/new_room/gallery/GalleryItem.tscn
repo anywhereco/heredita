@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bj8dbj28fas7r"]
 
-[ext_resource type="Script" uid="uid://bc4ij78xxo0jf" path="res://scenes/main_menu/pages/gallery/gallery_item.gd" id="1_d8guk"]
+[ext_resource type="Script" uid="uid://bc4ij78xxo0jf" path="res://scenes/main_menu/pages/room_list/new_room/gallery/gallery_item.gd" id="1_d8guk"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="2_6ox7a"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_d8guk"]
@@ -14,16 +14,24 @@ size = Vector2(2, 1)
 font = ExtResource("2_6ox7a")
 font_color = Color(1, 1, 1, 0.75686276)
 
-[node name="GalleryItem" type="PanelContainer" unique_id=49912668]
+[node name="GalleryItem" type="PanelContainer" unique_id=1299610332]
 custom_minimum_size = Vector2(144, 112)
+offset_right = 182.0
+offset_bottom = 112.0
 theme_type_variation = &"NestedPanel"
 script = ExtResource("1_d8guk")
 
+[node name="Button" type="Button" parent="." unique_id=1772303842]
+layout_mode = 2
+
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1235454979]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=2097876728]
 layout_mode = 2
+mouse_filter = 2
+alignment = 1
 
 [node name="LoadingPlaceholder" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1589481908]
 layout_mode = 2
@@ -39,11 +47,14 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_filter = 2
 texture = SubResource("PlaceholderTexture2D_b1hnv")
 expand_mode = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=2019274618]
 layout_mode = 2
+mouse_filter = 2
+alignment = 1
 
 [node name="Name" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1856877496]
 layout_mode = 2
@@ -54,12 +65,4 @@ layout_mode = 2
 text = "by Tibet Maps"
 label_settings = SubResource("LabelSettings_hnhop")
 
-[node name="Control" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=406393134]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1856063034]
-layout_mode = 2
-text = "Pick"
-
-[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/Button" to="." method="_picked"]
+[connection signal="pressed" from="Button" to="." method="_picked"]

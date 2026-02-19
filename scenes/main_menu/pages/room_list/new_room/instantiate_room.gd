@@ -1,6 +1,6 @@
 extends Button
 
-const NEW_ROOM_PROMPT = preload("uid://faj2phk4p8di")
+const NEW_ROOM_PROMPT = preload("res://scenes/main_menu/pages/room_list/new_room/NewRoomPrompt.tscn")
 
 
 func _pressed() -> void:

@@ -1,17 +1,26 @@
 [gd_scene format=3 uid="uid://faj2phk4p8di"]
 
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="1_5vjh0"]
-[ext_resource type="Script" uid="uid://j5d5mbyadwj8" path="res://libraries/ui/image_picker_button/image_picker_button.gd" id="2_fgy55"]
-[ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="2_fquqx"]
+[ext_resource type="Script" uid="uid://h6gmhcdgqkaq" path="res://scenes/main_menu/pages/room_list/new_room/new_room_prompt.gd" id="1_pf8od"]
+[ext_resource type="Script" uid="uid://80rk2bwsgwf4" path="res://scenes/main_menu/pages/room_list/new_room/back_landing.gd" id="3_7vv4v"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fgy55"]
 font = ExtResource("1_5vjh0")
 font_size = 20
 
-[sub_resource type="LabelSettings" id="LabelSettings_n8y21"]
-font = ExtResource("2_fquqx")
-font_size = 21
-font_color = Color(1, 1, 1, 0.5686275)
+[sub_resource type="Gradient" id="Gradient_7vv4v"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.15294118, 0.15686275, 0.30980393, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_pf8od"]
+gradient = SubResource("Gradient_7vv4v")
+height = 32
+
+[sub_resource type="Gradient" id="Gradient_7t0hk"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vpn6m"]
+gradient = SubResource("Gradient_7t0hk")
+height = 32
 
 [node name="NewRoomPrompt" type="VBoxContainer" unique_id=1920594828]
 anchors_preset = 8
@@ -25,6 +34,8 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 10
+script = ExtResource("1_pf8od")
 
 [node name="Title" type="Label" parent="." unique_id=2053284206]
 layout_mode = 2
@@ -32,20 +43,77 @@ text = "Create a Room"
 label_settings = SubResource("LabelSettings_fgy55")
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=64583945]
+[node name="HSeparator" type="HSeparator" parent="." unique_id=491921009]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="HBoxContainer" unique_id=999155388]
+[node name="Name" type="LineEdit" parent="." unique_id=165496074]
 layout_mode = 2
-text = "Check the gallery"
+placeholder_text = "Name"
 
-[node name="Label" type="Label" parent="HBoxContainer" unique_id=54990387]
+[node name="Description" type="TextEdit" parent="." unique_id=1203058588]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-text = "or"
-label_settings = SubResource("LabelSettings_n8y21")
+placeholder_text = "Description"
+wrap_mode = 1
+scroll_smooth = true
+scroll_v_scroll_speed = 10.0
 
-[node name="ImagePickerButton" type="Button" parent="HBoxContainer" unique_id=2079654197]
+[node name="Password" type="LineEdit" parent="." unique_id=683002425]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-text = "Pick an image or map"
-script = ExtResource("2_fgy55")
-metadata/_custom_type_script = "uid://j5d5mbyadwj8"
+placeholder_text = "Password (leave blank for none)"
+
+[node name="PlayerCapBox" type="HBoxContainer" parent="." unique_id=12239804]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label2" type="Label" parent="PlayerCapBox" unique_id=806400194]
+layout_mode = 2
+text = "Player Cap"
+horizontal_alignment = 1
+
+[node name="PlayerCap" type="SpinBox" parent="PlayerCapBox" unique_id=1248767228]
+layout_mode = 2
+size_flags_horizontal = 4
+min_value = 4.0
+max_value = 20.0
+value = 20.0
+
+[node name="ChangeMap" type="Button" parent="." unique_id=1911909449]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Choose map..."
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1285368030]
+layout_mode = 2
+
+[node name="OceanRect" type="TextureRect" parent="CenterContainer" unique_id=1143949700]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = SubResource("GradientTexture2D_pf8od")
+expand_mode = 3
+
+[node name="Map" type="TextureRect" parent="CenterContainer" unique_id=2023055921]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = SubResource("GradientTexture2D_vpn6m")
+expand_mode = 3
+
+[node name="Spacer" type="Control" parent="." unique_id=417460217]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="." unique_id=789915965]
+layout_mode = 2
+alignment = 1
+
+[node name="Back" type="Button" parent="Buttons" unique_id=463256579]
+layout_mode = 2
+text = "  Back  "
+script = ExtResource("3_7vv4v")
+
+[node name="Create" type="Button" parent="Buttons" unique_id=1346182965]
+layout_mode = 2
+text = "Create Room"

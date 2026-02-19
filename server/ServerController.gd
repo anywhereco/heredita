@@ -22,8 +22,7 @@ func new_room_id() -> int:
 	var id := randi()
 	while id in rooms:
 		id = randi()
-	#return id
-	return 0
+	return id
 
 func create_room(data: Dictionary = {}) -> int:
 	var id := new_room_id()
@@ -32,6 +31,12 @@ func create_room(data: Dictionary = {}) -> int:
 	for key: String in data:
 		if key == "name":
 			room.name = data[key]
+		if key == "description":
+			room.description = data[key]
+		if key == "password":
+			room.password = data[key]
+		if key == "player_cap":
+			room.player_limit = data[key]
 		if key == "map":
 			pass
 	var room_server := RoomServer.new()

@@ -5,13 +5,15 @@ extends VBoxContainer
 @onready var create: HBoxContainer = $Create
 var loading_placeholder_text: String
 
+static var _instance: RoomHandler
+
 func _ready() -> void:
+	_instance = self
 	loading_placeholder_text = loading_placeholder.get_node("Label").text
 	_load_rooms()
 
 func _process(_delta: float) -> void:
 	pass
-
 
 func _load_rooms() -> void:
 	loading_placeholder.show()
@@ -29,10 +31,11 @@ func _load_rooms() -> void:
 			HTTP.HTTPResult.FAILED_REQUEST:
 				loading_placeholder.get_node("Label").text = "Could not reach server. Try again later."
 				return
-	for room: Dictionary in rooms.val():
+	for room_id: String in rooms.val():
+		var room: Dictionary = rooms.val()[room_id]
 		add_child(RoomTemplate.of(
 			self,
-			room["id"] as String,
+			room_id,
 			room["name"] as String,
 			room["description"] as String,
 			room["player_count"] as int,
@@ -41,5 +44,21 @@ func _load_rooms() -> void:
 	move_child(create, -1)
 	loading_placeholder.hide()
 
-func join_room(_id: String) -> void:
-	pass
+func enter_mapper(map: PackedByteArray = PackedByteArray()) -> void:
+	const MAPPER_3D = preload("uid://bmfinmmve5h47")
+	var mapper: MapperRoot = MAPPER_3D.instantiate()
+	if map:
+		Map._instance.deserialize(map)
+	get_tree().current_scene.queue_free()
+	get_tree().root.add_child(mapper)
+	get_tree().current_scene = mapper
+	VirtualMouse._instance.enabled = true
+
+func join_room(_id: String, creation: Dictionary = {}, map: PackedByteArray = PackedByteArray()) -> void:
+	if creation:
+		assert(map, "Attempted to create room with no map")
+		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, creation, map)
+	else:
+		State.client = InfernoSocketClient.new(Statics.SERVER_URL, int(_id))
+	get_tree().root.add_child(State.client)
+	State.client.handshake_complete.connect(enter_mapper.bind(map))

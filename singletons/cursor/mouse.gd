@@ -23,7 +23,11 @@ const VIRTUAL_MOUSE_DEVICE := 7
 
 
 static var _instance: VirtualMouse 
-
+var enabled: bool:
+	set(en):
+		enabled = en
+		if en: unhide_mouse()
+		else: hide_mouse()
 
 var action: Action = Action.DEFAULT
 var tool_action: Action = Action.DEFAULT
@@ -93,7 +97,7 @@ func _input(event: InputEvent) -> void:
 			hide_mouse()
 
 	else:
-		if event is InputEventMouseButton and event.pressed:
+		if event is InputEventMouseButton and event.pressed and enabled:
 			unhide_mouse()
 
 func _notification(what: int) -> void:

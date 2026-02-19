@@ -29,6 +29,7 @@ var _attempts := 5
 
 var room: Room
 var creating_room := {}
+var creating_map: PackedByteArray = PackedByteArray()
 
 signal connected_to_server()
 signal connection_closed()
@@ -44,10 +45,11 @@ signal raw_message_received(string: String)
 
 signal raw_message_sent(string: String)
 
-func _init(url: String = "", _room: int = 0, creating: Dictionary = {}) -> void:
+func _init(url: String = "", _room: int = 0, creating: Dictionary = {}, map: PackedByteArray = PackedByteArray()) -> void:
 	websocket_url = url
 	room_id = _room
 	creating_room = creating
+	creating_map = map
 
 func _ready() -> void:
 	var err := self.connect_to_url(websocket_url)

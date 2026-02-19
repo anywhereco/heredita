@@ -8,4 +8,5 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _pressed() -> void:
-	MainMenuForeground._instance.swap_page(MainMenuForeground.Page.LANDING)
+	print(Prompts.prompts)
+	print(Prompts.close_prompt(Prompts.prompts.size()-1))

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dehpp1j2c2t4a"]
 
-[ext_resource type="Script" uid="uid://bcftydui3h2on" path="res://scenes/main_menu/pages/landing/temporary_mapper_opener_mp.gd" id="1_6w57y"]
+[ext_resource type="Script" uid="uid://bcftydui3h2on" path="res://scenes/main_menu/pages/room_list/join_room.gd" id="1_6w57y"]
 
 [node name="MpTest" type="Control" unique_id=1580545137]
 layout_mode = 3
@@ -28,3 +28,4 @@ offset_right = 441.0
 offset_bottom = 338.0
 text = "Join room 0"
 script = ExtResource("1_6w57y")
+create = null
