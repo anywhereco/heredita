@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bo7jlrc3hs4b5" path="res://scenes/main_menu/pages/room_list/keep_logo_size.gd" id="2_ad10x"]
 [ext_resource type="Script" uid="uid://cfggt4nqijly5" path="res://scenes/main_menu/pages/room_list/return_to_landing.gd" id="3_vv0m7"]
 [ext_resource type="Script" uid="uid://bwliltv76v13d" path="res://scenes/main_menu/pages/room_list/reload.gd" id="4_em73g"]
+[ext_resource type="Script" uid="uid://csnwclt1fqovt" path="res://scenes/main_menu/pages/room_list/set_username.gd" id="4_vv0m7"]
 [ext_resource type="Script" uid="uid://ccm6h71syvpb" path="res://scenes/main_menu/pages/room_list/roomhandler.gd" id="5_2ry5b"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="6_8mxs2"]
 [ext_resource type="Script" uid="uid://dmr78u6gtdkfg" path="res://scenes/main_menu/pages/room_list/new_room/instantiate_room.gd" id="7_myu5w"]
@@ -71,6 +72,18 @@ text = "Back"
 script = ExtResource("3_vv0m7")
 
 [node name="Control" type="Control" parent="Rooms/ButtonRow" unique_id=495330691]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Username" type="LineEdit" parent="Rooms/ButtonRow" unique_id=1851472981]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+placeholder_text = "Username"
+alignment = 1
+max_length = 20
+script = ExtResource("4_vv0m7")
+
+[node name="Control2" type="Control" parent="Rooms/ButtonRow" unique_id=482988999]
 layout_mode = 2
 size_flags_horizontal = 3
 

@@ -279,8 +279,10 @@ func _poll_string(message: Dictionary) -> void:
 				attempts_label.text = "%d attempts remaining" % _attempts
 				return
 			"_is2_username":
-				#send("_is2_username", State.player.name)
-				send("_is2_username", "User%d" % player_id)
+				if State.user.initialized:
+					send("_is2_username", State.user.username)
+				else:
+					send("_is2_username", State.guest_username)
 				return
 			"_is2_token":
 				#var token_res: Variant = LocalStorage.get_item("token")
