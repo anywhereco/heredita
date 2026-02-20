@@ -11,7 +11,6 @@ var players: ReactiveDictionary = ReactiveDictionary.new({})
 var player_ids_chronological: Array[int] = []
 var id_iterator := 0 #next id for use
 var close_on_empty := true
-var hosts: Array[int] = []
 
 var banned_ips := []
 
@@ -27,7 +26,8 @@ func player_info() -> Dictionary:
 	for player_id: int in players.keys():
 		l[player_id] = {"username": players.getv(player_id).username,
 					  "logged_in": players.getv(player_id).logged_in,
-					  "profile": players.getv(player_id).profile}
+					  "profile": players.getv(player_id).profile,
+					  "operator": players.getv(player_id).operator}
 	return l
 
 

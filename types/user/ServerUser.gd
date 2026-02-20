@@ -6,6 +6,7 @@ var logged_in: bool
 var profile := {}
 var flags: int
 var status: int
+var operator: bool
 
 func _init(peer: int, dict: Dictionary) -> void:
 	peer_id = peer
@@ -13,3 +14,4 @@ func _init(peer: int, dict: Dictionary) -> void:
 	logged_in = dict.logged_in
 	flags = dict.get("flags", 0)
 	status = dict.get("status", 0)
+	operator = dict.get("operator", false)

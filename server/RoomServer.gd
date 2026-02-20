@@ -108,6 +108,8 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		
 	#token stuff
 	
+	if created:
+		player.operator = true
 	send_event("_is2_player_join", {"player_id": player_id, "details": {"username": player.username, "logged_in": player.logged_in, "profile": player.profile}})
 	room.players.setv(player_id, player)
 	ws_server.send_targeted_event(peer_id, "_is2_handshake_complete", {"name": room.name, "description": room.description, "players": room.player_info()})
@@ -121,9 +123,16 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
-func parse_event(data: Dictionary) -> bool:
+func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] == "map_update":
 		room.map.get_map_update(data["details"])
+	elif data["event"] == "ban":
+		if room.players.getv(peer_player_id(peer_id)).operator:
+			var ban_id: int = data["details"]
+			var banned_peer: int = room.players.getv(ban_id).peer_id
+			room.banned_ips.append(ws_server.peer_ip(banned_peer))
+			ws_server.close(banned_peer, 5000, "Banned from this room")
+			
 	#return value is true if it should be broadcasted to the rest of the server
 	return true
 
@@ -134,7 +143,7 @@ func _text_data(peer_id: int, data: String) -> void:
 	if peer_id in connected_peers:
 		var data_json := parse_json(data)
 		if ISUtil.valid_event(data_json):
-			if parse_event(data_json.val()):
+			if parse_event(data_json.val(), peer_id):
 				send_event(data_json.val()["event"], data_json.val()["details"], peer_player_id(peer_id))
 
 func _binary_data(peer_id: int, data: Dictionary) -> void:

@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cjfxc2diqd0kw"]
+
+[node name="Info" type="VBoxContainer" unique_id=776196077]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="." unique_id=1409291308]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="." unique_id=785685312]
+layout_mode = 2
