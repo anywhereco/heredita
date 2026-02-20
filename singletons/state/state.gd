@@ -11,6 +11,8 @@ var room: Room = null
 ## Should not be null. Make sure to check if the user is logged in via State.user.initialized.
 var user: PrimaryUser = null
 
+var guest_username := ""
+
 var _http_requesting_node_for_user: HTTPRequest
 
 func _ready() -> void:

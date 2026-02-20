@@ -1,6 +1,6 @@
 extends Button
 
-const LOGIN_SIGNUP_PROMPT = preload("uid://opivht8lbmfs")
+const LOGIN_SIGNUP_PROMPT = preload("res://scenes/main_menu/pages/landing/LoginSignupPrompt.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
