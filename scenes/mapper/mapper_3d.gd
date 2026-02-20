@@ -19,6 +19,10 @@ var tool := ReactiveInt.new(Tool.NONE)
 
 var brush: BrushTool = BrushTool.new()
 
+# May be empty
+var map_data_compressed: PackedByteArray
+var map_data_uncompr_size: int
+
 func _brush_size_changed(_reactive: ReactiveInt) -> void:
 	brush.size = UIRoot._instance.brush_ui.size_controller.brush_size.value
 	Map._instance.preview_plane.texture.update(brush.get_image_for_brush())
@@ -61,10 +65,13 @@ func get_map_update(event: String, player_id: int, details: Variant) -> void:
 		Map._instance.get_map_update(details as Dictionary)
 
 func sync_map(event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
+	if event == ISUtil.BinaryEvents.SYNC_MAP_SIZE:
+		map_data_uncompr_size = details.decode_u32(0)
 	if event == ISUtil.BinaryEvents.SYNC_MAP:
-		print("AAAAAAA")
-		print(details.count(0))
-		Map._instance.set_data(MapData.deserialize(details))
+		map_data_compressed.append_array(details)
+	if event == ISUtil.BinaryEvents.SYNC_MAP_END:
+		map_data_compressed.append_array(details)
+		Map._instance.set_data(MapData.deserialize(map_data_compressed.decompress(map_data_uncompr_size, FileAccess.COMPRESSION_FASTLZ)))
 
 func closed() -> void:
 	if not is_inside_tree(): #if we exited manually

@@ -9,8 +9,11 @@ enum BinaryFlags {
 }
 
 enum BinaryEvents {
-	#chunked events start at 0x80
-	SYNC_MAP = 0x80
+	SYNC_MAP = 0x0,
+	SYNC_MAP_END = 0x1,
+	SYNC_MAP_SIZE = 0x2, # used on server only
+	#chunked events start at 0x8000
+	TODO_SYNC_MAP = 0x8000
 }
 
 static func json_event(dict: Dictionary) -> Variant:

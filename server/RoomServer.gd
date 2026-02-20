@@ -78,7 +78,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		while attempts <= 5:
 			var password_json := await get_json_data(peer_id)
 			if not ISUtil.valid_event_is(password_json, "_is2_password_attempt"):
-				ws_server.close(peer_id, 4096, "Protocol failure")
+				ws_server.close(peer_id, 4096, "Protocol failurea")
 				return
 			if password_json["details"] == room.password:
 				ws_server.send_targeted_event(peer_id, "_is2_login_valid_password")
@@ -93,7 +93,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	var username_json := await get_json_data(peer_id)
 	var player: Player
 	if not ISUtil.valid_event_is(username_json, "_is2_username"):
-		ws_server.close(peer_id, 4096, "Protocol failure")
+		ws_server.close(peer_id, 4096, "Protocol failureb")
 		return
 	else:
 		player = Player.new(peer_id, {username = username_json.val()["details"], logged_in = false})
@@ -114,7 +114,29 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	room.players.setv(player_id, player)
 	ws_server.send_targeted_event(peer_id, "_is2_handshake_complete", {"name": room.name, "description": room.description, "players": room.player_info()})
 	if not created:
-		ws_server.send_targeted_binary(peer_id, ISUtil.BinaryEvents.SYNC_MAP, room.map.serialize())
+		var serialized := room.map.serialize()
+		var compressed := serialized.compress(FileAccess.COMPRESSION_FASTLZ)
+		var parts := ceili(len(compressed) / 250000.0)
+		var sizedata := PackedByteArray()
+		sizedata.resize(4)
+		sizedata.encode_u32(0, serialized.size())
+		ws_server.send_targeted_binary(
+			-1,
+			ISUtil.BinaryEvents.SYNC_MAP_SIZE,
+			sizedata,
+			ISUtil.BinaryFlags.NONE,
+			false)
+				
+		for part in parts:
+			var last := part == parts - 1
+			ws_server.send_targeted_binary(
+				-1,
+				ISUtil.BinaryEvents.SYNC_MAP_END if last else ISUtil.BinaryEvents.SYNC_MAP, # TODO move this entire thing over to actual chunk system 
+				compressed.slice(part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000),
+				ISUtil.BinaryFlags.NONE,
+				false
+			)
+			await get_tree().create_timer(0.1).timeout 
 	# TODO: fix self.room.map.get_map_as_image().data not being EMPTY ):
 	var data := []
 	for v in 3:

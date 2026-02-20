@@ -22,6 +22,7 @@ func _ready() -> void:
 		print("Server started.")
 	else:
 		push_error("Unable to start server.")
+		breakpoint
 		set_process(false)
 
 signal text_data(peer_id: int, data: String)
@@ -115,4 +116,6 @@ func _process(_delta: float) -> void:
 			_peer_status.erase(peer_id)
 			var code := peer.get_close_code()
 			var reason := peer.get_close_reason()
+			print("server close (%d): %s" % [code, reason])
+			breakpoint
 			closed.emit(peer_id, code, reason)

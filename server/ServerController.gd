@@ -181,14 +181,20 @@ func _connected(peer_id: int) -> void:
 		r._connected(peer_id)
 		return
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
-		var map_data: Dictionary = await get_binary_data(peer_id)
-		var map_data_body: PackedByteArray = map_data['data']
-		var rid := create_room(json.val()["details"], map_data_body)
+		var size: int = json.val()["details"]["map_file_size"]
+		var map_content: PackedByteArray = PackedByteArray([])
+		while true:
+			var map_data: Dictionary = await get_binary_data(peer_id)
+			var map_data_body: PackedByteArray = map_data['data']
+			map_content.append_array(map_data_body)
+			if map_data['event'] == ISUtil.BinaryEvents.SYNC_MAP_END:
+				break
+		var rid := create_room(json.val()["details"], map_content.decompress(size, FileAccess.COMPRESSION_FASTLZ))
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
 		r._connected(peer_id, true)
 		return
-	ws_server.close(peer_id, 4096, "Protocol failure")
+	ws_server.close(peer_id, 4096, "Protocol failuree")
 
 func _text_data(peer_id: int, data: String) -> void:
 	if peer_id in peer_rooms:
@@ -196,7 +202,7 @@ func _text_data(peer_id: int, data: String) -> void:
 	else:
 		var data_json := parse_json(data)
 		if not (ISUtil.valid_event_is(data_json, "_is2_room_info") or ISUtil.valid_event_is(data_json, "_is2_create_room")):
-			ws_server.close(peer_id, 4096, "Protocol failure")
+			ws_server.close(peer_id, 4096, "Protocol failured")
 
 func _binary_data(peer_id: int, data: PackedByteArray) -> void:
 	var data_parsed := parse_binary(data)
@@ -204,7 +210,7 @@ func _binary_data(peer_id: int, data: PackedByteArray) -> void:
 		rooms[peer_rooms[peer_id]]._binary_data(peer_id, data_parsed)
 	else:
 		if not data_parsed['event'] == ISUtil.BinaryEvents.SYNC_MAP:
-			ws_server.close(peer_id, 4096, "Protocol failure")
+			ws_server.close(peer_id, 4096, "Protocol failurec")
 
 func _closed(peer_id: int, code: int, reason: String) -> void:
 	if peer_id in peer_rooms:

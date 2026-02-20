@@ -16,7 +16,7 @@ var room_id: int
 
 var ping_timer: float = 0
 
-const PING_INTERVAL: float = 60
+const PING_INTERVAL: float = 5
 
 var socket := WebSocketPeer.new()
 var last_state := WebSocketPeer.STATE_CLOSED
@@ -91,12 +91,15 @@ func send(event: String, message: Variant = null) -> int:
 		"event": event,
 		"details": message,
 	})
+	print("c>s event:%s data:%s" % [event, str(message)])
 	raw_message_sent.emit(data)
 	return socket.send_text(data)
 
 func send_binary(event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> int:
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
+	
+	print("c>s <Binary event %d>" % event)
 	raw_message_sent.emit("<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
@@ -120,9 +123,10 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
 	data = data.compress(FileAccess.COMPRESSION_FASTLZ)
 	var chunk_count := ceili(data.size() / float(0x10000))
-	var flags := ISUtil.BinaryFlags.NONE
+	var flags:= ISUtil.BinaryFlags.NONE
 	for i in chunk_count:
 		if i == 0:
+			@warning_ignore("int_as_enum_without_cast")
 			flags |= ISUtil.BinaryFlags.BEGIN_CHUNK
 		var chunk := data.slice(i*0x10000,(i+1)*0x10000)
 		var bytes := PackedByteArray()
@@ -130,6 +134,7 @@ func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
 		if i == chunk_count-1:
+			@warning_ignore("int_as_enum_without_cast")
 			flags &= ISUtil.BinaryFlags.LAST_CHUNK
 		send_binary(event, target, flags, bytes, false)
 		
@@ -215,7 +220,8 @@ func poll() -> void:
 			connected_to_server.emit()
 		elif state == socket.STATE_CLOSED:
 			connection_closed.emit()
-	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
+	while socket.get_ready_state() != socket.STATE_CLOSED and socket.get_available_packet_count():
+		print("wa")
 		_poll_loop()
 
 func _poll_loop() -> void:
@@ -234,6 +240,7 @@ func _poll_loop() -> void:
 func _poll_string(message: Dictionary) -> void:
 	if message == null:
 		return
+	print("c<s %s" % str(message))
 	if message.has("event") and message.has("player_id"):
 		message["player_id"] = message["player_id"] as int
 		if message["player_id"] != -1:
@@ -242,9 +249,19 @@ func _poll_string(message: Dictionary) -> void:
 		match message["event"]:
 			"_is2_handshake":
 				if creating_room:
+					var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
+					creating_room["map_file_size"] = creating_map.size()
 					send("_is2_create_room", creating_room)
-					#send_chunked_binary(BinaryEvents.SYNC_MAP, -1, creating_map)
-					send_binary(ISUtil.BinaryEvents.SYNC_MAP, -1, ISUtil.BinaryFlags.COMPRESSED, creating_map)
+					var parts := ceili(len(map_compr) / 250000.0)
+					for part in parts:
+						var last := part == parts - 1
+						send_binary(
+							ISUtil.BinaryEvents.SYNC_MAP_END if last else ISUtil.BinaryEvents.SYNC_MAP, # TODO move this entire thing over to actual chunk system
+							-1,
+							ISUtil.BinaryFlags.NONE, 
+							map_compr.slice(part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000),
+							false)
+						await get_tree().create_timer(0.1).timeout 
 					return
 				send("_is2_room_info", room_id)
 				return
@@ -320,8 +337,8 @@ func _poll_binary(message: PackedByteArray) -> void:
 	if compressed:
 		var compression_size := message.decode_u32(5)
 		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-	print("received event %d!!" % event)
 
+	print("c<s <Binary event %d, \"playerid\"=%d>" % [event, uid])
 	raw_message_received.emit("<Binary event %d, \"playerid\"=%d>" % [event, uid])
 	binary_message_received.emit(event, uid, flags, data)
 
@@ -329,6 +346,7 @@ func _process(delta: float) -> void:
 	poll()
 	ping_timer += delta
 	if ping_timer > PING_INTERVAL and socket.get_ready_state() != socket.STATE_CLOSED:
+		print("client: socket state %s" % socket.get_ready_state())
 		send("_is2_ping")
 		ping_timer -= PING_INTERVAL
 #endregion

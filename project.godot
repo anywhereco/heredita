@@ -43,7 +43,7 @@ window/vsync/vsync_mode=0
 [editor]
 
 movie_writer/movie_file="/home/infernity/Godot/MPMap-Redrawn/vidya.avi"
-run/main_run_args="-- --heredita-url=http://localhost:9000 --gameserver-url=wss://localhost:9001"
+run/main_run_args="-- --heredita-url=http://localhost:9000 --gameserver-url=ws://localhost:9001"
 
 [editor_plugins]
 
