@@ -3,10 +3,10 @@
 [ext_resource type="Texture2D" uid="uid://c0udqbl4trv2i" path="res://assets/logo_large.png" id="1_e06ia"]
 [ext_resource type="Script" uid="uid://c28ljhbovoicm" path="res://scenes/main_menu/pages/landing/play.gd" id="1_ymk45"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="2_2ejkv"]
-[ext_resource type="Script" path="res://scenes/main_menu/pages/landing/ver.gd" id="3_ecxkw"]
+[ext_resource type="Script" uid="uid://dyad1l4xw802a" path="res://scenes/main_menu/pages/landing/ver.gd" id="3_ecxkw"]
 [ext_resource type="Script" uid="uid://cvudgig5551tm" path="res://scenes/main_menu/pages/landing/settings.gd" id="5_ecxkw"]
 [ext_resource type="Script" uid="uid://cmvjksu4axhu4" path="res://scenes/main_menu/pages/landing/right_side_handler.gd" id="6_5jq1k"]
-[ext_resource type="Script" uid="uid://buw4ayurbvngk" path="res://scenes/main_menu/pages/landing/temporary_mptest_opener.gd" id="6_dvdc6"]
+[ext_resource type="Script" uid="uid://c63d0wosfculu" path="res://scenes/main_menu/pages/landing/account_button.gd" id="6_m7tep"]
 [ext_resource type="FontVariation" uid="uid://cyxhummrwgoly" path="res://assets/font/_variants/proitalics650.tres" id="6_v3lsn"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ikikv"]
@@ -132,8 +132,9 @@ theme_override_constants/margin_bottom = 0
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButtons"
-text = "Account  "
+text = "Make an account  "
 alignment = 2
+script = ExtResource("6_m7tep")
 
 [node name="MarginContainer3" type="MarginContainer" parent="LeftSide/VBoxContainer" unique_id=760489623]
 layout_mode = 2
@@ -141,14 +142,6 @@ theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 96
 theme_override_constants/margin_bottom = 0
-
-[node name="MultiplayerTest" type="Button" parent="LeftSide/VBoxContainer/MarginContainer3" unique_id=899242712]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"PrimaryButtons"
-text = "Multiplayer we ball   "
-alignment = 2
-script = ExtResource("6_dvdc6")
 
 [node name="BottomPadding" type="Control" parent="LeftSide" unique_id=253687138]
 custom_minimum_size = Vector2(0, 20)

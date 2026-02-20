@@ -1,0 +1,147 @@
+[gd_scene format=3 uid="uid://opivht8lbmfs"]
+
+[ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="1_8hng6"]
+[ext_resource type="Script" uid="uid://wj7e6v5fpr73" path="res://scenes/main_menu/pages/landing/login.gd" id="1_10o6o"]
+[ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="2_uquub"]
+[ext_resource type="Script" uid="uid://cinuw1uhd7ddo" path="res://scenes/main_menu/pages/landing/signup.gd" id="3_7ilia"]
+[ext_resource type="Script" uid="uid://o2x3vyai2ya6" path="res://error_label.gd" id="3_uquub"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7ilia"]
+font = ExtResource("1_8hng6")
+font_size = 20
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_10o6o"]
+color = Color(1, 1, 1, 0.40392157)
+thickness = 2
+vertical = true
+
+[sub_resource type="LabelSettings" id="LabelSettings_owksc"]
+font = ExtResource("2_uquub")
+font_size = 21
+font_color = Color(1, 1, 1, 0.5686275)
+
+[sub_resource type="LabelSettings" id="LabelSettings_10o6o"]
+font = ExtResource("2_uquub")
+font_size = 18
+font_color = Color(0.9098039, 0.38039216, 0.38039216, 1)
+shadow_offset = Vector2(0, 0)
+
+[node name="LoginSignupPrompt" type="VBoxContainer" unique_id=463427890]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -54.0
+offset_top = -55.0
+offset_right = 54.0
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoginOptions" type="HBoxContainer" parent="." unique_id=1853441606]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LoginPanel" type="PanelContainer" parent="LoginOptions" unique_id=638713897]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"HeavilyPaddedPanel"
+
+[node name="Login" type="VBoxContainer" parent="LoginOptions/LoginPanel" unique_id=1181463698]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+script = ExtResource("1_10o6o")
+
+[node name="Label" type="Label" parent="LoginOptions/LoginPanel/Login" unique_id=1717186554]
+layout_mode = 2
+text = "Log in"
+label_settings = SubResource("LabelSettings_7ilia")
+horizontal_alignment = 1
+
+[node name="Username" type="LineEdit" parent="LoginOptions/LoginPanel/Login" unique_id=1926914902]
+layout_mode = 2
+placeholder_text = "Username"
+
+[node name="Password" type="LineEdit" parent="LoginOptions/LoginPanel/Login" unique_id=189479308]
+layout_mode = 2
+placeholder_text = "Password"
+secret = true
+
+[node name="Button" type="Button" parent="LoginOptions/LoginPanel/Login" unique_id=1270786970]
+layout_mode = 2
+text = "Log in"
+
+[node name="Seperator" type="VBoxContainer" parent="LoginOptions" unique_id=1823121370]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Panel2" type="Panel" parent="LoginOptions/Seperator" unique_id=1335132547]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxLine_10o6o")
+
+[node name="Label" type="Label" parent="LoginOptions/Seperator" unique_id=1764605139]
+layout_mode = 2
+text = "or"
+label_settings = SubResource("LabelSettings_owksc")
+
+[node name="Panel" type="Panel" parent="LoginOptions/Seperator" unique_id=482068249]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxLine_10o6o")
+
+[node name="SignupPanel" type="PanelContainer" parent="LoginOptions" unique_id=144564958]
+layout_mode = 2
+theme_type_variation = &"HeavilyPaddedPanel"
+
+[node name="Signup" type="VBoxContainer" parent="LoginOptions/SignupPanel" unique_id=1648133460]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+script = ExtResource("3_7ilia")
+
+[node name="Label" type="Label" parent="LoginOptions/SignupPanel/Signup" unique_id=1185207532]
+layout_mode = 2
+text = "Make an account"
+label_settings = SubResource("LabelSettings_7ilia")
+horizontal_alignment = 1
+
+[node name="Username" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=216656133]
+layout_mode = 2
+placeholder_text = "Username"
+max_length = 20
+
+[node name="Password" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=160798003]
+layout_mode = 2
+placeholder_text = "Password"
+secret = true
+
+[node name="PasswordConfirmation" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=562740600]
+layout_mode = 2
+placeholder_text = "Confirm password"
+secret = true
+
+[node name="Email" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=845787002]
+visible = false
+layout_mode = 2
+placeholder_text = "Email (optional)"
+secret = true
+
+[node name="Button" type="Button" parent="LoginOptions/SignupPanel/Signup" unique_id=54171063]
+layout_mode = 2
+text = "Sign up"
+
+[node name="ErrorLabel" type="Label" parent="." unique_id=1134792778]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "Error: blahty blah"
+label_settings = SubResource("LabelSettings_10o6o")
+horizontal_alignment = 1
+script = ExtResource("3_uquub")
+
+[connection signal="pressed" from="LoginOptions/SignupPanel/Signup/Button" to="LoginOptions/SignupPanel/Signup" method="_signup_btn"]

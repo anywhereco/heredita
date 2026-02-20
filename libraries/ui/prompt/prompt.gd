@@ -31,3 +31,9 @@ func hide_prompt() -> void:
 
 func show_prompt() -> void:
 	blur.show()
+	
+func hide_panel() -> void:
+	theme_type_variation = &"HiddenPanel"
+	
+func show_panel() -> void:
+	theme_type_variation = &"Prompt"

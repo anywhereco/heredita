@@ -131,6 +131,23 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 corner_detail = 6
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_53216"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.14, 0.14, 0.14, 0.560784)
+border_color = Color(0.28485, 0.28485, 0.28485, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7yyeo"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w53sr"]
@@ -613,6 +630,8 @@ FlatUnpaddedButton/styles/normal = SubResource("StyleBoxEmpty_7g2p0")
 FlatUnpaddedButton/styles/pressed = SubResource("StyleBoxEmpty_357y2")
 HSlider/styles/grabber_area = SubResource("StyleBoxFlat_j5chx")
 HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_pkg68")
+HeavilyPaddedPanel/base_type = &"PanelContainer"
+HeavilyPaddedPanel/styles/panel = SubResource("StyleBoxFlat_53216")
 HiddenEdit/base_type = &"LineEdit"
 HiddenEdit/colors/font_uneditable_color = Color(1, 1, 1, 1)
 HiddenEdit/styles/focus = SubResource("StyleBoxEmpty_7yyeo")
