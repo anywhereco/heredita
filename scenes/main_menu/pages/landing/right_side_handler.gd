@@ -16,9 +16,12 @@ func _ready() -> void:
 			return
 	player_welcome.hide()
 	search_bar.get_node("Button").disabled = true
-	search_bar.get_node("LineEdit").placeholder_text = "Sign in to add friends!"
+	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
 
 func _update_user() -> void:
+	player_welcome.show()
+	search_bar.get_node("Button").disabled = true
+	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
 	player_name.text = State.user.username
 	for friend: UserPartial in State.user.friends:
 		var friend_node: FriendNode = FRIEND.instantiate()

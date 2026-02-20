@@ -216,12 +216,14 @@ layout_mode = 2
 [node name="LineEdit" type="LineEdit" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=818308122]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "Search or add a friend"
+placeholder_text = "Friends coming soon :]"
 max_length = 20
+editable = false
 
 [node name="Button" type="Button" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=954121561]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+disabled = true
 text = "  Add  "
 
 [node name="BottomPadding" type="Control" parent="RightSide" unique_id=1430361985]

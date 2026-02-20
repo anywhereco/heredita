@@ -22,11 +22,14 @@ func _ready() -> void:
 	add_child(_http_requesting_node_for_user)
 	
 	var token := FileAccess.get_file_as_string("user://DO_NOT_SHARE-token.txt") 
+	user = PrimaryUser.new(_http_requesting_node_for_user)
+	user.user_initialized.connect(func() -> void:
+		var tokenfile := FileAccess.open("user://DO_NOT_SHARE-token.txt", FileAccess.WRITE) 
+		tokenfile.store_string(user.token)
+	)
 	if token != "":
-		user = PrimaryUser.new(_http_requesting_node_for_user, token)
+		user.token = token
 		user.initialize()
-	else:
-		user = PrimaryUser.new(_http_requesting_node_for_user)
 
 ## This function should be called if a user has just logged in and needs to be given an HTTPRequest node.
 func ready_user() -> void:

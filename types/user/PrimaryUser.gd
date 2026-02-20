@@ -1,7 +1,6 @@
 extends Resource
 class_name PrimaryUser
 
-signal ready_to_initialize()
 signal user_initialized()
 signal failed(response_code: int)
 
@@ -47,7 +46,7 @@ func login(_username: String, _password: String) -> void:
 	http.request_completed.connect(_set_token)
 	http.request(
 		Statics.HEREDITA_URL + "/auth/token",
-		[], 
+		["Authorization: Basic", "Content-Type: application/x-www-form-urlencoded"], 
 		HTTPClient.METHOD_POST,
 		"grant_type=password&username=%s&password=%s" % [_username, _password]
 	)
@@ -55,12 +54,15 @@ func login(_username: String, _password: String) -> void:
 @warning_ignore("unused_parameter")
 func _set_token(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	http.request_completed.disconnect(_set_token)
+	if response_code >= 300:
+		failed.emit(response_code)
+		return
 	var json := JSON.new()
 	json.parse(body.get_string_from_utf8())
 	var response: Dictionary = json.get_data()
 	token = response.access_token
-	ready_to_initialize.emit()
-
+	initialize()
+	
 func initialize() -> void:
 	http.request_completed.connect(_set_details)
 	http.request(Statics.HEREDITA_URL + "/users/me", ["Authorization: Bearer " + token.strip_edges()])

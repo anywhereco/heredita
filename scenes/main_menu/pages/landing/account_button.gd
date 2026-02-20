@@ -4,8 +4,10 @@ const LOGIN_SIGNUP_PROMPT = preload("uid://opivht8lbmfs")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
-
+	if State.user and State.user.initialized:
+		logged_in()
+		return
+	State.user.user_initialized.connect(logged_in)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -21,3 +23,6 @@ func _pressed() -> void:
 	prompt.hide_panel()
 	prompt.add_child(LOGIN_SIGNUP_PROMPT.instantiate())
 	
+func logged_in() -> void:
+	disabled = true
+	text = "Your account  "

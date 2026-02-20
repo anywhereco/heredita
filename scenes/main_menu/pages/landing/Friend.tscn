@@ -36,6 +36,7 @@ clip_text = true
 text_overrun_behavior = 5
 
 [node name="Action" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=193680472]
+visible = false
 layout_mode = 2
 text = "In \"Loooooooooooooooong era name\" - 1902"
 label_settings = SubResource("LabelSettings_33uqb")
@@ -46,9 +47,11 @@ text_overrun_behavior = 5
 layout_mode = 2
 
 [node name="OtherActionsMenu" type="MenuButton" parent="MarginContainer/HBoxContainer" unique_id=399182481]
+visible = false
 layout_mode = 2
 text = "M"
 
 [node name="UserJoin" type="Button" parent="MarginContainer/HBoxContainer" unique_id=671681191]
+visible = false
 layout_mode = 2
 text = "  Join  "

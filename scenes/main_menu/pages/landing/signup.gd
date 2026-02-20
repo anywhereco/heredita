@@ -73,7 +73,9 @@ func _signup_btn() -> void:
 	tween.set_parallel(true)
 	tween.tween_callback(func() -> void: button.modulate = error_color)
 	tween.tween_property(button, "modulate", Color.WHITE, 2)
+	
 	State.user.failed.connect(func(response_code: int) -> void:
+		tween.kill()
 		if response_code == 403:
 			button.modulate = error_color
 			error_label.err("That username is already in use")
@@ -85,5 +87,10 @@ func _signup_btn() -> void:
 			tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 			tween.tween_property(button, "modulate", Color.WHITE, 2)
 	)
+	State.user.user_initialized.connect(close)
+	
 	State.user.signup(username.text, password.text, email.text)
-	await Promise.new(State.user.user_initialized, State.user.failed, get_tree().create_timer(10).timeout).done
+	
+func close() -> void:
+	State.user.user_initialized.disconnect(close)
+	find_parent("LoginSignupPrompt").get_parent().close()

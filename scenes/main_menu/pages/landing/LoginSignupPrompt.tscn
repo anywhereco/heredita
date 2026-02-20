@@ -144,4 +144,5 @@ label_settings = SubResource("LabelSettings_10o6o")
 horizontal_alignment = 1
 script = ExtResource("3_uquub")
 
+[connection signal="pressed" from="LoginOptions/LoginPanel/Login/Button" to="LoginOptions/LoginPanel/Login" method="_login_btn"]
 [connection signal="pressed" from="LoginOptions/SignupPanel/Signup/Button" to="LoginOptions/SignupPanel/Signup" method="_signup_btn"]

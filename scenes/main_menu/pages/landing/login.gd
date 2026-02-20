@@ -19,7 +19,7 @@ func _process(_delta: float) -> void:
 	pass
 
 
-func _signup_btn() -> void:
+func _login_btn() -> void:
 	tween = create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	for i in 10:
 		tween.tween_property(button, "modulate", Color(.8, .8, .8), .5)
@@ -28,17 +28,28 @@ func _signup_btn() -> void:
 	tween.set_parallel(true)
 	tween.tween_callback(func() -> void: button.modulate = error_color)
 	tween.tween_property(button, "modulate", Color.WHITE, 2)
+	
 	State.user.failed.connect(func(response_code: int) -> void:
-		if response_code == 403:
+		tween.kill()
+		if response_code == 401:
 			button.modulate = error_color
-			error_label.err("That username is already in use")
-			tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
+			username.modulate = error_color
+			password.modulate = error_color
+			error_label.err("Invalid username or password")
+			tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT).set_parallel(true)
 			tween.tween_property(button, "modulate", Color.WHITE, 2)
+			tween.tween_property(username, "modulate", Color.WHITE, 2)
+			tween.tween_property(password, "modulate", Color.WHITE, 2)
 		else:
 			button.modulate = error_color
 			error_label.err("Server error (try again later)")
 			tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 			tween.tween_property(button, "modulate", Color.WHITE, 2)
 	)
+	State.user.user_initialized.connect(close)
+	
 	State.user.login(username.text, password.text)
-	await Promise.new(State.user.user_initialized, State.user.failed, get_tree().create_timer(10).timeout).done
+
+func close() -> void:
+	State.user.user_initialized.disconnect(close)
+	find_parent("LoginSignupPrompt").get_parent().close()
