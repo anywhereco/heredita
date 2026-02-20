@@ -9,7 +9,7 @@
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="6_8mxs2"]
 [ext_resource type="Script" uid="uid://dmr78u6gtdkfg" path="res://scenes/main_menu/pages/room_list/new_room/instantiate_room.gd" id="7_myu5w"]
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="8_iouc7"]
-[ext_resource type="Script" path="res://scenes/main_menu/pages/landing/ver.gd" id="9_kpbv2"]
+[ext_resource type="Script" uid="uid://dyad1l4xw802a" path="res://scenes/main_menu/pages/landing/ver.gd" id="9_kpbv2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3knor"]
 content_margin_left = 4.0
@@ -76,11 +76,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Username" type="LineEdit" parent="Rooms/ButtonRow" unique_id=1851472981]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-placeholder_text = "Username"
+placeholder_text = "Guest username"
 alignment = 1
 max_length = 20
+expand_to_text_length = true
 script = ExtResource("4_vv0m7")
 
 [node name="Control2" type="Control" parent="Rooms/ButtonRow" unique_id=482988999]
@@ -153,3 +154,5 @@ text = "Heredita %s"
 label_settings = SubResource("LabelSettings_j6gyg")
 horizontal_alignment = 2
 script = ExtResource("9_kpbv2")
+
+[connection signal="text_changed" from="Rooms/ButtonRow/Username" to="Rooms/ButtonRow/Username" method="_on_text_changed"]

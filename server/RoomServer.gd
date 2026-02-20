@@ -69,9 +69,9 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		room.id_iterator += 1
 
 	if created:
-		ws_server.send_targeted_event(peer_id, "_is2_room_info", {"room_id": server_controller._room_find_id(self), "player_id": player_id, "hosts": room.hosts})
+		ws_server.send_targeted_event(peer_id, "_is2_room_info", {"room_id": server_controller._room_find_id(self), "player_id": player_id})
 	else:
-		ws_server.send_targeted_event(peer_id, "_is2_room_info", {"player_id": player_id, "hosts": room.hosts})
+		ws_server.send_targeted_event(peer_id, "_is2_room_info", {"player_id": player_id})
 	if room.password:
 		ws_server.send_targeted_event(peer_id, "_is2_login")
 		var attempts := 1
@@ -106,7 +106,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		ws_server.close(peer_id, 4100, "Username in use")
 		return
 		
-	#token stuff
+	# CRITICAL token stuff
 	
 	if created:
 		player.operator = true

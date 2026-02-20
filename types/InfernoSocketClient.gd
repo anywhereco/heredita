@@ -269,7 +269,7 @@ func _poll_string(message: Dictionary) -> void:
 				if message.get("details").has("room_id"): #creating room
 					room_id = message.get("details").get("room_id")
 				player_id = message.get("details").get("player_id") as int
-				hosts = message.get("details").get("hosts")
+				#hosts = message.get("details").get("hosts")
 				return
 			"_is2_login":
 				_prompt_instance = load("res://types/ui/PasswordPrompt.tscn").instantiate()

@@ -8,3 +8,8 @@ func _ready() -> void:
 		hide()
 	else:
 		text = random_username()
+		State.guest_username = text
+	
+func _on_text_changed(new_text: String) -> void:
+	State.guest_username = new_text
+	pass

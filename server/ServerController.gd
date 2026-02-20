@@ -209,7 +209,7 @@ func _binary_data(peer_id: int, data: PackedByteArray) -> void:
 	if peer_id in peer_rooms:
 		rooms[peer_rooms[peer_id]]._binary_data(peer_id, data_parsed)
 	else:
-		if not data_parsed['event'] == ISUtil.BinaryEvents.SYNC_MAP:
+		if not data_parsed['event'] in ISUtil.BinaryEvents.values(): # == ISUtil.BinaryEvents.SYNC_MAP: # TODO probably needs to be only the map events
 			ws_server.close(peer_id, 4096, "Protocol failurec")
 
 func _closed(peer_id: int, code: int, reason: String) -> void:
