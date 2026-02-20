@@ -10,4 +10,5 @@ static func initialize() -> void:
 	for i in range(user_args.size()):
 		if user_args[i].contains("--heredita-url="):
 			HEREDITA_URL = user_args[i].split("=")[1]
-			SERVER_URL = "ws" + HEREDITA_URL.right(-4) + "/ws"
+		if user_args[i].contains("--gameserver-url="):
+			SERVER_URL = user_args[i].split("=")[1]
