@@ -22,7 +22,6 @@ static func deserialize(serialized: PackedByteArray) -> MapData:
 		var map_data: Dictionary[String, Variant] = bytes_to_var(s_data)
 		var image_size: Vector2 = map_data["image_size"]
 		md.image = Image.create_from_data(image_size.x,image_size.y,false,Image.FORMAT_RGBA8,map_data["image"])
-		#md.image.save_png("TEST_MAP_IMG.png")
 	return md
 	
 func get_map_update(details: Dictionary) -> void:
