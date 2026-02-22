@@ -103,7 +103,8 @@ func _physics_process(delta: float) -> void:
 		if not map.map_world_bounds.has_point(pos2):
 			if not map.map_world_bounds.has_point(Vector2(position.x, 0)):
 				position.x = -position.x * 0.99
-				camera_pivot.position = position
+				if local:
+					camera_pivot.position = position
 			#if not map.map_world_bounds.has_point(Vector2(0, position.z)):
 			#	position.z = -position.z
 			

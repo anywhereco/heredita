@@ -125,11 +125,22 @@ func set_data(data: MapData) -> void:
 	original_map = data.image
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
+	if not State.client.operator:
+		load_from_original()
 
 func _init() -> void:
 	_instance = self
 
+func load_from_original() -> void:
+	preview_plane.texture.set_image(preview_texture)
+	reset_chunks()
+	water.mesh.size = map_space_to_world_space(Vector2.ZERO).abs() * 2
+	map_world_bounds = Rect2(map_space_to_world_space(Vector2.ZERO), map_space_to_world_space(Vector2.ZERO).abs() * 2)
+
 func reset_chunks() -> void:
+	if chunk_container_node.get_children().size() > 0:
+		for child in chunk_container_node.get_children():
+			child.queue_free()
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	for x: int in range(0, original_map_size.x, CHUNK_SIZE):
@@ -162,10 +173,8 @@ func reset_chunks() -> void:
 			chunk_images.get(x_idx).insert(y_idx, img)
 
 func _ready() -> void:
-	preview_plane.texture.set_image(preview_texture)
-	reset_chunks()
-	water.mesh.size = map_space_to_world_space(Vector2.ZERO).abs() * 2
-	map_world_bounds = Rect2(map_space_to_world_space(Vector2.ZERO), map_space_to_world_space(Vector2.ZERO).abs() * 2)
+	if State.client.operator:
+		load_from_original()
 
 func update_map_pos() -> void:
 	var mouse_position := VirtualMouse._instance.position

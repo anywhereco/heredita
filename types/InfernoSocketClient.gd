@@ -21,7 +21,8 @@ const PING_INTERVAL: float = 5
 var socket := WebSocketPeer.new()
 var last_state := WebSocketPeer.STATE_CLOSED
 var player_id: int = -2 # -1 is reserved for the server, so we default to -2
-var hosts := []
+
+var operator: bool = false
 
 var _prompt: PromptInstance
 var _prompt_instance: Node
@@ -51,6 +52,8 @@ signal raw_message_sent(string: String)
 func _init(url: String = "", _room: int = 0, creating: Dictionary = {}, map: PackedByteArray = PackedByteArray()) -> void:
 	websocket_url = url
 	room_id = _room
+	if creating != {}:
+		operator = true
 	creating_room = creating
 	creating_map = map
 
