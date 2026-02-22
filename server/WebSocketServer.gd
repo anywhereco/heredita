@@ -117,5 +117,5 @@ func _process(_delta: float) -> void:
 			var code := peer.get_close_code()
 			var reason := peer.get_close_reason()
 			print("server close (%d): %s" % [code, reason])
-			breakpoint
+			#breakpoint
 			closed.emit(peer_id, code, reason)

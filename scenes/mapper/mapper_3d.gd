@@ -71,7 +71,8 @@ func sync_map(event: int, player_id: int, flags: int, details: PackedByteArray) 
 		map_data_compressed.append_array(details)
 	if event == ISUtil.BinaryEvents.SYNC_MAP_END:
 		map_data_compressed.append_array(details)
-		Map._instance.set_data(MapData.deserialize(map_data_compressed.decompress(map_data_uncompr_size, FileAccess.COMPRESSION_FASTLZ)))
+		var decomp := map_data_compressed.decompress(map_data_uncompr_size, FileAccess.COMPRESSION_FASTLZ)
+		Map._instance.set_data(MapData.deserialize(decomp))
 
 func closed() -> void:
 	if not is_inside_tree(): #if we exited manually

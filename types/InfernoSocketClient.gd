@@ -91,7 +91,7 @@ func send(event: String, message: Variant = null) -> int:
 		"event": event,
 		"details": message,
 	})
-	print("c>s event:%s data:%s" % [event, str(message)])
+	#print("c>s event:%s data:%s" % [event, str(message)])
 	raw_message_sent.emit(data)
 	return socket.send_text(data)
 
@@ -99,7 +99,7 @@ func send_binary(event: int, target: int, flags: int, message: PackedByteArray =
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
 	
-	print("c>s <Binary event %d>" % event)
+	#print("c>s <Binary event %d>" % event)
 	raw_message_sent.emit("<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
@@ -221,7 +221,7 @@ func poll() -> void:
 		elif state == socket.STATE_CLOSED:
 			connection_closed.emit()
 	while socket.get_ready_state() != socket.STATE_CLOSED and socket.get_available_packet_count():
-		print("wa")
+		#print("wa")
 		_poll_loop()
 
 func _poll_loop() -> void:
@@ -240,7 +240,7 @@ func _poll_loop() -> void:
 func _poll_string(message: Dictionary) -> void:
 	if message == null:
 		return
-	print("c<s %s" % str(message))
+	#print("c<s %s" % str(message))
 	if message.has("event") and message.has("player_id"):
 		message["player_id"] = message["player_id"] as int
 		if message["player_id"] != -1:
@@ -338,7 +338,7 @@ func _poll_binary(message: PackedByteArray) -> void:
 		var compression_size := message.decode_u32(5)
 		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
 
-	print("c<s <Binary event %d, \"playerid\"=%d>" % [event, uid])
+	#print("c<s <Binary event %d, \"playerid\"=%d>" % [event, uid])
 	raw_message_received.emit("<Binary event %d, \"playerid\"=%d>" % [event, uid])
 	binary_message_received.emit(event, uid, flags, data)
 
