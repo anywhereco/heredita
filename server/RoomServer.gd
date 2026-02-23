@@ -172,13 +172,16 @@ func _binary_data(peer_id: int, data: Dictionary) -> void:
 	pass
 
 func _ready() -> void:
-	var tr := TextureRect.new()
-	tr.texture = ImageTexture.create_from_image(room.map.image)
-	tr.scale = Vector2.ONE / 16
-	var timer := Timer.new()
-	timer.timeout.connect(func() -> void:
-		tr.texture.update(room.map.image)
-	)
-	add_child(timer)
-	timer.start(1)
-	add_child(tr)
+	pass
+	
+	## ctrl+k this to show the server map
+	#var tr := TextureRect.new()
+	#tr.texture = ImageTexture.create_from_image(room.map.image)
+	#tr.scale = Vector2.ONE / 16
+	#var timer := Timer.new()
+	#timer.timeout.connect(func() -> void:
+		#tr.texture.update(room.map.image)
+	#)
+	#add_child(timer)
+	#timer.start(1)
+	#add_child(tr)
