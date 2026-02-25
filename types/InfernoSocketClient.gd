@@ -349,7 +349,7 @@ func _process(delta: float) -> void:
 	poll()
 	ping_timer += delta
 	if ping_timer > PING_INTERVAL and socket.get_ready_state() != socket.STATE_CLOSED:
-		print("client: socket state %s" % socket.get_ready_state())
+		#print("client: socket state %s" % socket.get_ready_state())
 		send("_is2_ping")
 		ping_timer -= PING_INTERVAL
 #endregion

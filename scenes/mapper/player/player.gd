@@ -9,7 +9,7 @@ var frame_data: Dictionary = {} #outgoing if local, incoming if non-local
 @onready var map: Map = $/root/Mapper3D/Map
 
 const SPEED = 5.0
-const SPRINT_MULT = 3.0
+const SPRINT_MULT = 5.0
 const JUMP_VELOCITY = 4.5
 
 const MAX_NAME_VIEW_DISTANCE = 15

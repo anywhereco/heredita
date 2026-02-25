@@ -42,15 +42,9 @@ func new_fullscreen_prompt(force: bool = false, exclusive: bool = false) -> Resu
 			prompt.close()
 		
 	var prompt_inst := preload("res://libraries/ui/prompt/Prompt.tscn").instantiate()
-	var ui: Node = null
-	
+	var ui: Node = TopLevel.get_ui()
 	if override_ui != null:
 		ui = override_ui
-	else:
-		for child in _window_root.get_children():
-			if child is Control: # top-level ui node
-				ui = child
-				break
 	
 	if ui == null:
 		return Result.err(PromptCreationResult.NO_SUITABLE_UI)

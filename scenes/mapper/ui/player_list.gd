@@ -10,17 +10,26 @@ func _ready() -> void:
 func add_player(player_id: int) -> void:
 	var player_node := preload("res://scenes/mapper/ui/player.tscn").instantiate()
 	player_node.name = str(player_id)
-	player_node.text = State.room.players.getv(player_id)['username']
-	player_node.gui_input.connect(player_clicked.bind(player_id))
+	player_node.get_node("Label").text = State.room.players.getv(player_id)['username']
+	player_node.get_node("Button").pressed.connect(player_clicked.bind(player_id))
 	add_child(player_node)
 	
-func player_clicked(event: InputEvent, player_id: int) -> void:
-	if event is InputEventMouseButton:
-		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-			if State.player.operator:
-				InfoPrompt.custom_prompt("Ban this player?",
-				{"Cancel": Prompts.close_top_prompt(),
-				 "Ban": State.client.send("ban", player_id)})
+func player_clicked(player_id: int) -> void:
+	var menu := CPopupMenu.new()
+	if State.player["operator"] and player_id != State.client.player_id:
+		menu.add_item("Ban", ban_player.bind(player_id))
+		menu.add_item("Kick", ban_player.bind(player_id))
+		menu.add_item("Mute", ban_player.bind(player_id))
+	if not menu.item_count(): #no items so no menu
+		menu.queue_free()
+		return
+	menu.display()
+	menu.align_bottom(self)
+
+func ban_player(player_id: int) -> void:
+		InfoPrompt.custom_prompt("Ban this player?",
+		{"Cancel": Prompts.close_top_prompt,
+		 "Ban": State.client.send.bind("ban", player_id)})
 	
 func remove_player(player_id: int) -> void:
 	var player_node := find_child(str(player_id), false, false)

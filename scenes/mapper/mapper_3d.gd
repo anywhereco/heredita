@@ -38,7 +38,7 @@ func _init() -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	Prompts.override_ui = $UI
+	TopLevel.ui = $UI
 	tool.value_changed.connect(_tool_changed)
 	brush._map_ready()
 	if State.client:
@@ -81,7 +81,7 @@ func closed() -> void:
 	var menu: Node2D = preload("res://scenes/main_menu/main.tscn").instantiate()
 	get_tree().current_scene.queue_free()
 	get_tree().root.add_child(menu)
-	Prompts.override_ui = menu.get_node("Foreground") #do this manually since it hasn't loaded yet
+	TopLevel.ui = menu.get_node("Foreground") #do this manually since it hasn't loaded yet
 	InfoPrompt.prompt("The room was closed.")
 	#eventually have a more detailed message if you're kicked/banned/etc though idk how they'd send that
 	get_tree().current_scene = menu

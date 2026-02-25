@@ -9,7 +9,7 @@
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="6_8mxs2"]
 [ext_resource type="Script" uid="uid://dmr78u6gtdkfg" path="res://scenes/main_menu/pages/room_list/new_room/instantiate_room.gd" id="7_myu5w"]
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="8_iouc7"]
-[ext_resource type="Script" uid="uid://dyad1l4xw802a" path="res://scenes/main_menu/pages/landing/ver.gd" id="9_kpbv2"]
+[ext_resource type="Script" path="res://scenes/main_menu/pages/landing/ver.gd" id="9_kpbv2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3knor"]
 content_margin_left = 4.0

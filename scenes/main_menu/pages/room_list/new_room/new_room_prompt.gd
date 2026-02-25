@@ -33,4 +33,15 @@ func create_room() -> void:
 	create_dict["player_cap"] = $PlayerCapBox/PlayerCap.value
 	var map_object := MapData.new()
 	map_object.image = map.value
+	loading_prompt()
 	RoomHandler._instance.join_room("", create_dict, map_object)
+
+func loading_prompt() -> void:
+	var prompt_res := Prompts.new_fullscreen_prompt()
+	if prompt_res.is_err():
+		return
+	var prompt: PromptInstance = prompt_res.val()
+	var loading_label := Label.new()
+	loading_label.text = "Loading..."
+	prompt.add_child(loading_label)
+	prompt.make_uncloseable()

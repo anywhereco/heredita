@@ -27,6 +27,7 @@ HTTP="*res://libraries/HTTP.gd"
 DebugLayer="*res://singletons/debug/DebugLayer.tscn"
 CursorLayer="*res://singletons/cursor/CursorLayer.tscn"
 Settings="*res://singletons/state/settings.gd"
+TopLevel="*uid://cskohnlj8smnp"
 
 [debug]
 

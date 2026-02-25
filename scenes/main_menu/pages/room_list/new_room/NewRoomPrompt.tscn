@@ -48,6 +48,7 @@ layout_mode = 2
 
 [node name="Name" type="LineEdit" parent="." unique_id=165496074]
 layout_mode = 2
+text = "Unnamed Room"
 placeholder_text = "Name"
 
 [node name="Description" type="TextEdit" parent="." unique_id=1203058588]
