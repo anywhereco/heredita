@@ -23,7 +23,7 @@ enum Month {
 var minutes_per_year: float
 var factor: float : 
 	get():
-		return minutes_per_year * MPY_TO_SPS
+		return MPY_TO_SPS / minutes_per_year
 
 var year: int
 var month: Month
@@ -42,6 +42,17 @@ func _init(mpy: float, _year: int) -> void:
 	hour = 0
 	minute = 0
 	second = 0
+
+static func from_json(json: Dictionary) -> Calendar:
+	var inst := new(0, 0)
+	inst.minutes_per_year = json["minutes_per_year"]
+	inst.year = json["year"]
+	inst.month = json["month"]
+	inst.day = json["day"]
+	inst.hour = json["hour"]
+	inst.minute = json["minute"]
+	inst.second = json["second"]
+	return inst
 
 @warning_ignore("shadowed_variable")
 static func is_leap_year(year: int) -> bool:
@@ -126,3 +137,14 @@ func year_string() -> String:
 	elif year < 1500:
 		return str(year) + " AD"
 	return str(year)
+
+func to_json() -> Dictionary:
+	return {
+		"minutes_per_year": minutes_per_year,
+		"year": year,
+		"month": month,
+		"day": day,
+		"hour": hour,
+		"minute": minute,
+		"second": second,
+	}

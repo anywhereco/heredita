@@ -42,7 +42,7 @@ func _ready() -> void:
 	tool.value_changed.connect(_tool_changed)
 	brush._map_ready()
 	if State.client:
-		State.client.message_received.connect(get_map_update)
+		State.client.message_received.connect(message_recieved)
 		State.client.binary_message_received.connect(sync_map)
 		State.client.connection_closed.connect(closed)
 
@@ -60,9 +60,11 @@ func process_tool_use(event: InputEvent) -> void:
 			push_error("Tool \"%s\" doesn't have code to handle events!" % MapperRoot.Tool.keys()[tool.value].to_lower())
 			return
 
-func get_map_update(event: String, _player_id: int, details: Variant) -> void:
+func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 	if event == "map_update":
 		Map._instance.get_map_update(details as Dictionary)
+	if event == "calendar_sync":
+		TimekeepingUI._inst.calendar_sync(details as Dictionary)
 
 func sync_map(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
 	if event == ISUtil.BinaryEvents.SYNC_MAP_SIZE:

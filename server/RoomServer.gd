@@ -3,9 +3,12 @@ class_name RoomServer
 
 var room: Room = null
 var map_controller: RoomMap = RoomMap.new()
+var calendar: Calendar = Calendar.new(.001, 1984) # heh
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
 var connected_peers := [] #peers that have finished making a connection
+
+var tasks: Array[Task] = []
 
 func get_text_data(peer_id: int) -> String:
 	var peer := 0x7fffffffffffffff
@@ -51,6 +54,9 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 		if error:
 			return error
 	return OK
+
+func sync_calendar() -> void:
+	send_event("calendar_sync", calendar.to_json())
 
 func close_room() -> void:
 	for player_id: int in room.players.keys():
@@ -138,6 +144,8 @@ func _connected(peer_id: int, created: bool = false) -> void:
 				false
 			)
 			await get_tree().create_timer(0.1).timeout 
+			
+	ws_server.send_targeted_event(peer_id, "calendar_sync", calendar.to_json())
 	# TODO: fix self.room.map.get_map_as_image().data not being EMPTY ):
 	var data := []
 	for v in 3:
@@ -150,6 +158,12 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] == "map_update":
 		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"])
+	elif data["event"] == "calendar_sync":
+		if room.players.getv(peer_player_id(peer_id)).operator:
+			@warning_ignore("unsafe_call_argument")
+			calendar = Calendar.from_json(data["details"])
+			sync_calendar()
+			return false
 	elif data["event"] == "ban":
 		if room.players.getv(peer_player_id(peer_id)).operator:
 			var ban_id: int = data["details"]
@@ -191,7 +205,7 @@ func _binary_data(_peer_id: int, _data: Dictionary) -> void:
 	pass
 
 func _ready() -> void:
-	pass
+	tasks.append(Task.new(sync_calendar, 5))
 	
 	## ctrl+k this to show the server map
 	#var tr := TextureRect.new()
@@ -201,6 +215,11 @@ func _ready() -> void:
 	#timer.timeout.connect(func() -> void:
 		#tr.texture.update(room.map.image)
 	#)
-	#add_child(timer)
+	#add_child(timer)_f
 	#timer.start(1)
 	#add_child(tr)
+
+func _process(delta: float) -> void:
+	calendar.process(delta)
+	for task in tasks:
+		task.poll()
