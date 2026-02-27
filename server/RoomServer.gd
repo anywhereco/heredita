@@ -162,6 +162,10 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		if room.players.getv(peer_player_id(peer_id)).operator:
 			@warning_ignore("unsafe_call_argument")
 			calendar = Calendar.from_json(data["details"])
+			if calendar.year < -1_000_000_000:
+				calendar.year = -1_000_000_000
+			if calendar.year > 1_000_000_000:
+				calendar.year = 1_000_000_000
 			sync_calendar()
 			return false
 	elif data["event"] == "ban":

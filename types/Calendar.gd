@@ -7,6 +7,8 @@ const SPS_TO_MPY = 1/MPY_TO_SPS
 const YEARS_IN_CYCLE = 400
 const DAYS_IN_CYCLE = 146097 # 303 non leap years and 97 leap years
 
+const MIN_MPY = 0.0005
+
 enum Month {
 	JANUARY,
 	FEBRUARY,
@@ -38,7 +40,7 @@ var second: float
 
 
 func _init(mpy: float, _year: int) -> void:
-	minutes_per_year = mpy
+	minutes_per_year = minf(mpy, MIN_MPY)
 	year = _year
 	month = Month.JANUARY
 	day = 1
@@ -48,7 +50,8 @@ func _init(mpy: float, _year: int) -> void:
 
 static func from_json(json: Dictionary) -> Calendar:
 	var inst := new(0, 0)
-	inst.minutes_per_year = json["minutes_per_year"]
+	@warning_ignore("unsafe_call_argument")
+	inst.minutes_per_year = minf(json["minutes_per_year"], MIN_MPY)
 	inst.year = json["year"]
 	inst.month = json["month"]
 	inst.day = json["day"]
