@@ -212,16 +212,13 @@ func _ready() -> void:
 	tasks.append(Task.new(sync_calendar, 5))
 	
 	## ctrl+k this to show the server map
-	#var tr := TextureRect.new()
-	#tr.texture = ImageTexture.create_from_image(room.map.image)
-	#tr.scale = Vector2.ONE / 16
-	#var timer := Timer.new()
-	#timer.timeout.connect(func() -> void:
-		#tr.texture.update(room.map.image)
-	#)
-	#add_child(timer)_f
-	#timer.start(1)
-	#add_child(tr)
+	#var trect := TextureRect.new()
+	#trect.texture = ImageTexture.create_from_image(room.map.image)
+	#trect.scale = Vector2.ONE / 16
+	#tasks.append(Task.new(func() -> void:
+		#trect.texture.update(room.map.image)
+	#, 1))
+	#add_child(trect)
 
 func _process(delta: float) -> void:
 	calendar.process(delta)
