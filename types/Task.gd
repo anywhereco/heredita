@@ -10,7 +10,7 @@ var timestamp_of_next_call: int
 func _init(fn: Callable, _delay: float, call_immediately: bool = false) -> void:
 	function = fn
 	delay = int(_delay * 1_000_000)
-	timestamp_of_next_call = Time.get_ticks_usec() + delay if call_immediately else 0
+	timestamp_of_next_call = Time.get_ticks_usec() + 0 if call_immediately else delay
 
 ## Note that depending on the delay, this may call the function multiple times.
 func poll() -> void:
