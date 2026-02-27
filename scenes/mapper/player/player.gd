@@ -69,9 +69,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if not local and frame_data:
-		position = Vector3(frame_data["position"][0],frame_data["position"][1],frame_data["position"][2])
-		rotation = Vector3(frame_data["rotation"][0],frame_data["rotation"][1],frame_data["rotation"][2])
-		velocity = Vector3(frame_data["velocity"][0],frame_data["velocity"][1],frame_data["velocity"][2])
+		position = ISUtil.to_vec3(frame_data["position"])
+		rotation = ISUtil.to_vec3(frame_data["rotation"])
+		velocity = ISUtil.to_vec3(frame_data["velocity"])
 		camera_rotation = frame_data["camera_rotation"]
 		jump = frame_data["jump"]
 		frame_data = {}

@@ -41,3 +41,10 @@ static func from_vec2(vec: Vector2) -> Array:
 static func to_vec2(vec: Array) -> Vector2:
 	@warning_ignore("unsafe_call_argument")
 	return Vector2(vec[0], vec[1])
+	
+static func from_vec3(vec: Vector3) -> Array:
+	return [vec.x, vec.y, vec.z]
+	
+static func to_vec3(vec: Array) -> Vector3:
+	@warning_ignore("unsafe_call_argument")
+	return Vector3(vec[0], vec[1], vec[2])
