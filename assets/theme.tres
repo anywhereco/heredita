@@ -7,6 +7,35 @@
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="5_wms38"]
 [ext_resource type="FontFile" uid="uid://dymfhuoc1cmtw" path="res://assets/font/fonts/CrimsonProper.ttf" id="6_357y2"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ua2xh"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.14, 0.14, 0.14, 0.560784)
+border_color = Color(0.28485, 0.28485, 0.28485, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+corner_detail = 1
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7bkgo"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0, 0, 0, 0.19215687)
+border_color = Color(1, 1, 1, 0.54509807)
+corner_radius_bottom_left = 15
+corner_detail = 1
+anti_aliasing = false
+anti_aliasing_size = 0.01
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_10rey"]
 content_margin_left = 4.0
 content_margin_top = 4.0
@@ -608,6 +637,9 @@ bg_color = Color(0.1, 0.1, 0.1, 0.6)
 
 [resource]
 default_font = ExtResource("6_357y2")
+BumpedPanelContainer/base_type = &"PanelContainer"
+BumpedPanelContainer/styles/bump = SubResource("StyleBoxFlat_ua2xh")
+BumpedPanelContainer/styles/panel = SubResource("StyleBoxFlat_7bkgo")
 Button/constants/icon_max_width = 20
 Button/font_sizes/font_size = 18
 Button/fonts/font = ExtResource("1_e8htd")

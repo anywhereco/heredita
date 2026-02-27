@@ -1,5 +1,5 @@
 class_name TimekeepingUI
-extends HBoxContainer
+extends VBoxContainer
 
 static var _inst: TimekeepingUI
 

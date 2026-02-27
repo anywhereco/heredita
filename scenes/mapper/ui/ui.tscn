@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://i3124dmjaoj6" path="res://scenes/mapper/ui/right_items.gd" id="1_itatv"]
 [ext_resource type="Material" uid="uid://dayrr5lupf1h2" path="res://scenes/_shared/glass.tres" id="2_tv71d"]
 [ext_resource type="Texture2D" uid="uid://dl2432kvta2xt" path="res://assets/icons/exit.svg" id="3_2eddf"]
+[ext_resource type="Script" uid="uid://b6i1m2ju6n7mu" path="res://libraries/ui/BumpedPanelContainer.gd" id="3_y5csc"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="4_itatv"]
 [ext_resource type="Script" uid="uid://b6wekdyqxe7s" path="res://scenes/mapper/ui/exit_button.gd" id="4_m4x71"]
 [ext_resource type="Texture2D" uid="uid://bvjemq5dgx8om" path="res://assets/icons/floppy.svg" id="4_n7ck4"]
@@ -11,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="5_5g7k5"]
 [ext_resource type="Texture2D" uid="uid://btb4jabo6nmoe" path="res://assets/icons/openfolder.svg" id="5_580mp"]
 [ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/settings.gd" id="5_jj21m"]
-[ext_resource type="Script" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
+[ext_resource type="Script" uid="uid://82u1nskr1k2o" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
 [ext_resource type="Texture2D" uid="uid://dtur4inp5a2k4" path="res://assets/icons/image.svg" id="6_rdvpr"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="6_wbt2f"]
 [ext_resource type="Script" uid="uid://cyue2b6ml14cg" path="res://scenes/mapper/ui/toolui/tool_changer.gd" id="7_0sgq1"]
@@ -28,19 +29,6 @@
 [ext_resource type="Script" uid="uid://4l3n0jimw2sw" path="res://scenes/mapper/ui/chat_box.gd" id="14_0eah7"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://scenes/mapper/ui/chat_scroll.gd" id="15_yn3oc"]
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list.gd" id="16_i44o3"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hddsb"]
-content_margin_left = 5.0
-content_margin_top = 5.0
-content_margin_right = 5.0
-content_margin_bottom = 5.0
-bg_color = Color(0, 0, 0, 0.19215687)
-border_color = Color(1, 1, 1, 0.54509807)
-corner_radius_bottom_right = 15
-corner_radius_bottom_left = 15
-corner_detail = 1
-anti_aliasing = false
-anti_aliasing_size = 0.01
 
 [sub_resource type="LabelSettings" id="LabelSettings_c8yws"]
 
@@ -115,11 +103,14 @@ offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Menubar" type="PanelContainer" parent="MenubarContainer" unique_id=1348783002]
+[node name="Menubar" type="Container" parent="MenubarContainer" unique_id=1954560839]
 material = ExtResource("2_tv71d")
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_hddsb")
+script = ExtResource("3_y5csc")
+bump_space = 100.0
+bump_protrusion = 0.0
+metadata/_custom_type_script = "uid://b6i1m2ju6n7mu"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=39126391]
 layout_mode = 2
@@ -202,40 +193,29 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=1022248519]
+[node name="Time" type="VBoxContainer" parent="MenubarContainer/Menubar" unique_id=1731809799]
 layout_mode = 2
-mouse_filter = 2
-mouse_behavior_recursive = 2
-theme_override_constants/separation = 8
-
-[node name="Spacer" type="Control" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=1890453698]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="Time" type="HBoxContainer" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=1337700989]
-layout_mode = 2
+theme_override_constants/separation = 2
 script = ExtResource("12_y5csc")
 
-[node name="Date" type="Label" parent="MenubarContainer/Menubar/HBoxContainer2/Time" unique_id=1072244005]
+[node name="Date" type="Label" parent="MenubarContainer/Menubar/Time" unique_id=1072244005]
 layout_mode = 2
 text = "January 22nd,"
 label_settings = SubResource("LabelSettings_c8yws")
 horizontal_alignment = 1
 
-[node name="Year" type="Label" parent="MenubarContainer/Menubar/HBoxContainer2/Time" unique_id=333699788]
+[node name="Year" type="Label" parent="MenubarContainer/Menubar/Time" unique_id=333699788]
 layout_mode = 2
 text = "99999"
 label_settings = SubResource("LabelSettings_5g5qp")
 horizontal_alignment = 1
 
-[node name="Time" type="Label" parent="MenubarContainer/Menubar/HBoxContainer2/Time" unique_id=96124114]
+[node name="Time" type="Label" parent="MenubarContainer/Menubar/Time" unique_id=96124114]
 layout_mode = 2
 
-[node name="Spacer2" type="Control" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=479760990]
+[node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=713196267]
 layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
+alignment = 2
 
 [node name="Bottom" type="Control" parent="MenubarContainer" unique_id=218551915]
 layout_mode = 2
