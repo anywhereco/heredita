@@ -133,7 +133,7 @@ func send_binary(peer: int, event: int, target: int, flags: int, message: Packed
 		bytes.resize(9)
 		bytes.encode_u32(5, compression_size)
 	bytes.append_array(message)
-	var r := self.ws_server.send_raw_binary(peer, bytes)
+	self.ws_server.send_raw_binary(peer, bytes)
 
 func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArray) -> void:
 	#Compression is built into this method. If it's this big we're compressing it
@@ -147,6 +147,7 @@ func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArr
 	var flags := ISUtil.BinaryFlags.NONE
 	for i in chunk_count:
 		if i == 0:
+			@warning_ignore("int_as_enum_without_cast")
 			flags &= ISUtil.BinaryFlags.BEGIN_CHUNK
 		var chunk := data.slice(i*0x1000,(i+1)*0x1000)
 		var bytes := PackedByteArray()
@@ -154,6 +155,7 @@ func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArr
 		bytes.encode_u8(0, chunk_count)
 		bytes.append_array(chunk)
 		if i == (chunk_count - 1):
+			@warning_ignore("int_as_enum_without_cast")
 			flags &= ISUtil.BinaryFlags.LAST_CHUNK
 		send_binary(peer, event, target, flags, bytes, false)
 
@@ -172,6 +174,7 @@ func _connected(peer_id: int) -> void:
 	ws_server.send_targeted_event(peer_id, "_is2_handshake")
 	var json := await get_json_data(peer_id)
 	if ISUtil.valid_event_is(json, "_is2_room_info"):
+		@warning_ignore("unsafe_call_argument")
 		var rid := int(json.val()["details"])
 		if not rooms.has(rid):
 			ws_server.close(peer_id, 6146, "Room does not exist")
@@ -189,6 +192,7 @@ func _connected(peer_id: int) -> void:
 			map_content.append_array(map_data_body)
 			if map_data['event'] == ISUtil.BinaryEvents.SYNC_MAP_END:
 				break
+		@warning_ignore("unsafe_call_argument")
 		var rid := create_room(json.val()["details"], map_content.decompress(size, FileAccess.COMPRESSION_FASTLZ))
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]

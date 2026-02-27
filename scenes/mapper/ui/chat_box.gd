@@ -33,5 +33,6 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 func add_message(sender_id: int, message: String) -> void:
 	var newline := "\n" if messages.text else ""
 	var player: Dictionary = State.room.players.getv(sender_id)
+	@warning_ignore("unsafe_call_argument")
 	messages.text += newline + "[b]%s[/b]: %s" % [Markdown.bb_escape(player["username"]),
 												  Markdown.bb_escape(message)]

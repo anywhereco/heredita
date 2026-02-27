@@ -54,6 +54,7 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 
 func close_room() -> void:
 	for player_id: int in room.players.keys():
+		@warning_ignore("unsafe_call_argument")
 		ws_server.close(room.players.getv(player_id).peer_id)
 
 func _connected(peer_id: int, created: bool = false) -> void:
@@ -147,6 +148,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 
 func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] == "map_update":
+		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"])
 	elif data["event"] == "ban":
 		if room.players.getv(peer_player_id(peer_id)).operator:
@@ -161,27 +163,31 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			ws_server.close(kicked_peer, 5001, "Kicked from this room")
 	elif data["event"] == "mute":
 		if room.players.getv(peer_player_id(peer_id)).operator:
+			@warning_ignore("unused_variable")
 			var mute_id: int = data["details"]
 			#mute
 	elif data["event"] == "unmute":
 		if room.players.getv(peer_player_id(peer_id)).operator:
+			@warning_ignore("unused_variable")
 			var unmute_id: int = data["details"]
 			#unmute
 
 	#return value is true if it should be broadcasted to the rest of the server
 	return true
 
-func _closed(peer_id: int, code: int, reason: String) -> void:
+func _closed(peer_id: int, _code: int, _reason: String) -> void:
 	_on_peer_close(peer_id)
 
 func _text_data(peer_id: int, data: String) -> void:
 	if peer_id in connected_peers:
 		var data_json := parse_json(data)
 		if ISUtil.valid_event(data_json):
+			@warning_ignore("unsafe_call_argument")
 			if parse_event(data_json.val(), peer_id):
+				@warning_ignore("unsafe_call_argument")
 				send_event(data_json.val()["event"], data_json.val()["details"], peer_player_id(peer_id))
 
-func _binary_data(peer_id: int, data: Dictionary) -> void:
+func _binary_data(_peer_id: int, _data: Dictionary) -> void:
 	pass
 
 func _ready() -> void:

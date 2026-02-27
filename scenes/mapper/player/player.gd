@@ -69,8 +69,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if not local and frame_data:
+		@warning_ignore("unsafe_call_argument")
 		position = ISUtil.to_vec3(frame_data["position"])
+		@warning_ignore("unsafe_call_argument")
 		rotation = ISUtil.to_vec3(frame_data["rotation"])
+		@warning_ignore("unsafe_call_argument")
 		velocity = ISUtil.to_vec3(frame_data["velocity"])
 		camera_rotation = frame_data["camera_rotation"]
 		jump = frame_data["jump"]
@@ -120,10 +123,12 @@ func _physics_process(delta: float) -> void:
 
 func _process(_delta: float) -> void:
 	if not local:
+		@warning_ignore("unsafe_call_argument")
 		if position.distance_to($/root/Mapper3D/LocalPlayer.position) < 0.9: #slightly less than full diameter
 			$PlayerShape.ghost(true)
 		else:
 			$PlayerShape.ghost(false)
+		@warning_ignore("unsafe_call_argument")
 		var name_distance: float = get_tree().root.get_camera_3d().global_position.distance_to($Name.global_position)
 		$Name.pixel_size = 0.0025 * sqrt(name_distance)
 		$Name.visible = name_distance < MAX_NAME_VIEW_DISTANCE
