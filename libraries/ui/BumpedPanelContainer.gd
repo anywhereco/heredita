@@ -51,3 +51,4 @@ func _notification(what: int) -> void:
 										  fit_size.x - bump_size.x/2, fit_size.y))
 			fit_child_in_rect(Right, Rect2(offset.x + fit_size.x/2 + bump_size.x/2, offset.y,
 										   fit_size.x - bump_size.x/2, fit_size.y))
+			queue_redraw()
