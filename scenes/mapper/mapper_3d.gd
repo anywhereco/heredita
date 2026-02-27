@@ -60,11 +60,11 @@ func process_tool_use(event: InputEvent) -> void:
 			push_error("Tool \"%s\" doesn't have code to handle events!" % MapperRoot.Tool.keys()[tool.value].to_lower())
 			return
 
-func get_map_update(event: String, player_id: int, details: Variant) -> void:
+func get_map_update(event: String, _player_id: int, details: Variant) -> void:
 	if event == "map_update":
 		Map._instance.get_map_update(details as Dictionary)
 
-func sync_map(event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
+func sync_map(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
 	if event == ISUtil.BinaryEvents.SYNC_MAP_SIZE:
 		map_data_uncompr_size = details.decode_u32(0)
 	if event == ISUtil.BinaryEvents.SYNC_MAP:

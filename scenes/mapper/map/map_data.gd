@@ -21,12 +21,14 @@ static func deserialize(serialized: PackedByteArray) -> MapData:
 	if package_version >= 0:
 		var map_data: Dictionary[String, Variant] = bytes_to_var(s_data)
 		var image_size: Vector2 = map_data["image_size"]
+		@warning_ignore("unsafe_call_argument", "narrowing_conversion")
 		md.image = Image.create_from_data(image_size.x,image_size.y,false,Image.FORMAT_RGBA8,map_data["image"])
 	return md
 	
 func get_map_update(details: Dictionary) -> void:
 	var type: String = details["type"]
 	if type == "brush":
+		@warning_ignore("unsafe_call_argument")
 		set_pixels_at_targeted(
 			State.brush_shape_map.get_vec2s(details["size"]),
 			ISUtil.to_color(details["paint_color"]),

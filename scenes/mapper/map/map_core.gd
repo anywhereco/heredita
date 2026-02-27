@@ -203,6 +203,7 @@ func update_brush_preview() -> void:
 func get_map_update(details: Dictionary) -> void:
 	var type: String = details["type"]
 	if type == "brush":
+		@warning_ignore("unsafe_call_argument")
 		Map._instance.set_pixels_at_targeted(
 			brush_shape_map.get_vec2s(details["size"]),
 			ISUtil.to_color(details["paint_color"]),

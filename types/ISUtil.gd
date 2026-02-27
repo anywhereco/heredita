@@ -32,10 +32,12 @@ static func from_color(color: Color) -> Array:
 	return [color.r, color.g, color.b]
 	
 static func to_color(color: Array) -> Color:
+	@warning_ignore("unsafe_call_argument")
 	return Color(color[0], color[1], color[2])
 
 static func from_vec2(vec: Vector2) -> Array:
 	return [vec.x, vec.y]
 	
 static func to_vec2(vec: Array) -> Vector2:
+	@warning_ignore("unsafe_call_argument")
 	return Vector2(vec[0], vec[1])

@@ -155,15 +155,16 @@ class ChunkedBinaryData:
 	var array: PackedByteArray
 	var event: int
 	
-	func _init(array: PackedByteArray, event: int) -> void:
-		self.array = array
-		self.event = event
+	func _init(_array: PackedByteArray, _event: int) -> void:
+		self.array = _array
+		self.event = _event
 
 func get_chunked_binary_data() -> ChunkedBinaryData:
 	var data := []
 	var data_length := 0
 	var chunks_recieved := 0
 	var event := 0
+	@warning_ignore("unused_variable")
 	var target := 0
 	while true:
 		var sig_data: Variant = await self.binary_message_received

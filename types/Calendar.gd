@@ -1,4 +1,4 @@
-extends Node
+extends Resource
 class_name Calendar
 
 const MPY_TO_SPS = 525600.0 # aka just "How many minutes are in a year"
@@ -16,7 +16,8 @@ enum Month {
 	SEPTEMBER,
 	OCTOBER,
 	NOVEMBER,
-	DECEMBER
+	DECEMBER,
+	MAXIMUM
 }
 
 var minutes_per_year: float
@@ -33,17 +34,51 @@ var minute: int
 var second: float
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+func _init(mpy: float, _year: int) -> void:
+	minutes_per_year = mpy
+	year = _year
+	month = Month.JANUARY
+	day = 1
+	hour = 0
+	minute = 0
+	second = 0
 
 @warning_ignore("shadowed_variable")
 static func is_leap_year(year: int) -> bool:
 	return (year % 4 == 0) and \
 		   ((year % 100 != 0) or (year % 400 == 0))
+		
+static func get_ordinal(number: int) -> String:
+	var last_digit: int = number % 10
+	var last_pair: int = number % 100
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+	if last_digit == 1 and last_pair != 11:
+		return str(number) + "st"
+	if last_digit == 2 and last_pair != 12:
+		return str(number) + "nd"
+	if last_digit == 3 and last_pair != 13:
+		return str(number) + "rd"
+	return str(number) + "th"
+
+func days_in_month() -> int:
+	match month:
+		Month.JANUARY: return 31
+		Month.FEBRUARY: return 29 if is_leap_year(year) else 28
+		Month.MARCH: return 31
+		Month.APRIL: return 30
+		Month.MAY: return 31
+		Month.JUNE: return 30
+		Month.JULY: return 31
+		Month.AUGUST: return 31
+		Month.SEPTEMBER: return 30
+		Month.OCTOBER: return 31
+		Month.NOVEMBER: return 30
+		Month.DECEMBER: return 31
+		_: 
+			push_error("month %d doesn't have a set amount of days waaaa" % month)
+			return 0
+		
+func process(delta: float) -> void:
 	second += delta * factor
 	
 	minute += floor(second / 60)
@@ -57,3 +92,37 @@ func _process(delta: float) -> void:
 	day += floor(hour / 24)
 	hour %= 24
 	
+	var days_in_year := 366 if is_leap_year(year) else 365
+	
+	if day > days_in_year:
+		day -= days_in_year
+		year += 1
+		if year == 0:
+			year = 1
+		days_in_year = 366 if is_leap_year(year) else 365
+	
+	while day > days_in_month():
+		day -= days_in_month()
+		
+		@warning_ignore("int_as_enum_without_cast")
+		month += 1
+		
+		if month == Month.MAXIMUM:
+			month = 0 as Month
+			
+		if month == 0:
+			year += 1
+			if year == 0:
+				year = 1
+
+func date_string() -> String:
+	var month_str: String = Month.keys()[month]
+	month_str = month_str.to_lower().capitalize()
+	return month_str + " " + get_ordinal(day)
+
+func year_string() -> String:
+	if year < 0:
+		return str(-year) + " BC"
+	elif year < 1500:
+		return str(year) + " AD"
+	return str(year)

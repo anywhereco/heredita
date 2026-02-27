@@ -1,8 +1,6 @@
 ## Library for creating prompt windows.
 extends Node
 
-@onready var _window_root := get_node('/root')  
-
 ## The override UI.
 ##
 ## The override UI is used if you need to have the prompt attached to a specific node.
