@@ -3,7 +3,7 @@ class_name RoomServer
 
 var room: Room = null
 var map_controller: RoomMap = RoomMap.new()
-var calendar: Calendar = Calendar.new(.00000000001, 1984) # heh
+var calendar: Calendar = Calendar.new(12, 1984) # heh
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
 var connected_peers := [] #peers that have finished making a connection
