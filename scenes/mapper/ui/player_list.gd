@@ -7,30 +7,44 @@ func _ready() -> void:
 		State.room.players.value_changed.connect(refresh_players)
 	refresh_players(State.room.players)
 
-func add_player(player_id: int) -> void:
-	var player_node := preload("res://scenes/mapper/ui/player.tscn").instantiate()
-	player_node.name = str(player_id)
-	player_node.get_node("Label").text = State.room.players.getv(player_id)['username']
-	player_node.get_node("Button").pressed.connect(player_clicked.bind(player_id))
-	add_child(player_node)
+func ban_player(player_id: int) -> void:
+		InfoPrompt.custom_prompt("Ban this player?",
+		{"Cancel": Prompts.close_top_prompt,
+		 "Ban": State.client.send.bind("ban", player_id)})
 	
+func kick_player(player_id: int) -> void:
+		InfoPrompt.custom_prompt("Kick this player?",
+		{"Cancel": Prompts.close_top_prompt,
+		 "Kick": State.client.send.bind("kick", player_id)})
+
+func mute_player(player_id: int) -> void:
+		State.client.send("mute", player_id)
+
+func unmute_player(player_id: int) -> void:
+		State.client.send("unmute", player_id)
+
 func player_clicked(player_id: int) -> void:
 	var menu := CPopupMenu.new()
 	if State.player["operator"] and player_id != State.client.player_id:
 		menu.add_item("Ban", ban_player.bind(player_id))
-		menu.add_item("Kick", ban_player.bind(player_id))
-		menu.add_item("Mute", ban_player.bind(player_id))
+		menu.add_item("Kick", kick_player.bind(player_id))
+		if State.player["muted"]:
+			menu.add_item("Unmute", mute_player.bind(player_id))
+		else:
+			menu.add_item("Mute", mute_player.bind(player_id))
 	if not menu.item_count(): #no items so no menu
 		menu.queue_free()
 		return
 	menu.display()
 	menu.align_bottom(self)
 
-func ban_player(player_id: int) -> void:
-		InfoPrompt.custom_prompt("Ban this player?",
-		{"Cancel": Prompts.close_top_prompt,
-		 "Ban": State.client.send.bind("ban", player_id)})
-	
+func add_player(player_id: int) -> void:
+	var player_node := preload("res://scenes/mapper/ui/player.tscn").instantiate()
+	player_node.name = str(player_id)
+	player_node.get_node("Label").text = State.room.players.getv(player_id)['username']
+	player_node.get_node("Button").pressed.connect(player_clicked.bind(player_id))
+	add_child(player_node)
+
 func remove_player(player_id: int) -> void:
 	var player_node := find_child(str(player_id), false, false)
 	player_node.queue_free()

@@ -154,7 +154,20 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			var banned_peer: int = room.players.getv(ban_id).peer_id
 			room.banned_ips.append(ws_server.peer_ip(banned_peer))
 			ws_server.close(banned_peer, 5000, "Banned from this room")
-			
+	elif data["event"] == "kick":
+		if room.players.getv(peer_player_id(peer_id)).operator:
+			var kick_id: int = data["details"]
+			var kicked_peer: int = room.players.getv(kick_id).peer_id
+			ws_server.close(kicked_peer, 5001, "Kicked from this room")
+	elif data["event"] == "mute":
+		if room.players.getv(peer_player_id(peer_id)).operator:
+			var mute_id: int = data["details"]
+			#mute
+	elif data["event"] == "unmute":
+		if room.players.getv(peer_player_id(peer_id)).operator:
+			var unmute_id: int = data["details"]
+			#unmute
+
 	#return value is true if it should be broadcasted to the rest of the server
 	return true
 
