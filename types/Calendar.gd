@@ -4,6 +4,9 @@ class_name Calendar
 const MPY_TO_SPS = 525600.0 # aka just "How many minutes are in a year"
 const SPS_TO_MPY = 1/MPY_TO_SPS
 
+const YEARS_IN_CYCLE = 400
+const DAYS_IN_CYCLE = 146097 # 303 non leap years and 97 leap years
+
 enum Month {
 	JANUARY,
 	FEBRUARY,
@@ -105,6 +108,12 @@ func process(delta: float) -> void:
 	
 	var days_in_year := 366 if is_leap_year(year) else 365
 	
+	if day > DAYS_IN_CYCLE:
+		@warning_ignore("integer_division")
+		var cycles := floori(day / DAYS_IN_CYCLE)
+		day %= DAYS_IN_CYCLE 
+		year += YEARS_IN_CYCLE * cycles
+	
 	if day > days_in_year:
 		day -= days_in_year
 		year += 1
@@ -137,6 +146,9 @@ func year_string() -> String:
 	elif year < 1500:
 		return str(year) + " AD"
 	return str(year)
+
+func time_string() -> String:
+	return "%02d:%02d:%02d" % [hour, minute, second]
 
 func to_json() -> Dictionary:
 	return {

@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="5_5g7k5"]
 [ext_resource type="Texture2D" uid="uid://btb4jabo6nmoe" path="res://assets/icons/openfolder.svg" id="5_580mp"]
 [ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/settings.gd" id="5_jj21m"]
-[ext_resource type="Script" uid="uid://82u1nskr1k2o" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
+[ext_resource type="Script" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
 [ext_resource type="Texture2D" uid="uid://dtur4inp5a2k4" path="res://assets/icons/image.svg" id="6_rdvpr"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="6_wbt2f"]
 [ext_resource type="Script" uid="uid://cyue2b6ml14cg" path="res://scenes/mapper/ui/toolui/tool_changer.gd" id="7_0sgq1"]
@@ -24,7 +24,7 @@
 [ext_resource type="Script" uid="uid://boffekhvui4ql" path="res://scenes/mapper/ui/toolui/brush.gd" id="12_2eddf"]
 [ext_resource type="Script" uid="uid://boj66ccjdmq6n" path="res://libraries/ui/Unfocus.gd" id="12_vdunj"]
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="12_wbt2f"]
-[ext_resource type="Script" path="res://scenes/mapper/ui/time.gd" id="12_y5csc"]
+[ext_resource type="Script" uid="uid://d0t8pp1b4syhm" path="res://scenes/mapper/ui/time.gd" id="12_y5csc"]
 [ext_resource type="Script" uid="uid://4l3n0jimw2sw" path="res://scenes/mapper/ui/chat_box.gd" id="14_0eah7"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://scenes/mapper/ui/chat_scroll.gd" id="15_yn3oc"]
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list.gd" id="16_i44o3"]
@@ -228,6 +228,9 @@ layout_mode = 2
 text = "99999"
 label_settings = SubResource("LabelSettings_5g5qp")
 horizontal_alignment = 1
+
+[node name="Time" type="Label" parent="MenubarContainer/Menubar/HBoxContainer2/Time" unique_id=96124114]
+layout_mode = 2
 
 [node name="Spacer2" type="Control" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=479760990]
 layout_mode = 2
