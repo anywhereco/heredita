@@ -1,7 +1,8 @@
 [gd_resource type="Theme" format=3 uid="uid://csm3q8ve108a8"]
 
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="1_e8htd"]
-[ext_resource type="Texture2D" uid="uid://b5l2iegic583f" path="res://assets/theme_assets/check.png" id="2_f5r8q"]
+[ext_resource type="Texture2D" uid="uid://ca65ltc3jhcrn" path="res://assets/icons/checkbox/checkbox-checked.svg" id="2_wms38"]
+[ext_resource type="Texture2D" uid="uid://dpuhpy6bhhb5f" path="res://assets/icons/checkbox/checkbox-unchecked.svg" id="3_bcf2e"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="3_wms38"]
 [ext_resource type="FontVariation" uid="uid://cyxhummrwgoly" path="res://assets/font/_variants/proitalics650.tres" id="4_e8htd"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="5_wms38"]
@@ -113,14 +114,6 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
-
-[sub_resource type="Gradient" id="Gradient_w53sr"]
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0, 0, 0, 0)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_f5r8q"]
-gradient = SubResource("Gradient_w53sr")
-width = 16
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0dftj"]
 
@@ -649,8 +642,8 @@ Button/styles/hover = SubResource("StyleBoxFlat_w53sr")
 Button/styles/hover_pressed = SubResource("StyleBoxFlat_5rsk0")
 Button/styles/normal = SubResource("StyleBoxFlat_f5r8q")
 Button/styles/pressed = SubResource("StyleBoxFlat_4goj0")
-CheckBox/icons/checked = ExtResource("2_f5r8q")
-CheckBox/icons/unchecked = SubResource("GradientTexture1D_f5r8q")
+CheckBox/icons/checked = ExtResource("2_wms38")
+CheckBox/icons/unchecked = ExtResource("3_bcf2e")
 ColorSlider/base_type = &"VSlider"
 ColorSlider/styles/grabber_area = SubResource("StyleBoxEmpty_0dftj")
 ColorSlider/styles/grabber_area_highlight = SubResource("StyleBoxEmpty_h5t51")

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cj4f7t362ln81"]
+
+[ext_resource type="Script" uid="uid://b41hsplsqutkb" path="res://scenes/_settings/toggle.gd" id="1_qcwmq"]
+
+[node name="Toggle" type="HBoxContainer" unique_id=1769327676]
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+script = ExtResource("1_qcwmq")
+
+[node name="Value" type="CheckBox" parent="." unique_id=1061858368]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+flat = true
+
+[connection signal="toggled" from="Value" to="." method="_on_value_toggled"]

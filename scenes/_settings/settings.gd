@@ -18,6 +18,10 @@ func make_slider(setting_data: SliderSetting, percent := false, log10 := false) 
 	node.log10 = log10
 	return node
 
+func make_toggle(_setting_data: ToggleSetting) -> Control:
+	var node: Control = preload("res://scenes/_settings/toggle.tscn").instantiate()
+	return node
+
 func tab_add_setting(tab: Container, setting: String) -> void:
 	var setting_data := Settings.settings_data[setting]
 	var setting_node: Control
@@ -25,6 +29,9 @@ func tab_add_setting(tab: Container, setting: String) -> void:
 		"SliderSetting":
 			var slider := setting_data as SliderSetting
 			setting_node = make_slider(slider, slider.is_percent(), slider.is_log())
+		"ToggleSetting":
+			var toggle := setting_data as ToggleSetting
+			setting_node = make_toggle(toggle)
 		_:
 			push_error("Cannot make setting node for type %s" % (setting_data.get_script() as Script).get_global_name())
 	setting_node.setting = Settings.get_reactive(setting)

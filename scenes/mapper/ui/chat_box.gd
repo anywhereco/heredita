@@ -25,6 +25,8 @@ func send_typed_message() -> void:
 		
 func send_message(message: String) -> void:
 	State.client.send("chat_message", message)
+	if Settings.getv("unfocus_on_chat_submission", true):
+		text_box.release_focus()
 
 func receive_message(event: String, user_id: int, message: Variant) -> void:
 	if event == "chat_message" and message is String:
@@ -36,3 +38,9 @@ func add_message(sender_id: int, message: String) -> void:
 	@warning_ignore("unsafe_call_argument")
 	messages.text += newline + "[b]%s[/b]: %s" % [Markdown.bb_escape(player["username"]),
 												  Markdown.bb_escape(message)]
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if text_box.has_focus():
+		return
+	if event.is_action_pressed("chat_focus"):
+		text_box.grab_focus.call_deferred()

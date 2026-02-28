@@ -25,6 +25,10 @@ var settings_data: Dictionary[String, SettingsResource] = {
 		1.0,
 		3.0, # TODO: we should probably cap this based on current screen size?
 		0.25
+	),
+	"unfocus_on_chat_submission": ToggleSetting.new(
+		"Unfocus on chat send",
+		true
 	)
 }
 var settings_tabs: Dictionary[String, Array] = {
@@ -32,7 +36,8 @@ var settings_tabs: Dictionary[String, Array] = {
 		"mouse_sensitivity"
 	],
 	"Game": [
-		"camera_sensitivity"
+		"camera_sensitivity",
+		"unfocus_on_chat_submission"
 	],
 	"UI": [
 		"ui_scale"
@@ -61,6 +66,8 @@ func _init() -> void:
 			continue
 		if settings_data.get(setting) is SliderSetting:
 			settings.setv(setting, ReactiveFloat.new((settings_data[setting] as SliderSetting).default))
+		if settings_data.get(setting) is ToggleSetting:
+			settings.setv(setting, ReactiveBool.new((settings_data[setting] as ToggleSetting).default))
 	settings.value_changed.connect(_save_settings.unbind(1))
 
 func _ready() -> void:
