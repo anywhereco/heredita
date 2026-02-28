@@ -1,11 +1,11 @@
 class_name TimekeepingUI
-extends VBoxContainer
+extends HBoxContainer
 
 static var _inst: TimekeepingUI
 
-@onready var date: Label = $Date
-@onready var year: Label = $Year
-@onready var time: Label = $Time
+@onready var date: Label = $TimeInner/Date
+@onready var year: Label = $TimeInner/Year
+@onready var time: Label = $TimeInner/Time
 @onready var calendar: Calendar = Calendar.new(1, 222222)
 
 
@@ -26,3 +26,9 @@ func _process(delta: float) -> void:
 	
 func calendar_sync(details: Dictionary) -> void:
 	calendar = Calendar.from_json(details)
+
+func _on_pause_pressed() -> void:
+	pass # Replace with function body.
+
+func _on_configure_pressed() -> void:
+	pass # Replace with function body.
