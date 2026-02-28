@@ -29,6 +29,14 @@ func get_json_data(peer_id: int) -> Result:
 	var data := await get_text_data(peer_id)
 	return parse_json(data)
 
+func _get_verification(target_eid: int) -> Result:
+	var eid := 0x7fffffffffffffff
+	var ret: Array
+	while eid != target_eid:
+		ret = await server_controller.bridge.token_verification
+		eid = ret[0]
+	return ret[1] as Result
+
 func peer_player_id(peer_id: int) -> int:
 	for player_id: int in room.players.keys():
 		if room.players.getv(player_id).peer_id == peer_id:
@@ -54,6 +62,9 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 		if error:
 			return error
 	return OK
+
+func update_player_status(player_id: int) -> void:
+	send_event("update_player_status", {"player_id": player_id, "status": room.players.getv(player_id).status})
 
 func sync_calendar() -> void:
 	send_event("calendar_sync", calendar.to_json())
@@ -113,8 +124,23 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		ws_server.close(peer_id, 4100, "Username in use")
 		return
 		
-	# CRITICAL token stuff
-	
+	ws_server.send_targeted_event(peer_id, "_is2_token")
+	var token_json := await get_json_data(peer_id)
+	if ISUtil.valid_event_is(token_json, "_is2_token"):
+		var token: Variant = token_json.val()["details"]
+		if token == "" or token == null:
+			player.logged_in = false
+		else:
+			token = token as String
+			var eid := server_controller.bridge.validate_token_request(token)
+			var result := await _get_verification(eid)
+			if result.is_err():
+				ws_server.close(peer_id, 4101, "Invalid token")
+				return
+			else:
+				player.logged_in = true
+				player.username = result.val().username
+
 	if created:
 		player.operator = true
 	send_event("_is2_player_join", {"player_id": player_id, "details": {"username": player.username, "logged_in": player.logged_in, "profile": player.profile}})
@@ -183,11 +209,17 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		if room.players.getv(peer_player_id(peer_id)).operator:
 			@warning_ignore("unused_variable")
 			var mute_id: int = data["details"]
+			var mute_player: Player = room.players.getv(mute_id)
+			mute_player.status["muted"] = true
+			update_player_status(mute_id)
 			#mute
 	elif data["event"] == "unmute":
 		if room.players.getv(peer_player_id(peer_id)).operator:
 			@warning_ignore("unused_variable")
 			var unmute_id: int = data["details"]
+			var unmute_player: Player = room.players.getv(unmute_id)
+			unmute_player.status["muted"] = false
+			update_player_status(unmute_id)
 			#unmute
 
 	#return value is true if it should be broadcasted to the rest of the server

@@ -39,7 +39,8 @@ func _notification(what: int) -> void:
 			var rect := Rect2(Vector2.ZERO, size)
 			stylebox.draw(self.get_canvas_item(), rect)
 			var bump_stylebox := get_theme_stylebox("bump", &"BumpedPanelContainer")
-			var bump_size := Bump.get_combined_minimum_size() + Vector2(bump_space,bump_protrusion-size.y)
+			var bump_bottom_margin := bump_stylebox.get_margin(SIDE_BOTTOM)
+			var bump_size := Bump.get_combined_minimum_size() + Vector2(bump_space,-size.y + bump_protrusion + bump_bottom_margin)
 			var bump_rect := Rect2(size.x/2-bump_size.x/2, size.y, bump_size.x, bump_size.y)
 			bump_stylebox.draw(self.get_canvas_item(), bump_rect)
 		NOTIFICATION_SORT_CHILDREN:
@@ -47,7 +48,6 @@ func _notification(what: int) -> void:
 			var stylebox := get_theme_stylebox("panel", &"BumpedPanelContainer")
 			var fit_size := get_size() - stylebox.get_minimum_size()
 			var offset := stylebox.get_offset()
-			print(offset)
 			var bump_size := Bump.get_combined_minimum_size() + Vector2(bump_space,bump_protrusion-size.y)
 			fit_child_in_rect(Bump, Rect2(offset.x + fit_size.x/2 - bump_size.x/2, offset.y,
 										  bump_size.x, bump_size.y))

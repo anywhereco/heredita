@@ -25,10 +25,10 @@ func unmute_player(player_id: int) -> void:
 
 func player_clicked(player_id: int) -> void:
 	var menu := CPopupMenu.new()
-	if State.player["operator"] and player_id != State.client.player_id:
+	if State.player.operator and player_id != State.client.player_id:
 		menu.add_item("Ban", ban_player.bind(player_id))
 		menu.add_item("Kick", kick_player.bind(player_id))
-		if State.player["muted"]:
+		if State.player.status.get("muted", false):
 			menu.add_item("Unmute", mute_player.bind(player_id))
 		else:
 			menu.add_item("Mute", mute_player.bind(player_id))

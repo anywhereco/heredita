@@ -328,6 +328,12 @@ func _poll_string(message: Dictionary) -> void:
 				room.players.erase(message.get("details"))
 				message_received.emit("is2_player_exit", -1, message.get("details"))
 				return
+			"is2_player_status_update":
+				var player: Player = room.players.getv(message.get("details").get("player_id") as int)
+				player.status = message.get("details").get("status")
+				message_received.emit("is2_player_status_update", -1, message.get("details"))
+				return
+				
 			"_is2_pong":
 				return
 			_:
