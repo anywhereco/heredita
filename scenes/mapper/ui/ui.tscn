@@ -34,7 +34,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_5g5qp"]
 font = ExtResource("6_wbt2f")
-font_size = 28
+font_size = 29
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rficw"]
 content_margin_left = 5.0
@@ -108,7 +108,7 @@ material = ExtResource("2_tv71d")
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 script = ExtResource("3_y5csc")
-bump_space = 100.0
+bump_space = 60.0
 bump_protrusion = 2.0
 metadata/_custom_type_script = "uid://b6i1m2ju6n7mu"
 
@@ -194,8 +194,9 @@ custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
 [node name="Time" type="VBoxContainer" parent="MenubarContainer/Menubar" unique_id=1731809799]
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = -6
 script = ExtResource("12_y5csc")
 
 [node name="Date" type="Label" parent="MenubarContainer/Menubar/Time" unique_id=1072244005]
@@ -212,6 +213,7 @@ horizontal_alignment = 1
 
 [node name="Time" type="Label" parent="MenubarContainer/Menubar/Time" unique_id=96124114]
 layout_mode = 2
+theme_override_font_sizes/font_size = 14
 text = "01:02:03"
 horizontal_alignment = 1
 

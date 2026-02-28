@@ -27,7 +27,10 @@ func _get_minimum_size() -> Vector2:
 			  Bump.get_combined_minimum_size() +
 			  Right.get_combined_minimum_size()).x
 	var y := Left.get_combined_minimum_size().max(Right.get_combined_minimum_size()).y
-	return Vector2(x,y)
+	var stylebox := get_theme_stylebox("panel", &"BumpedPanelContainer")
+	var size_offset := Vector2(stylebox.get_margin(SIDE_LEFT) + stylebox.get_margin(SIDE_RIGHT),
+							   stylebox.get_margin(SIDE_TOP) + stylebox.get_margin(SIDE_BOTTOM))
+	return Vector2(x,y) + size_offset
 
 func _notification(what: int) -> void:
 	match what:
@@ -41,9 +44,10 @@ func _notification(what: int) -> void:
 			bump_stylebox.draw(self.get_canvas_item(), bump_rect)
 		NOTIFICATION_SORT_CHILDREN:
 			_update_children()
-			var stylebox := get_theme_stylebox("panel", &"PanelContainer")
+			var stylebox := get_theme_stylebox("panel", &"BumpedPanelContainer")
 			var fit_size := get_size() - stylebox.get_minimum_size()
 			var offset := stylebox.get_offset()
+			print(offset)
 			var bump_size := Bump.get_combined_minimum_size() + Vector2(bump_space,bump_protrusion-size.y)
 			fit_child_in_rect(Bump, Rect2(offset.x + fit_size.x/2 - bump_size.x/2, offset.y,
 										  bump_size.x, bump_size.y))
