@@ -29,6 +29,10 @@ var settings_data: Dictionary[String, SettingsResource] = {
 	"unfocus_on_chat_submission": ToggleSetting.new(
 		"Unfocus on chat send",
 		true
+	),
+	"enable_seconds": ToggleSetting.new(
+		"Enable seconds in time",
+		false
 	)
 }
 var settings_tabs: Dictionary[String, Array] = {
@@ -37,7 +41,8 @@ var settings_tabs: Dictionary[String, Array] = {
 	],
 	"Game": [
 		"camera_sensitivity",
-		"unfocus_on_chat_submission"
+		"unfocus_on_chat_submission",
+		"enable_seconds"
 	],
 	"UI": [
 		"ui_scale"

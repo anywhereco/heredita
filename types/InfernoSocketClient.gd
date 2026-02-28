@@ -306,10 +306,11 @@ func _poll_string(message: Dictionary) -> void:
 					send("_is2_username", State.guest_username)
 				return
 			"_is2_token":
-				#var token_res: Variant = LocalStorage.get_item("token")
-				#if token_res.is_err() or not State.user.is_account:
-				#	send("_is2_token", "")
-				#send("_is2_token", token_res.val())
+				if State.user.initialized:
+					var token_res: Variant = State.user.token
+					send("_is2_token", token_res.val())
+					return
+				send("_is2_token", "")
 				return
 			"_is2_handshake_complete":
 				room = Room.new()

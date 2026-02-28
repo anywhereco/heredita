@@ -151,7 +151,10 @@ func year_string() -> String:
 	return str(year)
 
 func time_string() -> String:
-	return "%02d:%02d:%02d" % [hour, minute, second]
+	if Settings.getv("enable_seconds", true):
+		return "%02d:%02d:%02d" % [hour, minute, second]
+	else:
+		return "%02d:%02d" % [hour, minute]
 
 func to_json() -> Dictionary:
 	return {
