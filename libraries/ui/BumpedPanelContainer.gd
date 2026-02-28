@@ -1,7 +1,7 @@
+## A three-element contianer with a protruding middle element.
 @tool
 extends Container
 class_name BumpedPanelContainer
-#Holds exactly 3 controls
 
 ##How much wider the bump is than its contents' minimum size.
 ##(The contents will expand to fill the bump.)
