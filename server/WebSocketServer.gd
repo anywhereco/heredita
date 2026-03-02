@@ -36,12 +36,22 @@ signal closed(peer_id: int, code: int, reason: String)
 func peer_ip(peer_id: int) -> String:
 	return _peers[peer_id].get_connected_host()
 
+func peer_available(peer_id: int) -> bool:
+	if peer_id not in _peers:
+		return false
+	var peer_state := _peers[peer_id].get_ready_state()
+	return peer_state != WebSocketPeer.STATE_CLOSING and peer_state != WebSocketPeer.STATE_CLOSED
+
 func send_text(peer_id: int, message: String) -> Error:
+	if not peer_available(peer_id):
+		return FAILED
 	var peer := _peers[peer_id]
 	var error := peer.send_text(message)
 	return error
 	
 func send_raw_binary(peer_id: int, message: PackedByteArray) -> Error:
+	if not peer_available(peer_id):
+		return FAILED
 	var peer := _peers[peer_id]
 	var error := peer.send(message)
 	return error
@@ -117,5 +127,4 @@ func _process(_delta: float) -> void:
 			var code := peer.get_close_code()
 			var reason := peer.get_close_reason()
 			print("server close (%d): %s" % [code, reason])
-			#breakpoint
 			closed.emit(peer_id, code, reason)

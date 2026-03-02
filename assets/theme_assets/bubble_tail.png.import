@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dbstrvv450g0c"
-path="res://.godot/imported/select.png-0b9fe9974996017093bbf453dd02c50f.ctex"
+uid="uid://rnlt4ll5ockr"
+path="res://.godot/imported/bubble_tail.png-c06ab5af24d5939bdec36ef9b7a0314b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/tools/select.png"
-dest_files=["res://.godot/imported/select.png-0b9fe9974996017093bbf453dd02c50f.ctex"]
+source_file="res://assets/theme_assets/bubble_tail.png"
+dest_files=["res://.godot/imported/bubble_tail.png-c06ab5af24d5939bdec36ef9b7a0314b.ctex"]
 
 [params]
 

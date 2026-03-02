@@ -5,8 +5,12 @@ extends VBoxContainer
 @onready var scroll: ScrollContainer = find_child("ChatScroll")
 @onready var messages: RichTextLabel = find_child("ChatMessages")
 var players_listed := []
+var text_box_default_placeholder: String
+
+var muted_text := "" #used to restore text if unmuted
 
 func _ready() -> void:
+	text_box_default_placeholder = text_box.placeholder_text
 	if State.room:
 		$PanelContainer/MarginContainer/ChatSP.hide()
 		text_box.editable = true
@@ -31,6 +35,17 @@ func send_message(message: String) -> void:
 func receive_message(event: String, user_id: int, message: Variant) -> void:
 	if event == "chat_message" and message is String:
 		add_message(user_id, message as String)
+	elif event == "is2_player_status_update":
+		if State.player.status.get("muted", false):
+			text_box.editable = false
+			text_box.placeholder_text = "You are muted!"
+			muted_text = text_box.text
+			text_box.text = ""
+		else:
+			text_box.editable = true
+			text_box.placeholder_text = text_box_default_placeholder
+			text_box.text = muted_text
+			muted_text = ""
 
 func add_message(sender_id: int, message: String) -> void:
 	var newline := "\n" if messages.text else ""

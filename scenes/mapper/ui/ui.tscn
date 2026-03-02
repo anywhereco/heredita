@@ -91,6 +91,9 @@ font_size = 18
 font = ExtResource("12_wbt2f")
 font_size = 18
 
+[sub_resource type="Theme" id="Theme_c8yws"]
+LineEdit/constants/minimum_character_width = 2
+
 [node name="UI" type="CanvasLayer" unique_id=1177199395]
 script = ExtResource("1_em4te")
 
@@ -497,6 +500,7 @@ size_flags_vertical = 3
 script = ExtResource("10_tv71d")
 
 [node name="none" type="CenterContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1985060931]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -611,6 +615,21 @@ visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Preset"
+
+[node name="dice" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=889499975]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/dice" unique_id=197942183]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Size"
+
+[node name="SpinBox" type="SpinBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/dice" unique_id=1789389572]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_c8yws")
 
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/Pause" to="MenubarContainer/Menubar/Time" method="_on_pause_pressed"]
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/Configure" to="MenubarContainer/Menubar/Time" method="_on_configure_pressed"]

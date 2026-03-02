@@ -14,7 +14,7 @@ var room: Room = null
 ## Should not be null. Make sure to check if the user is logged in via State.user.initialized.
 var user: PrimaryUser = null
 var player: Player:
-	get: return Player.from_info(room.players.getv(client.player_id)) if room else null
+	get: return room.players.getv(client.player_id) if room else null
 
 var guest_username := ""
 

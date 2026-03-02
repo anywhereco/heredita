@@ -80,10 +80,15 @@ func closed() -> void:
 	if not is_inside_tree(): #if we exited manually
 		return
 	VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
-	var menu: Node2D = preload("res://scenes/main_menu/main.tscn").instantiate()
+	var menu: Node2D = load("res://scenes/main_menu/main.tscn").instantiate()
 	get_tree().current_scene.queue_free()
 	get_tree().root.add_child(menu)
 	TopLevel.ui = menu.get_node("Foreground") #do this manually since it hasn't loaded yet
-	InfoPrompt.prompt("The room was closed.")
+	#this code doesnt work because the client gets a close reason of 1002 for some reason
+	#var connection_string := State.client.socket.get_close_reason()
+	#if not connection_string:
+		#connection_string = "The connection was closed."
+	#InfoPrompt.prompt(connection_string)
+	InfoPrompt.prompt("The connection was closed.")
 	#eventually have a more detailed message if you're kicked/banned/etc though idk how they'd send that
 	get_tree().current_scene = menu

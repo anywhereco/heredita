@@ -210,6 +210,12 @@ func int_keys(dict: Dictionary) -> Dictionary[int, Variant]:
 	for key: Variant in dict:
 		new_dict[key as int] = dict[key]
 	return new_dict
+	
+func convert_players(dict: Dictionary) -> Dictionary[int, Player]:
+	var new_dict: Dictionary[int, Player] = {}
+	for key: Variant in dict:
+		new_dict[key as int] = Player.from_info(dict[key] as Dictionary)
+	return new_dict
 
 #region Polling
 func poll() -> void:
@@ -317,18 +323,18 @@ func _poll_string(message: Dictionary) -> void:
 				State.room = room
 				room.name = message.get("details").get("name")
 				room.description = message.get("details").get("description")
-				room.players = ReactiveDictionary.new(int_keys(message.get("details").get("players") as Dictionary))
+				room.players = ReactiveDictionary.new(convert_players(message.get("details").get("players") as Dictionary))
 				handshake_complete.emit()
 				return
 			"_is2_player_join":
-				room.players.setv(message.get("details").get("player_id") as int, message.get("details").get("details"))
+				room.players.setv(message.get("details").get("player_id") as int, Player.from_info(message.get("details").get("details")))
 				message_received.emit("is2_player_join", -1, message.get("details"))
 				return
 			"_is2_player_exit":
 				room.players.erase(message.get("details"))
 				message_received.emit("is2_player_exit", -1, message.get("details"))
 				return
-			"is2_player_status_update":
+			"_is2_player_status_update":
 				var player: Player = room.players.getv(message.get("details").get("player_id") as int)
 				player.status = message.get("details").get("status")
 				message_received.emit("is2_player_status_update", -1, message.get("details"))

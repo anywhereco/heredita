@@ -68,6 +68,10 @@ func unhide_mouse() -> void:
 	global_position = get_global_mouse_position()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	show()
+	var rect: Rect2 = get_viewport().get_visible_rect()
+	if (position.x < rect.position.x or rect.position.x > rect.end.x or
+		position.y < rect.position.y or rect.position.y > rect.end.y):
+			position = rect.size/2
 
 func _input(event: InputEvent) -> void:
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:

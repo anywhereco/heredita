@@ -64,7 +64,7 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 	return OK
 
 func update_player_status(player_id: int) -> void:
-	send_event("update_player_status", {"player_id": player_id, "status": room.players.getv(player_id).status})
+	send_event("_is2_player_status_update", {"player_id": player_id, "status": room.players.getv(player_id).status})
 
 func sync_calendar() -> void:
 	send_event("calendar_sync", calendar.to_json())
@@ -131,8 +131,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		if token == "" or token == null:
 			player.logged_in = false
 		else:
-			token = token as String
-			var eid := server_controller.bridge.validate_token_request(token)
+			var eid := server_controller.bridge.validate_token_request(token as String)
 			var result := await _get_verification(eid)
 			if result.is_err():
 				ws_server.close(peer_id, 4101, "Invalid token")
@@ -207,7 +206,6 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			ws_server.close(kicked_peer, 5001, "Kicked from this room")
 	elif data["event"] == "mute":
 		if room.players.getv(peer_player_id(peer_id)).operator:
-			@warning_ignore("unused_variable")
 			var mute_id: int = data["details"]
 			var mute_player: Player = room.players.getv(mute_id)
 			mute_player.status["muted"] = true
@@ -215,12 +213,14 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			#mute
 	elif data["event"] == "unmute":
 		if room.players.getv(peer_player_id(peer_id)).operator:
-			@warning_ignore("unused_variable")
 			var unmute_id: int = data["details"]
 			var unmute_player: Player = room.players.getv(unmute_id)
 			unmute_player.status["muted"] = false
 			update_player_status(unmute_id)
 			#unmute
+	elif data["event"] == "chat_message":
+		var player: Player = room.players.getv(peer_player_id(peer_id))
+		return not player.status.get("muted", false)
 
 	#return value is true if it should be broadcasted to the rest of the server
 	return true
