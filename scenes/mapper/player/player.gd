@@ -8,11 +8,14 @@ var frame_data: Dictionary = {} #outgoing if local, incoming if non-local
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var map: Map = $/root/Mapper3D/Map
 
+var bubbles: Array[ChatBubble] = []
+
 const SPEED = 5.0
 const SPRINT_MULT = 5.0
 const JUMP_VELOCITY = 4.5
 
 const MAX_NAME_VIEW_DISTANCE = 15
+const MAX_BUBBLES = 5
 
 var jump: bool = false
 var jump_new: bool = false
@@ -120,6 +123,21 @@ func _physics_process(delta: float) -> void:
 						  "jump": jump}
 			if State.client:
 				State.client.send("avatar_update",frame_data)
+
+func add_bubble(message: String) -> void:
+	var bubble := ChatBubble.create(message)
+	bubble.root_position = $BubbleAnchor.position
+	if $Name.visible:
+		bubble.root_position.y += $Name.pixel_size * $Name.font_size
+	bubbles.insert(0, bubble)
+	for idx in bubbles.size():
+		bubbles[idx].bubble_position = idx
+		if idx >= MAX_BUBBLES:
+			bubbles[idx].queue_free()
+	if len(bubbles) > MAX_BUBBLES:
+		bubbles.resize(MAX_BUBBLES)
+	bubble.fading.connect(bubbles.erase.bind(bubble))
+	add_child(bubble)
 
 func _process(_delta: float) -> void:
 	if not local:

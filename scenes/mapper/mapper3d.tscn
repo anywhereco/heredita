@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://yb2j237qhuec" path="res://scenes/mapper/ui/ui.tscn" id="2_htv7j"]
 [ext_resource type="Script" uid="uid://bsvdn8owdbv8m" path="res://scenes/mapper/player/network_players.gd" id="3_sm41v"]
 [ext_resource type="Script" uid="uid://clxj0fu6d2g3r" path="res://scenes/mapper/map/map_core.gd" id="6_sm41v"]
-[ext_resource type="Script" uid="uid://bsiv8ukmfm4wg" path="res://scenes/mapper/map_markings.gd" id="9_l0uxc"]
+[ext_resource type="Script" path="res://scenes/mapper/map_markings.gd" id="9_l0uxc"]
 [ext_resource type="ArrayMesh" uid="uid://dtef8pb44sygw" path="res://assets/map/markings/city_mesh.tres" id="10_0kc0x"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wvm7y"]

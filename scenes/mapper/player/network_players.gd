@@ -12,6 +12,11 @@ func receive_update(event: String, user_id: int, message: Variant) -> void:
 	if State.room:
 		if event == "avatar_update" and user_id != State.client.player_id and message is Dictionary:
 			get_node(str(user_id)).frame_data = message
+		if event == "chat_message":
+			if user_id == State.client.player_id:
+				get_parent().get_node("LocalPlayer").add_bubble(message)
+			else:
+				get_node(str(user_id)).add_bubble(message)
 
 func add_player(player_id: int) -> void:
 	var player_node: PlayerMovement = preload("res://scenes/mapper/player/player.tscn").instantiate()

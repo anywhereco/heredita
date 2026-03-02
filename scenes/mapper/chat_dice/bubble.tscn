@@ -1,32 +1,36 @@
 [gd_scene format=3 uid="uid://b2ce4xv4q71gw"]
 
+[ext_resource type="Script" uid="uid://cwqkt80jik1og" path="res://scenes/mapper/chat_dice/bubble.gd" id="1_wy4sq"]
 [ext_resource type="Texture2D" uid="uid://b2p3dtpq11hvg" path="res://assets/theme_assets/bubble.png" id="1_xelex"]
 [ext_resource type="Texture2D" uid="uid://rnlt4ll5ockr" path="res://assets/theme_assets/bubble_tail.png" id="2_6xevc"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="3_wy4sq"]
 [ext_resource type="Script" uid="uid://bc3oexh2e0pab" path="res://libraries/ui/MaxWidthLabel.gd" id="4_6xevc"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_gqcjs"]
-viewport_path = NodePath("SubViewport")
+[sub_resource type="ViewportTexture" id="ViewportTexture_wy4sq"]
+viewport_path = NodePath("BubbleViewport")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_levda"]
 resource_local_to_scene = true
 transparency = 1
 shading_mode = 0
-albedo_texture = SubResource("ViewportTexture_gqcjs")
+albedo_texture = SubResource("ViewportTexture_wy4sq")
 billboard_mode = 1
+billboard_keep_scale = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_36hln"]
+resource_local_to_scene = true
 material = SubResource("StandardMaterial3D_levda")
 
 [node name="Bubble" type="MeshInstance3D" unique_id=505063915]
-transform = Transform3D(8.82274, 0, 0, 0, 8.82274, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 mesh = SubResource("QuadMesh_36hln")
+script = ExtResource("1_wy4sq")
 
-[node name="SubViewport" type="SubViewport" parent="." unique_id=1737307445]
+[node name="BubbleViewport" type="SubViewport" parent="." unique_id=1737307445]
 transparent_bg = true
 size = Vector2i(256, 256)
 
-[node name="Margin" type="MarginContainer" parent="SubViewport" unique_id=71858339]
+[node name="Bubble2D" type="MarginContainer" parent="BubbleViewport" unique_id=71858339]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -42,7 +46,7 @@ theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
 
-[node name="BubbleSprite" type="NinePatchRect" parent="SubViewport/Margin" unique_id=91423228]
+[node name="BubbleSprite" type="NinePatchRect" parent="BubbleViewport/Bubble2D" unique_id=91423228]
 texture_filter = 1
 layout_mode = 2
 texture = ExtResource("1_xelex")
@@ -51,7 +55,7 @@ patch_margin_top = 20
 patch_margin_right = 21
 patch_margin_bottom = 45
 
-[node name="BubbleTail" type="TextureRect" parent="SubViewport/Margin/BubbleSprite" unique_id=1856966885]
+[node name="BubbleTail" type="TextureRect" parent="BubbleViewport/Bubble2D/BubbleSprite" unique_id=1856966885]
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 7
@@ -67,17 +71,17 @@ grow_vertical = 0
 texture = ExtResource("2_6xevc")
 stretch_mode = 2
 
-[node name="TextMargin" type="MarginContainer" parent="SubViewport/Margin" unique_id=1667301423]
+[node name="TextMargin" type="MarginContainer" parent="BubbleViewport/Bubble2D" unique_id=1667301423]
 layout_mode = 2
 theme_override_constants/margin_left = 21
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 21
 theme_override_constants/margin_bottom = 45
 
-[node name="Text" type="Label" parent="SubViewport/Margin/TextMargin" unique_id=70522979]
+[node name="Text" type="Label" parent="BubbleViewport/Bubble2D/TextMargin" unique_id=70522979]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_wy4sq")
 text = "The chatting chatter"
 script = ExtResource("4_6xevc")
-max_width = 250.0
+max_width = 200.0

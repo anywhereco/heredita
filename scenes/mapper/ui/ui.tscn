@@ -484,7 +484,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Tool UI"
+text = "Tool Settings"
 horizontal_alignment = 1
 
 [node name="Close" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/HBoxContainer" unique_id=954544806]
@@ -500,7 +500,6 @@ size_flags_vertical = 3
 script = ExtResource("10_tv71d")
 
 [node name="none" type="CenterContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1985060931]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -617,6 +616,7 @@ theme_override_font_sizes/font_size = 12
 text = "Preset"
 
 [node name="dice" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=889499975]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1

@@ -116,3 +116,6 @@ spring_length = 5.0
 environment = SubResource("Environment_c4ga5")
 near = 0.15
 script = ExtResource("6_4te7a")
+
+[node name="BubbleAnchor" type="Node3D" parent="." unique_id=213980136]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
