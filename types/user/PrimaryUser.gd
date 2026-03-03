@@ -8,6 +8,7 @@ var initialized: bool = false
 
 var token: String
 var id: int
+var rank: UserEnums.Rank
 var username: String
 ## Will be empty if there is no email.
 var email: String
@@ -83,19 +84,21 @@ func _set_details(result: int, response_code: int, headers: PackedStringArray, b
 	
 	id = response.id
 	username = response.username
+	@warning_ignore("unsafe_call_argument")
+	rank = UserEnums.string_to_rank(response.rank)
 	email = response.email if response.email != null else ""
 	
 	for friend: Dictionary in response.friends:
 		@warning_ignore("unsafe_call_argument")
-		friends.append(UserPartial.new(friend.id, friend.username))
+		friends.append(UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank)))
 		
 	for friend: Dictionary in response.sent_friend_requests:
 		@warning_ignore("unsafe_call_argument")
-		friend_requests_sent.append(UserPartial.new(friend.id, friend.username))
+		friend_requests_sent.append(UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank)))
 		
 	for friend: Dictionary in response.received_friend_requests:
 		@warning_ignore("unsafe_call_argument")
-		friend_requests_received.append(UserPartial.new(friend.id, friend.username))
+		friend_requests_received.append(UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank)))
 	
 	initialized = true
 	user_initialized.emit()

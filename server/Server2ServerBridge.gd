@@ -36,7 +36,7 @@ func _poll_loop() -> void:
 			send_event("roomlist_response", {"rooms": rooms_json})
 		"validated":
 			@warning_ignore("unsafe_call_argument")
-			token_verification.emit(message.eid, Result.ok(UserPartial.new(message.user_id, message.user)))
+			token_verification.emit(message.eid, Result.ok(UserPartial.new(message.user_id, message.user, UserEnums.string_to_rank(message.rank))))
 		"invalid_token":
 			token_verification.emit(message.eid, Result.err(-1))
 
