@@ -31,6 +31,7 @@ func send_message(message: String) -> void:
 	State.client.send("chat_message", message)
 	if Settings.getv("unfocus_on_chat_submission", true):
 		text_box.release_focus()
+	#TODO put things in chat for system events too (like banning/kicking)
 
 func receive_message(event: String, user_id: int, message: Variant) -> void:
 	if event == "chat_message" and message is String:

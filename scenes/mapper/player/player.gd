@@ -130,6 +130,7 @@ func add_bubble(message: String) -> void:
 	if $Name.visible:
 		bubble.root_position.y += $Name.pixel_size * $Name.font_size
 	bubbles.insert(0, bubble)
+
 	for idx in bubbles.size():
 		bubbles[idx].bubble_position = idx
 		if idx >= MAX_BUBBLES:
@@ -138,6 +139,13 @@ func add_bubble(message: String) -> void:
 		bubbles.resize(MAX_BUBBLES)
 	bubble.fading.connect(bubbles.erase.bind(bubble))
 	add_child(bubble)
+	
+func sort_bubbles() -> void:
+	var total_offset := ChatBubble.BUBBLE_ASCENSION
+	for b in bubbles:
+		b.position_offset = total_offset
+		if b.is_node_ready():
+			total_offset += b.get_height() + ChatBubble.BUBBLE_EXTRA_ASCENSION
 
 func _process(_delta: float) -> void:
 	if not local:
@@ -150,3 +158,4 @@ func _process(_delta: float) -> void:
 		var name_distance: float = get_tree().root.get_camera_3d().global_position.distance_to($Name.global_position)
 		$Name.pixel_size = 0.0025 * sqrt(name_distance)
 		$Name.visible = name_distance < MAX_NAME_VIEW_DISTANCE
+	sort_bubbles()

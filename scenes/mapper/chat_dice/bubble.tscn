@@ -11,6 +11,7 @@ viewport_path = NodePath("BubbleViewport")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_levda"]
 resource_local_to_scene = true
+render_priority = 1
 transparency = 1
 shading_mode = 0
 albedo_texture = SubResource("ViewportTexture_wy4sq")
@@ -83,5 +84,6 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_wy4sq")
 text = "The chatting chatter"
+horizontal_alignment = 1
 script = ExtResource("4_6xevc")
 max_width = 200.0
