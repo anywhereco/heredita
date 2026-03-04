@@ -35,7 +35,10 @@ func send_message(message: String) -> void:
 
 func receive_message(event: String, user_id: int, message: Variant) -> void:
 	if event == "chat_message" and message is String:
-		add_message(user_id, message as String)
+		add_chat_message(user_id, message as String)
+	elif event == "is2_player_joined":
+		var player: Player = State.room.players.getv(message["player_id"])
+		add_message("%s joined the room" % player.username)
 	elif event == "is2_player_status_update":
 		if State.player.status.get("muted", false):
 			text_box.editable = false
@@ -48,12 +51,15 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 			text_box.text = muted_text
 			muted_text = ""
 
-func add_message(sender_id: int, message: String) -> void:
-	var newline := "\n" if messages.text else ""
+func add_chat_message(sender_id: int, message: String) -> void:
 	var player: Player = State.room.players.getv(sender_id)
+	add_message("[b]%s[/b]: %s" % [Markdown.bb_escape(player.username),
+								   Markdown.bb_escape(message)])
+
+func add_message(message: String) -> void:
+	var newline := "\n" if messages.text else ""
 	@warning_ignore("unsafe_call_argument")
-	messages.text += newline + "[b]%s[/b]: %s" % [Markdown.bb_escape(player.username),
-												  Markdown.bb_escape(message)]
+	messages.text += newline + message
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if text_box.has_focus():

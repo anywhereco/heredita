@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Heredita"
-config/version="0.4.0"
+config/version="0.4.0 RC1"
 run/main_scene="uid://bxwiva1eghxgy"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/bg_color=Color(0.050980393, 0.26666668, 0.16862746, 1)
