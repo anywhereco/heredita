@@ -31,6 +31,12 @@ func admin_privileged() -> bool:
 	
 func privileged() -> bool:
 	return operator or (rank >= UserEnums.Rank.MODERATOR)
+	
+func privileged_over(player: Player) -> bool:
+	if operator and not player.operator and player.rank < UserEnums.Rank.MODERATOR:
+		return true
+	else:
+		return rank > player.rank
 			
 static func from_info(dict: Dictionary) -> Player:
 	return Player.new(-2, dict)

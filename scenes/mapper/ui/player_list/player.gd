@@ -13,11 +13,11 @@ func _process(_delta: float) -> void:
 	pass
 
 
-func add_badge(texture: Texture2D) -> TextureRect:
+func add_badge(texture: Texture2D, tooltip: String) -> TextureRect:
 	var texturerect := TextureRect.new()
 	texturerect.texture = texture
 	texturerect.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+	texturerect.tooltip_text = tooltip
 	elements.add_child(texturerect)
 	elements.move_child(texturerect, 0)
-
 	return texturerect
