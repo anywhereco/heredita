@@ -6,6 +6,7 @@ const BADGE_DEVELOPER = preload("uid://x4locc6fhj3")
 const BADGE_MODERATOR = preload("uid://bo4oxu4rpjud1")
 const BADGE_PLAYER_LOGGEDOUT = preload("uid://cakvortcaev5s")
 const BADGE_PLAYER = preload("uid://bqlqc6ldgd3kc")
+const BADGE_OPERATOR = preload("uid://dwh3xvonrqo0u")
 
 var players_listed := []
 
@@ -33,7 +34,7 @@ func unmute_player(player_id: int) -> void:
 func player_clicked(player_node: Control, player_id: int) -> void:
 	var menu := CPopupMenu.new()
 	var player: Player = State.room.players.getv(player_id)
-	if State.player.privileged() and player_id != State.client.player_id:
+	if State.player.operator and player_id != State.client.player_id:
 		menu.add_item("Ban", ban_player.bind(player_id))
 		menu.add_item("Kick", kick_player.bind(player_id))
 		if player.status.get("muted", false):
@@ -55,10 +56,14 @@ func add_player(player_id: int) -> void:
 	add_child(player_node)
 	if not player.logged_in:
 		player_node.add_badge(BADGE_PLAYER_LOGGEDOUT)
+		if player.operator:
+			player_node.add_badge(BADGE_OPERATOR)
 		return
 	match player.rank:
 		UserEnums.Rank.PLAYER:
 			player_node.add_badge(BADGE_PLAYER)
+			if player.operator:
+				player_node.add_badge(BADGE_OPERATOR)
 		UserEnums.Rank.MODERATOR:
 			player_node.add_badge(BADGE_MODERATOR)
 		UserEnums.Rank.ADMIN:
