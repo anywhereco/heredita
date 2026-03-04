@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://o2evwqxo244p"]
+
+[ext_resource type="Script" uid="uid://bkfkbm3mr0672" path="res://scenes/mapper/chat_dice/dice_bubble.gd" id="1_41tex"]
+[ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="2_wp3gi"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_wy4sq"]
+viewport_path = NodePath("BubbleViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_levda"]
+resource_local_to_scene = true
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_wy4sq")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_36hln"]
+resource_local_to_scene = true
+material = SubResource("StandardMaterial3D_levda")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ontsf"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.14, 0.14, 0.14, 0.560784)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_41tex"]
+font_size = 14
+
+[sub_resource type="LabelSettings" id="LabelSettings_t6pnj"]
+font_size = 64
+
+[node name="Bubble" type="MeshInstance3D" unique_id=505063915]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+mesh = SubResource("QuadMesh_36hln")
+script = ExtResource("1_41tex")
+
+[node name="BubbleViewport" type="SubViewport" parent="." unique_id=1737307445]
+transparent_bg = true
+size = Vector2i(256, 256)
+
+[node name="Bubble2D" type="MarginContainer" parent="BubbleViewport" unique_id=71858339]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -72.0
+offset_top = -96.0
+offset_right = 72.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="Panel" type="PanelContainer" parent="BubbleViewport/Bubble2D" unique_id=2098869334]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ontsf")
+
+[node name="VBox" type="VBoxContainer" parent="BubbleViewport/Bubble2D/Panel" unique_id=974929242]
+layout_mode = 2
+
+[node name="Roller" type="Label" parent="BubbleViewport/Bubble2D/Panel/VBox" unique_id=1276264413]
+layout_mode = 2
+text = "rolls_georg rolled"
+label_settings = SubResource("LabelSettings_41tex")
+horizontal_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="BubbleViewport/Bubble2D/Panel/VBox" unique_id=5309505]
+layout_mode = 2
+
+[node name="Left" type="MarginContainer" parent="BubbleViewport/Bubble2D/Panel/VBox/HBox" unique_id=96482851]
+layout_mode = 2
+theme_override_constants/margin_top = 0
+
+[node name="VBox" type="VBoxContainer" parent="BubbleViewport/Bubble2D/Panel/VBox/HBox/Left" unique_id=1568343831]
+layout_mode = 2
+
+[node name="DieString" type="Label" parent="BubbleViewport/Bubble2D/Panel/VBox/HBox/Left/VBox" unique_id=2927858]
+layout_mode = 2
+text = "d100"
+horizontal_alignment = 1
+
+[node name="Die" type="TextureRect" parent="BubbleViewport/Bubble2D/Panel/VBox/HBox/Left/VBox" unique_id=1740668181]
+layout_mode = 2
+texture = ExtResource("2_wp3gi")
+
+[node name="Right" type="MarginContainer" parent="BubbleViewport/Bubble2D/Panel/VBox/HBox" unique_id=198291935]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+
+[node name="Outcome" type="Label" parent="BubbleViewport/Bubble2D/Panel/VBox/HBox/Right" unique_id=238218908]
+layout_mode = 2
+text = "100"
+label_settings = SubResource("LabelSettings_t6pnj")
+horizontal_alignment = 1

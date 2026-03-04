@@ -4,13 +4,13 @@ extends Node3D
 enum Tool {
 	NONE,
 	BRUSH,
+	DICE,
 	FILL,
 	LINE,
 	PICK,
 	INSPECT,
 	PAN,
 	MARKING,
-	SELECT
 }
 
 static var _instance: MapperRoot
@@ -18,6 +18,7 @@ static var _instance: MapperRoot
 var tool := ReactiveInt.new(Tool.NONE)
 
 var brush: BrushTool = BrushTool.new()
+var dice: DiceTool = DiceTool.new()
 
 # May be empty
 var map_data_compressed: PackedByteArray
@@ -32,6 +33,8 @@ func _tool_changed(reactive: ReactiveInt) -> void:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
 	elif reactive.value == Tool.BRUSH:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.BRUSH)
+	elif reactive.value == Tool.DICE:
+		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DICE)
 
 func _init() -> void:
 	_instance = self
@@ -41,6 +44,7 @@ func _ready() -> void:
 	TopLevel.ui = $UI
 	tool.value_changed.connect(_tool_changed)
 	brush._map_ready()
+	dice._map_ready()
 	if State.client:
 		State.client.message_received.connect(message_recieved)
 		State.client.binary_message_received.connect(sync_map)
@@ -56,6 +60,8 @@ func process_tool_use(event: InputEvent) -> void:
 			return
 		Tool.BRUSH:
 			brush.brush_events(event)
+		Tool.DICE:
+			dice.dice_events(event)
 		_:
 			push_error("Tool \"%s\" doesn't have code to handle events!" % MapperRoot.Tool.keys()[tool.value].to_lower())
 			return

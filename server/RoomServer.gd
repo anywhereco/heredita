@@ -186,6 +186,11 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] == "map_update":
 		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"])
+	elif data["event"] == "dice":
+		send_event("dice_result", {"player_id": peer_player_id(peer_id),
+								   "position": data["details"]["position"],
+								   "result": DiceTool.roll(data["details"]["settings"] as Dictionary).to_data()})
+		return false
 	elif data["event"] == "calendar_sync":
 		if room.players.getv(peer_player_id(peer_id)).privileged():
 			@warning_ignore("unsafe_call_argument")

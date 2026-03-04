@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="5_5g7k5"]
 [ext_resource type="Texture2D" uid="uid://btb4jabo6nmoe" path="res://assets/icons/openfolder.svg" id="5_580mp"]
 [ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/settings.gd" id="5_jj21m"]
-[ext_resource type="Script" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
+[ext_resource type="Script" uid="uid://82u1nskr1k2o" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
 [ext_resource type="Texture2D" uid="uid://dtur4inp5a2k4" path="res://assets/icons/image.svg" id="6_rdvpr"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="6_wbt2f"]
 [ext_resource type="Script" uid="uid://cyue2b6ml14cg" path="res://scenes/mapper/ui/toolui/tool_changer.gd" id="7_0sgq1"]
@@ -31,6 +31,8 @@
 [ext_resource type="Texture2D" uid="uid://b8edvgt68hm01" path="res://assets/icons/calendar/gear-full.svg" id="15_5g5qp"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://scenes/mapper/ui/chat_scroll.gd" id="15_yn3oc"]
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
+[ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
+[ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_c8yws"]
 
@@ -405,6 +407,13 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_grkin")
 icon = ExtResource("8_2eddf")
 
+[node name="Dice" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=593451830]
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_grkin")
+icon = ExtResource("25_5g5qp")
+
 [node name="Pan" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=761931475]
 layout_mode = 2
 theme_type_variation = &"ToolButton"
@@ -446,14 +455,6 @@ button_group = SubResource("ButtonGroup_grkin")
 icon = ExtResource("8_tv71d")
 
 [node name="Marking" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=1921768236]
-layout_mode = 2
-theme_type_variation = &"ToolButton"
-disabled = true
-toggle_mode = true
-button_group = SubResource("ButtonGroup_grkin")
-icon = ExtResource("8_tv71d")
-
-[node name="Select" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=593451830]
 layout_mode = 2
 theme_type_variation = &"ToolButton"
 disabled = true
@@ -620,6 +621,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
+script = ExtResource("33_m62g0")
 
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/dice" unique_id=197942183]
 layout_mode = 2

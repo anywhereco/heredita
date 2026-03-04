@@ -147,6 +147,20 @@ func sort_bubbles() -> void:
 		if b.is_node_ready():
 			total_offset += b.get_height() + ChatBubble.BUBBLE_EXTRA_ASCENSION
 
+func mouse_pos_on_map() -> Vector2:
+	var mouse_position := VirtualMouse._instance.position
+	var camera: Camera3D = camera_pivot.get_node("CameraArm/PlayerCamera")
+	# The map is at zero on the Y axis
+	var intersect: Variant = Plane.PLANE_XZ.intersects_ray(
+		camera.project_ray_origin(mouse_position),
+		camera.project_ray_normal(mouse_position)
+	)
+	if intersect is not Vector3:
+		return -Vector2.INF
+	@warning_ignore("unsafe_call_argument")
+	var intersect_pos: Vector2 = Vector2(intersect.x, intersect.z)
+	return intersect_pos
+
 func _process(_delta: float) -> void:
 	if not local:
 		@warning_ignore("unsafe_call_argument")

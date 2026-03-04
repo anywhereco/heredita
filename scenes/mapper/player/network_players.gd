@@ -1,8 +1,17 @@
 extends Node3D
+class_name PlayerBalls
+
+static var _instance: PlayerBalls
 
 var players_listed := []
 
+func get_player(player_id: int) -> PlayerMovement:
+	if player_id == State.client.player_id:
+		return get_parent().get_node("LocalPlayer")
+	return get_node(str(player_id))
+
 func _ready() -> void:
+	_instance = self
 	if State.room:
 		State.room.players.value_changed.connect(refresh_players)
 		State.client.message_received.connect(receive_update)

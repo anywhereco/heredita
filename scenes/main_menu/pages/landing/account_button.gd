@@ -35,4 +35,4 @@ func logged_in() -> void:
 	text = "Log out  "
 	
 func logged_out(_id: int) -> void:
-	text = "Make an account  "
+	text = "Log in  "
