@@ -33,7 +33,7 @@ func unmute_player(player_id: int) -> void:
 func player_clicked(player_node: Control, player_id: int) -> void:
 	var menu := CPopupMenu.new()
 	var player: Player = State.room.players.getv(player_id)
-	if State.player.operator and player_id != State.client.player_id:
+	if State.player.privileged() and player_id != State.client.player_id:
 		menu.add_item("Ban", ban_player.bind(player_id))
 		menu.add_item("Kick", kick_player.bind(player_id))
 		if player.status.get("muted", false):

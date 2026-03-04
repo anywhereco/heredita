@@ -187,7 +187,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"])
 	elif data["event"] == "calendar_sync":
-		if room.players.getv(peer_player_id(peer_id)).operator:
+		if room.players.getv(peer_player_id(peer_id)).privileged():
 			@warning_ignore("unsafe_call_argument")
 			calendar = Calendar.from_json(data["details"])
 			if calendar.year < -1_000_000_000:
@@ -197,25 +197,25 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			sync_calendar()
 			return false
 	elif data["event"] == "ban":
-		if room.players.getv(peer_player_id(peer_id)).operator:
+		if room.players.getv(peer_player_id(peer_id)).privileged():
 			var ban_id: int = data["details"]
 			var banned_peer: int = room.players.getv(ban_id).peer_id
 			room.banned_ips.append(ws_server.peer_ip(banned_peer))
 			ws_server.close(banned_peer, 5000, "Banned from this room")
 	elif data["event"] == "kick":
-		if room.players.getv(peer_player_id(peer_id)).operator:
+		if room.players.getv(peer_player_id(peer_id)).privileged():
 			var kick_id: int = data["details"]
 			var kicked_peer: int = room.players.getv(kick_id).peer_id
 			ws_server.close(kicked_peer, 5001, "Kicked from this room")
 	elif data["event"] == "mute":
-		if room.players.getv(peer_player_id(peer_id)).operator:
+		if room.players.getv(peer_player_id(peer_id)).privileged():
 			var mute_id: int = data["details"]
 			var mute_player: Player = room.players.getv(mute_id)
 			mute_player.status["muted"] = true
 			update_player_status(mute_id)
 			#mute
 	elif data["event"] == "unmute":
-		if room.players.getv(peer_player_id(peer_id)).operator:
+		if room.players.getv(peer_player_id(peer_id)).privileged():
 			var unmute_id: int = data["details"]
 			var unmute_player: Player = room.players.getv(unmute_id)
 			unmute_player.status["muted"] = false
