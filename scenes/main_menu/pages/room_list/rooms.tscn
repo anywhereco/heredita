@@ -136,6 +136,7 @@ text = "Create a room"
 script = ExtResource("7_myu5w")
 
 [node name="MenuButton" type="MenuButton" parent="Rooms/PanelContainer/ScrollContainer/Rooms/Create" unique_id=1510918680]
+visible = false
 layout_mode = 2
 text = "v"
 flat = false
