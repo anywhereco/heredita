@@ -258,6 +258,7 @@ func _poll_string(message: Dictionary) -> void:
 			return
 		match message["event"]:
 			"_is2_handshake":
+				print("handshake")
 				if creating_room:
 					var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
 					creating_room["map_file_size"] = creating_map.size()
@@ -276,6 +277,7 @@ func _poll_string(message: Dictionary) -> void:
 				send("_is2_room_info", room_id)
 				return
 			"_is2_room_info":
+				print("room info")
 				if message.get("details").has("room_id"): #creating room
 					room_id = message.get("details").get("room_id")
 				player_id = message.get("details").get("player_id") as int
@@ -306,19 +308,22 @@ func _poll_string(message: Dictionary) -> void:
 				attempts_label.text = "%d attempts remaining" % _attempts
 				return
 			"_is2_username":
+				print("username")
 				if State.user.initialized:
 					send("_is2_username", State.user.username)
 				else:
 					send("_is2_username", State.guest_username)
 				return
 			"_is2_token":
+				print("token")
 				if State.user.initialized:
 					var token_res: Variant = State.user.token
-					send("_is2_token", token_res.val())
+					send("_is2_token", token_res)
 					return
 				send("_is2_token", "")
 				return
 			"_is2_handshake_complete":
+				print("complete")
 				room = Room.new()
 				State.room = room
 				room.name = message.get("details").get("name")
@@ -327,6 +332,7 @@ func _poll_string(message: Dictionary) -> void:
 				handshake_complete.emit()
 				return
 			"_is2_player_join":
+				@warning_ignore("unsafe_call_argument")
 				room.players.setv(message.get("details").get("player_id") as int, Player.from_info(message.get("details").get("details")))
 				message_received.emit("is2_player_join", -1, message.get("details"))
 				return

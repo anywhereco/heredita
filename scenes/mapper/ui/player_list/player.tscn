@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://byitni8l0dq35"]
 
+[ext_resource type="Script" uid="uid://ctavmybpvmrfa" path="res://scenes/mapper/ui/player_list/player.gd" id="1_111kt"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vyrwt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vyrwt"]
@@ -20,12 +22,17 @@ offset_right = 82.0
 offset_bottom = 40.0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_bottom = 0
+script = ExtResource("1_111kt")
 
 [node name="Button" type="Button" parent="." unique_id=928438388]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxEmpty_vyrwt")
 theme_override_styles/hover = SubResource("StyleBoxFlat_vyrwt")
 
-[node name="Label" type="Label" parent="." unique_id=1839576240]
+[node name="Elements" type="HBoxContainer" parent="." unique_id=1429472053]
 layout_mode = 2
-text = "the player"
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Elements" unique_id=1839576240]
+layout_mode = 2
+text = "the player aaaaa"

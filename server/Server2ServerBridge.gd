@@ -43,7 +43,7 @@ func _poll_loop() -> void:
 func send_event(event: String, content: Dictionary[String, Variant]) -> int:
 	content["event"] = event
 	var eid := get_event_id()
-	content["eid"] = get_event_id()
+	content["eid"] = eid
 		
 	socket.send_text(JSON.stringify(content))
 	return eid

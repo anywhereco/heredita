@@ -13,6 +13,7 @@ var room: Room = null
 
 ## Should not be null. Make sure to check if the user is logged in via State.user.initialized.
 var user: PrimaryUser = null
+
 var player: Player:
 	get: return room.players.getv(client.player_id) if room else null
 
@@ -28,6 +29,16 @@ func _ready() -> void:
 	_http_requesting_node_for_user = HTTPRequest.new()
 	add_child(_http_requesting_node_for_user)
 	
+	reset_user()
+
+func _logout() -> void:
+	var tokenfile := FileAccess.open("user://DO_NOT_SHARE-token.txt", FileAccess.WRITE)
+	tokenfile.store_string("") 
+	user.token = ""
+	user.initialize()
+	
+
+func reset_user() -> void:
 	var token := FileAccess.get_file_as_string("user://DO_NOT_SHARE-token.txt") 
 	user = PrimaryUser.new(_http_requesting_node_for_user)
 	user.user_initialized.connect(func() -> void:

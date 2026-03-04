@@ -65,6 +65,12 @@ func _set_token(result: int, response_code: int, headers: PackedStringArray, bod
 	initialize()
 	
 func initialize() -> void:
+	if not token:
+		username = ""
+		id = -1
+		initialized = false
+		failed.emit(-1)
+		return
 	http.request_completed.connect(_set_details)
 	http.request(Statics.HEREDITA_URL + "/users/me", ["Authorization: Bearer " + token.strip_edges()])
 

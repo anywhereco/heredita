@@ -20,9 +20,9 @@ var bubble_position := 0 #increases if this bubble is supplanted by another bubb
 var root_position := Vector3.ZERO
 var position_offset := 0.0 #calculated by player object
 
-static func create(text: String) -> ChatBubble:
+static func create(_text: String) -> ChatBubble:
 	var bubble := preload("res://scenes/mapper/chat_dice/bubble.tscn").instantiate()
-	bubble.text = text
+	bubble.text = _text
 	return bubble
 
 func get_height() -> float:

@@ -8,6 +8,7 @@ func _ready() -> void:
 		logged_in()
 		return
 	State.user.user_initialized.connect(logged_in)
+	State.user.failed.connect(logged_out)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -15,7 +16,14 @@ func _process(_delta: float) -> void:
 
 func _pressed() -> void:
 	if State.user and State.user.initialized:
-		return
+		logged_in_pressed()
+	else:
+		logged_out_pressed()
+
+func logged_in_pressed() -> void:
+	State._logout()
+
+func logged_out_pressed() -> void:
 	var pres := Prompts.new_fullscreen_prompt()
 	if pres.is_err():
 		return
@@ -24,5 +32,7 @@ func _pressed() -> void:
 	prompt.add_child(LOGIN_SIGNUP_PROMPT.instantiate())
 	
 func logged_in() -> void:
-	disabled = true
-	text = "Your account  "
+	text = "Log out  "
+	
+func logged_out(_id: int) -> void:
+	text = "Make an account  "

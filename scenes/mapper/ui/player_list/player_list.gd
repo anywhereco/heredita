@@ -1,5 +1,12 @@
 extends HFlowContainer
 
+# textures
+const BADGE_ADMINISTRATOR = preload("uid://k0f4q3uf71dt")
+const BADGE_DEVELOPER = preload("uid://x4locc6fhj3")
+const BADGE_MODERATOR = preload("uid://bo4oxu4rpjud1")
+const BADGE_PLAYER_LOGGEDOUT = preload("uid://cakvortcaev5s")
+const BADGE_PLAYER = preload("uid://bqlqc6ldgd3kc")
+
 var players_listed := []
 
 func _ready() -> void:
@@ -40,11 +47,25 @@ func player_clicked(player_node: Control, player_id: int) -> void:
 	menu.align_bottom(player_node)
 
 func add_player(player_id: int) -> void:
-	var player_node := preload("res://scenes/mapper/ui/player.tscn").instantiate()
+	var player: Player = State.room.players.getv(player_id)
+	var player_node: PlayerListElement = preload("res://scenes/mapper/ui/player_list/player.tscn").instantiate()
 	player_node.name = str(player_id)
-	player_node.get_node("Label").text = State.room.players.getv(player_id)['username']
+	player_node.get_node("Elements/Label").text = player.username
 	player_node.get_node("Button").pressed.connect(player_clicked.bind(player_node, player_id))
 	add_child(player_node)
+	if not player.logged_in:
+		player_node.add_badge(BADGE_PLAYER_LOGGEDOUT)
+		return
+	match player.rank:
+		UserEnums.Rank.PLAYER:
+			player_node.add_badge(BADGE_PLAYER)
+		UserEnums.Rank.MODERATOR:
+			player_node.add_badge(BADGE_MODERATOR)
+		UserEnums.Rank.ADMIN:
+			player_node.add_badge(BADGE_ADMINISTRATOR)
+		UserEnums.Rank.DEV:
+			player_node.add_badge(BADGE_DEVELOPER)
+
 
 func remove_player(player_id: int) -> void:
 	var player_node := get_node(str(player_id))

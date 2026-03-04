@@ -7,6 +7,7 @@ var password := ""
 
 var map: MapData
 
+# ReactiveDictionary[ServerUser]
 var players: ReactiveDictionary = ReactiveDictionary.new({})
 var player_ids_chronological: Array[int] = []
 var id_iterator := 0 #next id for use
@@ -27,7 +28,8 @@ func player_info() -> Dictionary:
 		l[player_id] = {"username": players.getv(player_id).username,
 					  "logged_in": players.getv(player_id).logged_in,
 					  "profile": players.getv(player_id).profile,
-					  "operator": players.getv(player_id).operator}
+					  "operator": players.getv(player_id).operator,
+					  "rank": players.getv(player_id).rank}
 	return l
 
 

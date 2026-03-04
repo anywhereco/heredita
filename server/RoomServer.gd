@@ -35,6 +35,7 @@ func _get_verification(target_eid: int) -> Result:
 	while eid != target_eid:
 		ret = await server_controller.bridge.token_verification
 		eid = ret[0]
+		print(eid, " <- new verify | target -> ", target_eid)
 	return ret[1] as Result
 
 func peer_player_id(peer_id: int) -> int:
@@ -139,10 +140,12 @@ func _connected(peer_id: int, created: bool = false) -> void:
 			else:
 				player.logged_in = true
 				player.username = result.val().username
+				@warning_ignore("unsafe_call_argument")
+				player.rank = UserEnums.variant_to_rank(result.val().rank)
 
 	if created:
 		player.operator = true
-	send_event("_is2_player_join", {"player_id": player_id, "details": {"username": player.username, "logged_in": player.logged_in, "profile": player.profile}})
+	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
 	room.players.setv(player_id, player)
 	ws_server.send_targeted_event(peer_id, "_is2_handshake_complete", {"name": room.name, "description": room.description, "players": room.player_info()})
 	if not created:

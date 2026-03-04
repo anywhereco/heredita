@@ -11,6 +11,7 @@ const FRIEND = preload("uid://cef5r0v705n3w")
 func _ready() -> void:
 	if State.user:
 		State.user.user_initialized.connect(_update_user)
+		State.user.failed.connect(_update_userless)
 		if State.user.initialized:
 			_update_user()
 			return
@@ -28,3 +29,11 @@ func _update_user() -> void:
 		friend_node.user = friend
 		user_list.add_child(friend_node)
 		
+
+func _update_userless(_id: int) -> void:
+	player_welcome.hide()
+	player_name.text = ""
+	search_bar.get_node("Button").disabled = true
+	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
+	for user: Node in user_list.get_children():
+		user.queue_free()
