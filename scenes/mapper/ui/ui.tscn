@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="5_5g7k5"]
 [ext_resource type="Texture2D" uid="uid://btb4jabo6nmoe" path="res://assets/icons/openfolder.svg" id="5_580mp"]
 [ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/settings.gd" id="5_jj21m"]
-[ext_resource type="Script" uid="uid://82u1nskr1k2o" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
+[ext_resource type="Script" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
 [ext_resource type="Texture2D" uid="uid://dtur4inp5a2k4" path="res://assets/icons/image.svg" id="6_rdvpr"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="6_wbt2f"]
 [ext_resource type="Script" uid="uid://cyue2b6ml14cg" path="res://scenes/mapper/ui/toolui/tool_changer.gd" id="7_0sgq1"]
@@ -24,9 +24,9 @@
 [ext_resource type="Script" uid="uid://db26k4s8p0vg1" path="res://scenes/mapper/ui/toolui/brush_size.gd" id="12_0sgq1"]
 [ext_resource type="Script" uid="uid://boffekhvui4ql" path="res://scenes/mapper/ui/toolui/brush.gd" id="12_2eddf"]
 [ext_resource type="Texture2D" uid="uid://5530a3jumjn0" path="res://assets/icons/calendar/pause.svg" id="12_c8yws"]
+[ext_resource type="Script" uid="uid://cik5kpwsako5a" path="res://scenes/mapper/ui/calendar/time.gd" id="12_m62g0"]
 [ext_resource type="Script" uid="uid://boj66ccjdmq6n" path="res://libraries/ui/Unfocus.gd" id="12_vdunj"]
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="12_wbt2f"]
-[ext_resource type="Script" uid="uid://d0t8pp1b4syhm" path="res://scenes/mapper/ui/time.gd" id="12_y5csc"]
 [ext_resource type="Script" uid="uid://4l3n0jimw2sw" path="res://scenes/mapper/ui/chat_box.gd" id="14_0eah7"]
 [ext_resource type="Texture2D" uid="uid://b8edvgt68hm01" path="res://assets/icons/calendar/gear-full.svg" id="15_5g5qp"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://scenes/mapper/ui/chat_scroll.gd" id="15_yn3oc"]
@@ -203,13 +203,19 @@ layout_mode = 2
 [node name="Time" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=117182332]
 layout_mode = 2
 alignment = 1
-script = ExtResource("12_y5csc")
+script = ExtResource("12_m62g0")
 
-[node name="Pause" type="Button" parent="MenubarContainer/Menubar/Time" unique_id=1432359683]
+[node name="PauseMargin" type="MarginContainer" parent="MenubarContainer/Menubar/Time" unique_id=1214097478]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = -10
+theme_override_constants/margin_bottom = 0
+
+[node name="Pause" type="Button" parent="MenubarContainer/Menubar/Time/PauseMargin" unique_id=1432359683]
 layout_mode = 2
 size_flags_vertical = 8
 icon = ExtResource("12_c8yws")
-flat = true
 
 [node name="TimeInner" type="VBoxContainer" parent="MenubarContainer/Menubar/Time" unique_id=1731809799]
 custom_minimum_size = Vector2(120, 0)
@@ -236,11 +242,17 @@ theme_override_font_sizes/font_size = 14
 text = "01:02:03"
 horizontal_alignment = 1
 
-[node name="Configure" type="Button" parent="MenubarContainer/Menubar/Time" unique_id=2040998374]
+[node name="ConfMargin" type="MarginContainer" parent="MenubarContainer/Menubar/Time" unique_id=64617773]
+layout_mode = 2
+theme_override_constants/margin_left = -10
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 0
+
+[node name="Configure" type="Button" parent="MenubarContainer/Menubar/Time/ConfMargin" unique_id=2040998374]
 layout_mode = 2
 size_flags_vertical = 8
 icon = ExtResource("15_5g5qp")
-flat = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=713196267]
 layout_mode = 2
@@ -632,9 +644,10 @@ text = "Size"
 layout_mode = 2
 size_flags_horizontal = 4
 theme = SubResource("Theme_c8yws")
+value = 20.0
 
-[connection signal="pressed" from="MenubarContainer/Menubar/Time/Pause" to="MenubarContainer/Menubar/Time" method="_on_pause_pressed"]
-[connection signal="pressed" from="MenubarContainer/Menubar/Time/Configure" to="MenubarContainer/Menubar/Time" method="_on_configure_pressed"]
+[connection signal="pressed" from="MenubarContainer/Menubar/Time/PauseMargin/Pause" to="MenubarContainer/Menubar/Time" method="_on_pause_pressed"]
+[connection signal="pressed" from="MenubarContainer/Menubar/Time/ConfMargin/Configure" to="MenubarContainer/Menubar/Time" method="_on_configure_pressed"]
 [connection signal="value_changed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize/HSlider" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" method="_on_slider_changed"]
 [connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [0]]
 [connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [0]]

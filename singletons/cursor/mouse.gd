@@ -11,14 +11,16 @@ enum Action {
 const ACTION_TEX_MAP: Dictionary[Action, Texture2D] = {
 	Action.DEFAULT: preload("uid://dmqeubohwubs"),
 	Action.BRUSH: preload("uid://c5cl8n3npd8bn"),
-	Action.DICE: preload("uid://dumkbg3oyffeh"),
+	Action.DICE: preload("uid://dmqeubohwubs"), # TODO make better dice cursor [for now we default to regular cursor]
+	#Action.DICE: preload("uid://dumkbg3oyffeh"),
 	Action.PANNING: preload("uid://byfqo6a6v6gvn")
 }
 
 const ACTION_OFFSET_MAP: Dictionary[Action, Vector2] = {
 	Action.DEFAULT: Vector2(7, 9),
 	Action.BRUSH: Vector2(12, 12),
-	Action.DICE: Vector2(0, 0),
+	Action.DICE: Vector2(7, 9),
+	#Action.DICE: Vector2(0, 0),
 	Action.PANNING: Vector2(0, 0)
 }
 

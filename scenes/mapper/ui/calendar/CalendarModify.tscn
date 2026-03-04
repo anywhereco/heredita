@@ -1,0 +1,150 @@
+[gd_scene format=3 uid="uid://o1ehxmubcjv8"]
+
+[ext_resource type="Script" uid="uid://ce1vsvv2j3y3o" path="res://scenes/mapper/ui/calendar/calendar_modify.gd" id="1_jkeml"]
+[ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="2_icods"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0myyi"]
+font = ExtResource("2_icods")
+font_size = 20
+
+[node name="CalendarModify" type="VBoxContainer" unique_id=1869356113]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jkeml")
+
+[node name="Titlebar" type="Label" parent="." unique_id=873236194]
+layout_mode = 2
+text = "Modify Calendar"
+label_settings = SubResource("LabelSettings_0myyi")
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="." unique_id=698717385]
+layout_mode = 2
+
+[node name="Date" type="HBoxContainer" parent="." unique_id=2094248820]
+layout_mode = 2
+
+[node name="Month" type="LineEdit" parent="Date" unique_id=320904024]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+focus_next = NodePath("../Day")
+text = "January"
+placeholder_text = "Month"
+
+[node name="Day" type="LineEdit" parent="Date" unique_id=307220222]
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_next = NodePath("../Year")
+theme_override_constants/minimum_character_width = 0
+text = "31st"
+placeholder_text = "Day"
+
+[node name="Comma" type="Label" parent="Date" unique_id=1445306719]
+layout_mode = 2
+text = ","
+
+[node name="Year" type="LineEdit" parent="Date" unique_id=1057123815]
+custom_minimum_size = Vector2(81, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_previous = NodePath("../../Time/Hour")
+theme_override_constants/minimum_character_width = 3
+text = "99999 AD"
+placeholder_text = "Year"
+
+[node name="Time" type="HBoxContainer" parent="." unique_id=932369489]
+layout_mode = 2
+alignment = 1
+
+[node name="Hour" type="LineEdit" parent="Time" unique_id=1536947099]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_next = NodePath("../Minute")
+theme_override_constants/minimum_character_width = 1
+text = "23"
+placeholder_text = "Hr"
+
+[node name="Colon" type="Label" parent="Time" unique_id=405871130]
+layout_mode = 2
+text = ":"
+
+[node name="Minute" type="LineEdit" parent="Time" unique_id=83433792]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_next = NodePath("../Second")
+theme_override_constants/minimum_character_width = 1
+text = "59"
+placeholder_text = "Mn"
+
+[node name="Colon2" type="Label" parent="Time" unique_id=635779024]
+layout_mode = 2
+text = ":"
+
+[node name="Second" type="LineEdit" parent="Time" unique_id=990889055]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/minimum_character_width = 1
+text = "59"
+placeholder_text = "Sec"
+
+[node name="AtMPY" type="HBoxContainer" parent="." unique_id=1240766148]
+layout_mode = 2
+alignment = 1
+
+[node name="At" type="Label" parent="AtMPY" unique_id=1109908571]
+layout_mode = 2
+text = "at "
+
+[node name="MinutesPerYear" type="LineEdit" parent="AtMPY" unique_id=2111619851]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_next = NodePath("../Minute")
+theme_override_constants/minimum_character_width = 1
+text = "12"
+placeholder_text = "Mins/yr"
+
+[node name="MPY" type="Label" parent="AtMPY" unique_id=1615668922]
+layout_mode = 2
+text = "MPY"
+
+[node name="HSeparator2" type="HSeparator" parent="." unique_id=1533185594]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=266925543]
+layout_mode = 2
+alignment = 1
+
+[node name="Cancel" type="Button" parent="HBoxContainer" unique_id=1182834381]
+layout_mode = 2
+text = "Cancel"
+
+[node name="Confirm" type="Button" parent="HBoxContainer" unique_id=1975649684]
+layout_mode = 2
+text = "Confirm"
+
+[connection signal="editing_toggled" from="Date/Month" to="." method="_on_month_editing_toggled"]
+[connection signal="text_submitted" from="Date/Month" to="." method="_on_month_text_submitted" binds= [false]]
+[connection signal="editing_toggled" from="Date/Day" to="." method="_on_day_editing_toggled"]
+[connection signal="text_submitted" from="Date/Day" to="." method="_on_day_text_submitted" binds= [false]]
+[connection signal="editing_toggled" from="Date/Year" to="." method="_on_year_editing_toggled"]
+[connection signal="text_submitted" from="Date/Year" to="." method="_on_year_text_submitted" binds= [false]]
+[connection signal="editing_toggled" from="Time/Hour" to="." method="_on_hour_editing_toggled"]
+[connection signal="text_submitted" from="Time/Hour" to="." method="_on_hour_text_submitted" binds= [false]]
+[connection signal="editing_toggled" from="Time/Minute" to="." method="_on_minute_editing_toggled"]
+[connection signal="text_submitted" from="Time/Minute" to="." method="_on_minute_text_submitted" binds= [false]]
+[connection signal="editing_toggled" from="Time/Second" to="." method="_on_second_editing_toggled"]
+[connection signal="text_submitted" from="Time/Second" to="." method="_on_second_text_submitted" binds= [false]]
+[connection signal="editing_toggled" from="AtMPY/MinutesPerYear" to="." method="_on_minutes_per_year_editing_toggled"]
+[connection signal="text_submitted" from="AtMPY/MinutesPerYear" to="." method="_on_minutes_per_year_text_submitted" binds= [false]]
+[connection signal="pressed" from="HBoxContainer/Cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="HBoxContainer/Confirm" to="." method="_on_confirm_pressed"]

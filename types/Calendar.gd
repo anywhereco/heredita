@@ -38,6 +38,7 @@ var hour: int
 var minute: int
 var second: float
 
+var paused: bool
 
 func _init(mpy: float, _year: int) -> void:
 	minutes_per_year = maxf(mpy, MIN_MPY)
@@ -47,6 +48,7 @@ func _init(mpy: float, _year: int) -> void:
 	hour = 0
 	minute = 0
 	second = 0
+	paused = false
 
 static func from_json(json: Dictionary) -> Calendar:
 	var inst := new(0, 0)
@@ -58,6 +60,7 @@ static func from_json(json: Dictionary) -> Calendar:
 	inst.hour = json["hour"]
 	inst.minute = json["minute"]
 	inst.second = json["second"]
+	inst.paused = json["paused"]
 	return inst
 
 @warning_ignore("shadowed_variable")
@@ -77,7 +80,8 @@ static func get_ordinal(number: int) -> String:
 		return str(number) + "rd"
 	return str(number) + "th"
 
-func days_in_month() -> int:
+@warning_ignore("shadowed_variable")
+static func days_in_month_static(month: Month, year: int) -> int:
 	match month:
 		Month.JANUARY: return 31
 		Month.FEBRUARY: return 29 if is_leap_year(year) else 28
@@ -85,7 +89,7 @@ func days_in_month() -> int:
 		Month.APRIL: return 30
 		Month.MAY: return 31
 		Month.JUNE: return 30
-		Month.JULY: return 31
+		Month.JULY: return 31 
 		Month.AUGUST: return 31
 		Month.SEPTEMBER: return 30
 		Month.OCTOBER: return 31
@@ -94,8 +98,44 @@ func days_in_month() -> int:
 		_: 
 			push_error("month %d doesn't have a set amount of days waaaa" % month)
 			return 0
+
+## Returns Month.MAXIMUM if no valid month could be determined
+static func str_to_month(str: String) -> Month:
+	match str.to_lower():
+		"jan", "january":
+			return Month.JANUARY
+		"feb", "febuary", "february": # epic anti-tpyo prevention
+			return Month.FEBRUARY
+		"mar", "march":
+			return Month.MARCH
+		"apr", "april":
+			return Month.APRIL
+		"may":
+			return Month.MAY
+		"jun", "june":
+			return Month.JUNE
+		"jul", "july":
+			return Month.JULY
+		"aug", "august":
+			return Month.AUGUST
+		"sep", "september":
+			return Month.SEPTEMBER
+		"oct", "october":
+			return Month.OCTOBER
+		"nov", "november":
+			return Month.NOVEMBER
+		"dec", "december":
+			return Month.DECEMBER
+		_:
+			return Month.MAXIMUM
+
+func days_in_month() -> int:
+	return days_in_month_static(month, year)
 		
 func process(delta: float) -> void:
+	if paused:
+		return
+	
 	second += delta * factor
 	
 	minute += floor(second / 60)
@@ -165,4 +205,8 @@ func to_json() -> Dictionary:
 		"hour": hour,
 		"minute": minute,
 		"second": second,
+		"paused": paused
 	}
+
+func _to_string() -> String:
+	return "Calendar%s" % to_json()
