@@ -61,4 +61,9 @@ func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> v
 	else:
 		State.client = InfernoSocketClient.new(Statics.SERVER_URL, int(_id))
 	get_tree().root.add_child(State.client)
+	State.client.connection_closed.connect(premature_close)
 	State.client.handshake_complete.connect(enter_mapper.bind(map))
+
+func premature_close() -> void:
+	var reason := State.client.socket.get_close_code()
+	print("Failed to join room: %d" % reason)
