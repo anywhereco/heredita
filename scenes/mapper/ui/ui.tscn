@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="5_5g7k5"]
 [ext_resource type="Texture2D" uid="uid://btb4jabo6nmoe" path="res://assets/icons/openfolder.svg" id="5_580mp"]
 [ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/settings.gd" id="5_jj21m"]
-[ext_resource type="Script" uid="uid://82u1nskr1k2o" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
+[ext_resource type="Script" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
 [ext_resource type="Texture2D" uid="uid://dtur4inp5a2k4" path="res://assets/icons/image.svg" id="6_rdvpr"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="6_wbt2f"]
 [ext_resource type="Script" uid="uid://cyue2b6ml14cg" path="res://scenes/mapper/ui/toolui/tool_changer.gd" id="7_0sgq1"]
@@ -33,6 +33,7 @@
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
+[ext_resource type="Script" uid="uid://df12i6ly675lm" path="res://scenes/mapper/ui/alerts.gd" id="34_v8jk4"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_c8yws"]
 
@@ -95,6 +96,11 @@ font_size = 18
 
 [sub_resource type="Theme" id="Theme_c8yws"]
 LineEdit/constants/minimum_character_width = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_5rjrm"]
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(0, 0)
 
 [node name="UI" type="CanvasLayer" unique_id=1177199395]
 script = ExtResource("1_em4te")
@@ -647,6 +653,24 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme = SubResource("Theme_c8yws")
 value = 20.0
+
+[node name="AlertRow" type="HBoxContainer" parent="." unique_id=1707121888]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -24.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+script = ExtResource("34_v8jk4")
+
+[node name="LockMessage" type="Label" parent="AlertRow" unique_id=887406348]
+visible = false
+layout_mode = 2
+text = "Your camera is locked, press Shift+B to unlock"
+label_settings = SubResource("LabelSettings_5rjrm")
 
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/PauseMargin/Pause" to="MenubarContainer/Menubar/Time" method="_on_pause_pressed"]
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/ConfMargin/Configure" to="MenubarContainer/Menubar/Time" method="_on_configure_pressed"]

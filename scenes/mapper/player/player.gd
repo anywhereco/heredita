@@ -1,11 +1,14 @@
 class_name PlayerMovement
 extends CharacterBody3D
 
+static var _local_inst: PlayerMovement
+
 var local: bool = true
 
 var frame_data: Dictionary = {} #outgoing if local, incoming if non-local
 
 @onready var camera_pivot: Node3D = $CameraPivot
+@onready var camera: PlayerCamera3D = $CameraPivot/CameraArm/PlayerCamera
 @onready var map: Map = $/root/Mapper3D/Map
 
 var bubbles: Array[ChatBubble] = []
@@ -28,7 +31,9 @@ var camera_rotation: float = 0.0
 var was_on_floor_last_frame: bool = false
 
 func _ready() -> void:
-	if not local:
+	if local:
+		_local_inst = self
+	else:
 		$CameraPivot.queue_free()
 		$Name.show()
 
@@ -57,6 +62,7 @@ func setup_velocity(direction: Vector3, delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if local:
+			
 		if event.is_action_pressed("jump"):
 			jump_new = true
 		elif event.is_action_released("jump"):
