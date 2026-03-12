@@ -3,9 +3,6 @@ extends Node3D
 
 static var _instance: Map
 
-const CHUNK_SIZE: int = 256
-const CHUNK_SIZE_FLOAT: float = float(CHUNK_SIZE)
-
 @export_range(1.0/16, 1, 1.0/16) var pixel_size: float = 1.0/8
 
 @onready var player_camera: Camera3D = $"../LocalPlayer/CameraPivot/CameraArm/PlayerCamera"
@@ -52,10 +49,10 @@ func map_space_to_world_space(_map_pos: Vector2) -> Vector2:
 
 func get_chunk_grid_coords(pos: Vector2) -> Vector2i:
 	@warning_ignore("narrowing_conversion")
-	return Vector2i(floorf(pos.x/CHUNK_SIZE_FLOAT), floorf(pos.y/CHUNK_SIZE_FLOAT))
+	return Vector2i(floorf(pos.x/Statics.CHUNK_SIZE_FLOAT), floorf(pos.y/Statics.CHUNK_SIZE_FLOAT))
 
 func get_chunk_relative_coords(pos: Vector2) -> Vector2:
-	return Vector2(fposmod(pos.x, CHUNK_SIZE_FLOAT), fposmod(pos.y, CHUNK_SIZE_FLOAT))
+	return Vector2(fposmod(pos.x, Statics.CHUNK_SIZE_FLOAT), fposmod(pos.y, Statics.CHUNK_SIZE_FLOAT))
 
 ## If a position is invalid, returns Color(-1, -1, -1, -1).
 func get_pixel_at(pos: Vector2) -> Color:
@@ -113,7 +110,7 @@ func get_map_as_image() -> Image:
 		var chunk_column: Array = chunk_images[x]
 		for y in len(chunk_column):
 			var chunk: Image = chunk_column[y]
-			map_image.blit_rect(chunk, Rect2i(0, 0, chunk.get_width(), chunk.get_height()), Vector2i(x*CHUNK_SIZE,y*CHUNK_SIZE))
+			map_image.blit_rect(chunk, Rect2i(0, 0, chunk.get_width(), chunk.get_height()), Vector2i(x*Statics.CHUNK_SIZE,y*Statics.CHUNK_SIZE))
 	return map_image
 
 func get_data() -> MapData:
@@ -143,22 +140,22 @@ func reset_chunks() -> void:
 			child.queue_free()
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
-	for x: int in range(0, original_map_size.x, CHUNK_SIZE):
-		for y: int in range(0, original_map_size.y, CHUNK_SIZE):
+	for x: int in range(0, original_map_size.x, Statics.CHUNK_SIZE):
+		for y: int in range(0, original_map_size.y, Statics.CHUNK_SIZE):
 			@warning_ignore("integer_division")
-			var x_idx := x/CHUNK_SIZE
+			var x_idx := x/Statics.CHUNK_SIZE
 			@warning_ignore("integer_division")
-			var y_idx := y/CHUNK_SIZE
-			var chunk_coords := Rect2i(Vector2i(x,y), Vector2i(CHUNK_SIZE, CHUNK_SIZE))
+			var y_idx := y/Statics.CHUNK_SIZE
+			var chunk_coords := Rect2i(Vector2i(x,y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE))
 			var img := original_map.get_region(chunk_coords)
-			#Image.create_empty(CHUNK_SIZE, CHUNK_SIZE, false, original_map.get_format())
+			#Image.create_empty(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE, false, original_map.get_format())
 			#img.blit_rect(original_map, chunk_coords, Vector2i.ZERO)
 			var chunk := Sprite3D.new()
 			chunk.texture = ImageTexture.create_from_image(img)
 			chunk.axis = Vector3.Axis.AXIS_Y
 			chunk.double_sided = false
 			@warning_ignore("integer_division")
-			var center := map_space_to_world_space(Vector2(x+(CHUNK_SIZE/2), y+(CHUNK_SIZE/2)))
+			var center := map_space_to_world_space(Vector2(x+(Statics.CHUNK_SIZE/2), y+(Statics.CHUNK_SIZE/2)))
 			chunk.position = Vector3(center.x, 0, center.y)
 			chunk.name = "MapChunk%d:%d" % [x_idx, y_idx]
 			chunk.pixel_size = pixel_size
