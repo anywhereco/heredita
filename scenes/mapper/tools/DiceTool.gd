@@ -1,8 +1,11 @@
 class_name DiceTool
 extends Resource
 
+const COOLDOWN: float = 0.5
+
 var min_roll: int = 1
 var max_roll: int = 6
+var cooldown: float = 0
 
 func _init() -> void:
 	if State.client:
@@ -17,11 +20,14 @@ func _size_changed() -> void:
 
 func dice_events(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if cooldown > 0:
+			return
 		var settings: Dictionary = {"max": max_roll, "min": min_roll}
 		var position_2: Vector2 = MapperRoot._instance.get_node("LocalPlayer").mouse_pos_on_map()
 		var position: Vector3 = Vector3(position_2.x, DiceBubble.HOVER, position_2.y)
 		if State.client:
 			State.client.send("dice", {"position": ISUtil.from_vec3(position), "settings": settings})
+			cooldown = COOLDOWN
 		else:
 			display_result(MapperRoot._instance.get_node("LocalPlayer").position as Vector3, -2, roll(settings))
 			
@@ -51,3 +57,6 @@ static func roll(settings: Dictionary) -> DiceResult: #only used by SERVER if no
 	else:
 		die_string = "%d⋯%d" % [settings["min"], settings["max"]]
 	return DiceResult.new(randi_range(settings.get("min", 1) as int, settings.get("max", 20) as int), die_string)
+
+func _process(delta: float) -> void:
+	cooldown = maxf(0.0, cooldown-delta)

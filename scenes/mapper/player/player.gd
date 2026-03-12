@@ -6,6 +6,7 @@ static var _local_inst: PlayerMovement
 var local: bool = true
 
 var frame_data: Dictionary = {} #outgoing if local, incoming if non-local
+var new_player: bool = true #used to send data if a new player joins
 
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var camera: PlayerCamera3D = $CameraPivot/CameraArm/PlayerCamera
@@ -36,6 +37,13 @@ func _ready() -> void:
 	else:
 		$CameraPivot.queue_free()
 		$Name.show()
+	else:
+		if State.client:
+			State.client.message_received.connect(received_message)
+			
+func received_message(event: String, player_id: int, details: Variant) -> void:
+	if event == "is2_player_join":
+		new_player = true
 
 func setup_velocity(direction: Vector3, delta: float) -> void:
 	var target_vel := direction * SPEED * (SPRINT_MULT if Input.is_action_pressed("sprint") else 1.0)
@@ -122,13 +130,16 @@ func _physics_process(delta: float) -> void:
 			
 		move_and_slide()
 		if local:
+			var old_frame_data := frame_data
 			frame_data = {"position":[position.x,position.y,position.z],
 						  "rotation":[rotation.x,rotation.y,rotation.z],
 						  "velocity":[velocity.x,velocity.y,velocity.z],
 						  "camera_rotation":camera_rotation,
 						  "jump": jump}
 			if State.client:
-				State.client.send("avatar_update",frame_data)
+				if old_frame_data != frame_data or new_player:
+					State.client.send("avatar_update",frame_data)
+					new_player = false
 
 func add_bubble(message: String) -> void:
 	var bubble := ChatBubble.create(message)
