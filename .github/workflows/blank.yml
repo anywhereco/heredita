@@ -3,7 +3,7 @@ name: Mirror (filtered) → public
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
