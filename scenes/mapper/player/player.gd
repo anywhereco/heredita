@@ -33,13 +33,12 @@ var was_on_floor_last_frame: bool = false
 
 func _ready() -> void:
 	if local:
+		if State.client:
+			State.client.message_received.connect(received_message)
 		_local_inst = self
 	else:
 		$CameraPivot.queue_free()
 		$Name.show()
-	else:
-		if State.client:
-			State.client.message_received.connect(received_message)
 			
 func received_message(event: String, player_id: int, details: Variant) -> void:
 	if event == "is2_player_join":
