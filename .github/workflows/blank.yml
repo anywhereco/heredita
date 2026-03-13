@@ -43,7 +43,7 @@ jobs:
 
     - name: Push filtered mirror to public repo
       env:
-        PUBLIC_REPO: ${{ secrets.PUBLIC_REPO }}
+        PUBLIC_REPO: ${{ vars.PUBLIC_REPO }}
         PUBLIC_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
       run: |
         set -euo pipefail
