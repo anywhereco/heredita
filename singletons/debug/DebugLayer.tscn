@@ -9,7 +9,6 @@ shadow_color = Color(0, 0, 0, 1)
 layer = 1023
 
 [node name="DebugLayer" type="Control" parent="." unique_id=912703483]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,3 +29,19 @@ mouse_behavior_recursive = 1
 text = "Heredita version !VER at %d/%d FPS"
 label_settings = SubResource("LabelSettings_ovp2x")
 horizontal_alignment = 1
+
+[node name="Window" type="Window" parent="DebugLayer" unique_id=1931597690]
+oversampling_override = 1.0
+title = "Debug console"
+position = Vector2i(50, 100)
+size = Vector2i(400, 200)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DebugLayer/Window" unique_id=1514721539]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="DebugLayer/Window/VBoxContainer" unique_id=119790432]
+layout_mode = 2
