@@ -50,6 +50,19 @@ func _init(mpy: float, _year: int) -> void:
 	second = 0
 	paused = false
 
+## Same as the regular function, but in the case of failure throws a null
+static func from_json_safe(json: Dictionary) -> Calendar:
+	if typeof(json["minutes_per_year"]) != TYPE_FLOAT or\
+	   typeof(json["year"]) not in [TYPE_FLOAT, TYPE_INT] or\
+	   typeof(json["month"]) not in [TYPE_FLOAT, TYPE_INT] or\
+	   typeof(json["day"]) not in [TYPE_FLOAT, TYPE_INT] or\
+	   typeof(json["hour"]) not in [TYPE_FLOAT, TYPE_INT] or\
+	   typeof(json["minute"]) not in [TYPE_FLOAT, TYPE_INT] or\
+	   typeof(json["second"]) != TYPE_FLOAT or\
+	   typeof(json["paused"]) != TYPE_BOOL:
+		return null
+	return from_json(json)
+
 static func from_json(json: Dictionary) -> Calendar:
 	var inst := new(0, 0)
 	@warning_ignore("unsafe_call_argument")

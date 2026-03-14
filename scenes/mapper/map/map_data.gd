@@ -28,6 +28,11 @@ static func deserialize(serialized: PackedByteArray) -> MapData:
 func get_map_update(details: Dictionary) -> void:
 	var type: String = details["type"]
 	if type == "brush":
+		if typeof(details["size"]) != TYPE_FLOAT or\
+		   not Verify.array_is_type(details["paint_color"], TYPE_FLOAT) or\
+		   not Verify.array_is_type(details["target_color"], TYPE_FLOAT) or\
+		   not Verify.array_is_type(details["pos"], TYPE_FLOAT):
+			return
 		@warning_ignore("unsafe_call_argument")
 		set_pixels_at_targeted(
 			State.brush_shape_map.get_vec2s(details["size"]),

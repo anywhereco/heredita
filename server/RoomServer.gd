@@ -187,6 +187,10 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"])
 	elif data["event"] == "dice":
+		if typeof(data["details"]["settings"]["min"]) != TYPE_FLOAT or\
+		   typeof(data["details"]["settings"]["max"]) != TYPE_FLOAT or\
+		   not Verify.array_is_type(data["details"]["position"], TYPE_FLOAT):
+			return false
 		send_event("dice_result", {"player_id": peer_player_id(peer_id),
 								   "position": data["details"]["position"],
 								   "result": DiceTool.roll(data["details"]["settings"] as Dictionary).to_data()})
@@ -194,7 +198,10 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 	elif data["event"] == "calendar_sync":
 		if room.players.getv(peer_player_id(peer_id)).privileged():
 			@warning_ignore("unsafe_call_argument")
-			calendar = Calendar.from_json(data["details"])
+			var tempcal := Calendar.from_json_safe(data["details"])
+			if tempcal == null:
+				return false
+			calendar = tempcal
 			if calendar.year < -1_000_000_000:
 				calendar.year = -1_000_000_000
 			if calendar.year > 1_000_000_000:
@@ -202,26 +209,38 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			sync_calendar()
 			return false
 	elif data["event"] == "ban":
-		var id: int = data["details"]
+		if not Verify.is_numeric(data["details"]):
+			return false
+		@warning_ignore("unsafe_call_argument")
+		var id := int(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			var banned_peer: int = player.peer_id
 			room.banned_ips.append(ws_server.peer_ip(banned_peer))
 			ws_server.close(banned_peer, 5000, "Banned from this room")
 	elif data["event"] == "kick":
-		var id: int = data["details"]
+		if not Verify.is_numeric(data["details"]):
+			return false
+		@warning_ignore("unsafe_call_argument")
+		var id := int(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			var kicked_peer: int = player.peer_id
 			ws_server.close(kicked_peer, 5001, "Kicked from this room")
 	elif data["event"] == "mute":
-		var id: int = data["details"]
+		if not Verify.is_numeric(data["details"]):
+			return false
+		@warning_ignore("unsafe_call_argument")
+		var id := int(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			player.status["muted"] = true
 			update_player_status(id)
 	elif data["event"] == "unmute":
-		var id: int = data["details"]
+		if not Verify.is_numeric(data["details"]):
+			return false
+		@warning_ignore("unsafe_call_argument")
+		var id := int(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			player.status["muted"] = false
