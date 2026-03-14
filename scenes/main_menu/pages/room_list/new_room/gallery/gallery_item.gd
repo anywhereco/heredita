@@ -61,10 +61,11 @@ func _http_request_completed_full(result: int, response_code: int, _headers: Pac
 		return
 	if response_code != 200:
 		return
-	image = Image.create_empty(8192, 4096, false, Image.FORMAT_RGBA8)
+	image = Image.create_empty(4096, 2048, false, Image.FORMAT_RGBA8)
 	image.load_png_from_buffer(body) # TODO: support .her soonish [when its actually a thing]
 	_picker.get_parent().get_parent().get_parent().find_child("ImagePickerButton").image._set_value.call_deferred(image)
 	_picker.loading_mutex.unlock.call_deferred() # TODO: probably need to be smarter about running this
+	Prompts.get_prompt_in(self).closing_paused.value = false
 
 func _picked() -> void:
 	
@@ -72,5 +73,6 @@ func _picked() -> void:
 		return
 	_picker.current_picked = id
 	prepare_load_full_image()
+	Prompts.get_prompt_in(self).closing_paused.value = true
 	_picker.get_parent().get_parent().get_parent().find_child("ImagePickerButton").image.value = thumbnail
 	_picker.get_parent().get_parent().get_parent().get_parent().find_child("MapName").text = "Selected map: %s by %s" % [map_name, attribution]
