@@ -23,3 +23,4 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		if event.is_released() and event.keycode == KEY_F3:
 			console.visible = not console.visible if self.visible else Input.is_key_pressed(KEY_SHIFT) 
 			self.visible = true if Input.is_key_pressed(KEY_SHIFT) else not self.visible
+			push_error("waa")

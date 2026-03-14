@@ -52,6 +52,9 @@ class CustomLogger extends Logger:
 # initialization messages are not accessible.
 func _init() -> void:
 	text = ""
+	get_v_scroll_bar().mouse_filter = Control.MOUSE_FILTER_PASS
+	get_v_scroll_bar().mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_ENABLED
+
 	_inst = self
 	OS.add_logger(logger)
 

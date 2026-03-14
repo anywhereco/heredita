@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://d2a2syuqfdlh7"]
 
 [ext_resource type="Script" uid="uid://dqqewyeqhmscd" path="res://singletons/debug/DebugLayer.gd" id="1_8p4q4"]
-[ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://types/ui/PinnedScrollContainer.gd" id="2_pvlt2"]
 [ext_resource type="FontVariation" uid="uid://svrxcxvd4unm" path="res://assets/font/_variants/code.tres" id="2_tdgdu"]
 [ext_resource type="FontVariation" uid="uid://dd56hif2mvma5" path="res://assets/font/_variants/codebold.tres" id="3_d4uou"]
 [ext_resource type="FontVariation" uid="uid://c5o5yviiq8mck" path="res://assets/font/_variants/codebolditalics.tres" id="4_y11d2"]
@@ -20,6 +19,16 @@ border_color = Color(0, 0, 0, 1)
 border_blend = true
 corner_detail = 1
 expand_margin_top = 20.0
+
+[sub_resource type="GDScript" id="GDScript_gchyr"]
+script/source = "extends PinnedScrollContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	get_v_scroll_bar().mouse_filter = Control.MOUSE_FILTER_PASS
+	get_v_scroll_bar().mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_ENABLED
+"
 
 [sub_resource type="LabelSettings" id="LabelSettings_ovp2x"]
 shadow_color = Color(0, 0, 0, 1)
@@ -74,8 +83,8 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
-script = ExtResource("2_pvlt2")
-tolerance = 500
+script = SubResource("GDScript_gchyr")
+tolerance = 2000
 metadata/_custom_type_script = "uid://j2x0souh6d7c"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="DebugLayer/Console/HBoxContainer/VBoxContainer/MarginContainer/ScrollContainer" unique_id=119790432]
@@ -91,6 +100,7 @@ bbcode_enabled = true
 text = "Hey. Im console.
 [color=#f54][b]ERROR:[/b] Im Die[/color]
 [color=999]at: example.cpp:1234[/color]"
+scroll_following = true
 horizontal_alignment = 2
 script = ExtResource("6_gchyr")
 
