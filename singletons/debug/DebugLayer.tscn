@@ -1,6 +1,25 @@
 [gd_scene format=3 uid="uid://d2a2syuqfdlh7"]
 
 [ext_resource type="Script" uid="uid://dqqewyeqhmscd" path="res://singletons/debug/DebugLayer.gd" id="1_8p4q4"]
+[ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://types/ui/PinnedScrollContainer.gd" id="2_pvlt2"]
+[ext_resource type="FontVariation" uid="uid://svrxcxvd4unm" path="res://assets/font/_variants/code.tres" id="2_tdgdu"]
+[ext_resource type="FontVariation" uid="uid://dd56hif2mvma5" path="res://assets/font/_variants/codebold.tres" id="3_d4uou"]
+[ext_resource type="FontVariation" uid="uid://c5o5yviiq8mck" path="res://assets/font/_variants/codebolditalics.tres" id="4_y11d2"]
+[ext_resource type="FontVariation" uid="uid://dk2rf8cuamptn" path="res://assets/font/_variants/codeitalics.tres" id="5_gchyr"]
+[ext_resource type="Script" uid="uid://ddtc3svvdjmwj" path="res://singletons/debug/console.gd" id="6_gchyr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gchyr"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.6, 0.6, 0.6, 0)
+draw_center = false
+border_width_right = 3489
+border_color = Color(0, 0, 0, 1)
+border_blend = true
+corner_detail = 1
+expand_margin_top = 20.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_ovp2x"]
 shadow_color = Color(0, 0, 0, 1)
@@ -9,6 +28,7 @@ shadow_color = Color(0, 0, 0, 1)
 layer = 1023
 
 [node name="DebugLayer" type="Control" parent="." unique_id=912703483]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,29 +39,69 @@ mouse_filter = 2
 mouse_behavior_recursive = 1
 script = ExtResource("1_8p4q4")
 
-[node name="Label" type="Label" parent="DebugLayer" unique_id=863968407]
+[node name="Console" type="PanelContainer" parent="DebugLayer" unique_id=560137308]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 21.0
-grow_horizontal = 2
-mouse_behavior_recursive = 1
-text = "Heredita version !VER at %d/%d FPS"
-label_settings = SubResource("LabelSettings_ovp2x")
-horizontal_alignment = 1
-
-[node name="Window" type="Window" parent="DebugLayer" unique_id=1931597690]
-oversampling_override = 1.0
-title = "Debug console"
-position = Vector2i(50, 100)
-size = Vector2i(400, 200)
-
-[node name="VBoxContainer" type="VBoxContainer" parent="DebugLayer/Window" unique_id=1514721539]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_gchyr")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="DebugLayer/Window/VBoxContainer" unique_id=119790432]
+[node name="HBoxContainer" type="HBoxContainer" parent="DebugLayer/Console" unique_id=2024893633]
 layout_mode = 2
+
+[node name="Padding" type="Control" parent="DebugLayer/Console/HBoxContainer" unique_id=775159651]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DebugLayer/Console/HBoxContainer" unique_id=1514721539]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="DebugLayer/Console/HBoxContainer/VBoxContainer" unique_id=487219579]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ScrollContainer" type="ScrollContainer" parent="DebugLayer/Console/HBoxContainer/VBoxContainer/MarginContainer" unique_id=708998119]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+script = ExtResource("2_pvlt2")
+tolerance = 500
+metadata/_custom_type_script = "uid://j2x0souh6d7c"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="DebugLayer/Console/HBoxContainer/VBoxContainer/MarginContainer/ScrollContainer" unique_id=119790432]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_fonts/normal_font = ExtResource("2_tdgdu")
+theme_override_fonts/bold_font = ExtResource("3_d4uou")
+theme_override_fonts/bold_italics_font = ExtResource("4_y11d2")
+theme_override_fonts/italics_font = ExtResource("5_gchyr")
+theme_override_fonts/mono_font = ExtResource("2_tdgdu")
+bbcode_enabled = true
+text = "Hey. Im console.
+[color=#f54][b]ERROR:[/b] Im Die[/color]
+[color=999]at: example.cpp:1234[/color]"
+horizontal_alignment = 2
+script = ExtResource("6_gchyr")
+
+[node name="Label" type="Label" parent="DebugLayer" unique_id=863968407]
+layout_mode = 1
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 240.0
+offset_bottom = 31.0
+mouse_behavior_recursive = 1
+text = "Heredita version !VER at %d/%d FPS
+Shift+F3 to show console
+F3 to exit"
+label_settings = SubResource("LabelSettings_ovp2x")

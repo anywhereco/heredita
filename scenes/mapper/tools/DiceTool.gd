@@ -16,7 +16,7 @@ func _map_ready() -> void:
 	_size_changed()
 
 func _size_changed() -> void:
-	max_roll = UIRoot._instance.dice_ui.size_controller.value
+	max_roll = int(UIRoot._instance.dice_ui.size_controller.value)
 
 func dice_events(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -33,11 +33,13 @@ func dice_events(event: InputEvent) -> void:
 			
 func message_received(event: String, player_id: int, details: Variant) -> void:
 	if event == "dice_result" and player_id == -1:
+		@warning_ignore("unsafe_call_argument")
 		display_result(ISUtil.to_vec3(details["position"]), details["player_id"], DiceResult.from_data(details["result"] as Dictionary))
 
 func display_result(position: Vector3, player_id: int, result: DiceResult) -> void:
 	var result_string: String
 	if result["outcome"] is float:
+		@warning_ignore("unsafe_call_argument")
 		result_string = str(int(result["outcome"]))
 	elif result["outcome"] is Array:
 		pass #this doesnt happen yet so we dont have to deal with it

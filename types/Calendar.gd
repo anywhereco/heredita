@@ -100,8 +100,8 @@ static func days_in_month_static(month: Month, year: int) -> int:
 			return 0
 
 ## Returns Month.MAXIMUM if no valid month could be determined
-static func str_to_month(str: String) -> Month:
-	match str.to_lower():
+static func str_to_month(string: String) -> Month:
+	match string.to_lower():
 		"jan", "january":
 			return Month.JANUARY
 		"feb", "febuary", "february": # epic anti-tpyo prevention

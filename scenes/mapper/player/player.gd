@@ -40,7 +40,7 @@ func _ready() -> void:
 		$CameraPivot.queue_free()
 		$Name.show()
 			
-func received_message(event: String, player_id: int, details: Variant) -> void:
+func received_message(event: String, _player_id: int, _details: Variant) -> void:
 	if event == "is2_player_join":
 		new_player = true
 
@@ -165,11 +165,11 @@ func sort_bubbles() -> void:
 
 func mouse_pos_on_map() -> Vector2:
 	var mouse_position := VirtualMouse._instance.position
-	var camera: Camera3D = camera_pivot.get_node("CameraArm/PlayerCamera")
+	var _camera: Camera3D = camera_pivot.get_node("CameraArm/PlayerCamera")
 	# The map is at zero on the Y axis
 	var intersect: Variant = Plane.PLANE_XZ.intersects_ray(
-		camera.project_ray_origin(mouse_position),
-		camera.project_ray_normal(mouse_position)
+		_camera.project_ray_origin(mouse_position),
+		_camera.project_ray_normal(mouse_position)
 	)
 	if intersect is not Vector3:
 		return -Vector2.INF
