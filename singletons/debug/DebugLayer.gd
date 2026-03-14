@@ -1,6 +1,7 @@
 extends Control
 
 @onready var label: Label = $Label
+@onready var console: PanelContainer = $Console
 
 var original_text: String
 
@@ -19,5 +20,6 @@ func _process(_delta: float) -> void:
 	
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey:
-		if event.pressed and event.keycode == KEY_F3:
-			self.visible = not self.visible
+		if event.is_released() and event.keycode == KEY_F3:
+			console.visible = not console.visible if self.visible else Input.is_key_pressed(KEY_SHIFT) 
+			self.visible = true if Input.is_key_pressed(KEY_SHIFT) else not self.visible

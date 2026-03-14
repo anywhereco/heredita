@@ -12,4 +12,4 @@ func to_data() -> Dictionary:
 	return {"outcome": outcome, "die_string": die_string}
 
 static func from_data(dict: Dictionary) -> DiceResult:
-	return DiceResult.new(dict["outcome"], dict["die_string"])
+	return DiceResult.new(dict["outcome"], str(dict["die_string"]))

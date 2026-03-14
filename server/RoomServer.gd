@@ -194,10 +194,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 	elif data["event"] == "calendar_sync":
 		if room.players.getv(peer_player_id(peer_id)).privileged():
 			@warning_ignore("unsafe_call_argument")
-			print("cal sync ", data["details"])
-			print("cal sync pre", calendar)
 			calendar = Calendar.from_json(data["details"])
-			print("cal sync post", calendar)
 			if calendar.year < -1_000_000_000:
 				calendar.year = -1_000_000_000
 			if calendar.year > 1_000_000_000:

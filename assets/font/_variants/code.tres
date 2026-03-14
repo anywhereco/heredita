@@ -1,0 +1,6 @@
+[gd_resource type="FontVariation" format=3 uid="uid://svrxcxvd4unm"]
+
+[ext_resource type="FontFile" uid="uid://dolpf8l6tphgj" path="res://assets/font/fonts/AtkinsonHyperlegibleMono-Regular.ttf" id="1_si3tx"]
+
+[resource]
+base_font = ExtResource("1_si3tx")

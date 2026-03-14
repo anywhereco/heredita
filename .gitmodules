@@ -1,4 +1,0 @@
-[submodule "Reactive"]
-	path = _ext/Reactive
-	url = https://github.com/infernitydev/reactive.git
-	branch = master

@@ -5,6 +5,9 @@ extends Object
 static var HEREDITA_URL := "https://beta.heredita.net"
 static var SERVER_URL := "wss://beta-gameserver.heredita.net"
 
+const CHUNK_SIZE: int = 256
+const CHUNK_SIZE_FLOAT: float = float(CHUNK_SIZE)
+
 static func initialize() -> void:
 	var user_args := OS.get_cmdline_user_args()
 	for i in range(user_args.size()):

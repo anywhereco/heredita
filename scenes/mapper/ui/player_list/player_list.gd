@@ -45,6 +45,7 @@ func player_clicked(player_node: Control, player_id: int) -> void:
 		menu.queue_free()
 		return
 	menu.display()
+	@warning_ignore("unsafe_call_argument")
 	menu.align_bottom(player_node.get_node("Elements/Label"))
 
 func add_player(player_id: int) -> void:
