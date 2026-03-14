@@ -23,6 +23,9 @@ func get_msg() -> Dictionary:
 func poll() -> void:
 	if socket.get_ready_state() != socket.STATE_CLOSED:
 		socket.poll()
+	else:
+		socket = WebSocketPeer.new()
+		socket.connect_to_url("ws" + Statics.HEREDITA_URL.right(-4) + "/__internal__heredita__/s2s")
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
 		_poll_loop()
 
