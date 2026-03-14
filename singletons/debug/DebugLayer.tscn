@@ -20,16 +20,6 @@ border_blend = true
 corner_detail = 1
 expand_margin_top = 20.0
 
-[sub_resource type="GDScript" id="GDScript_gchyr"]
-script/source = "extends PinnedScrollContainer
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	get_v_scroll_bar().mouse_filter = Control.MOUSE_FILTER_PASS
-	get_v_scroll_bar().mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_ENABLED
-"
-
 [sub_resource type="LabelSettings" id="LabelSettings_ovp2x"]
 shadow_color = Color(0, 0, 0, 1)
 
@@ -79,15 +69,7 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="ScrollContainer" type="ScrollContainer" parent="DebugLayer/Console/HBoxContainer/VBoxContainer/MarginContainer" unique_id=708998119]
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-script = SubResource("GDScript_gchyr")
-tolerance = 2000
-metadata/_custom_type_script = "uid://j2x0souh6d7c"
-
-[node name="RichTextLabel" type="RichTextLabel" parent="DebugLayer/Console/HBoxContainer/VBoxContainer/MarginContainer/ScrollContainer" unique_id=119790432]
+[node name="RichTextLabel" type="RichTextLabel" parent="DebugLayer/Console/HBoxContainer/VBoxContainer/MarginContainer" unique_id=119790432]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
