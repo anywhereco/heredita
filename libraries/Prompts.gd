@@ -91,3 +91,20 @@ func _update_prompt_ids() -> void:
 		prompts[idx].idx = idx
 	for idx in to_be_erased:
 		prompts.erase(idx)
+
+## Will return null in the case of the node not being in a prompt.
+func get_prompt_in(node: Node) -> PromptInstance:
+	var parents: Array[Node] = []
+	var current_node: Node = node.get_parent()
+	
+	while current_node != null and current_node != node.get_tree().get_root():
+		parents.append(current_node)
+		current_node = current_node.get_parent()
+	
+	for parent in parents:
+		var script := parent.get_script() as Script
+		if script == null:
+			continue 
+		if script.get_global_name() == "PromptInstance":
+			return parent
+	return null
