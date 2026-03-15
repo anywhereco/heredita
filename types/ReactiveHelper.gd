@@ -1,6 +1,7 @@
 extends Node
 class_name ReactiveHelper
 
+
 static func convert(value: Variant) -> Reactive:
 	if value is Array:
 		return ReactiveArray.new(value as Array)

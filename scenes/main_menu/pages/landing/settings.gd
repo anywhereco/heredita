@@ -1,5 +1,6 @@
 extends Button
 
+
 func _pressed() -> void:
 	var prompt_res := Prompts.new_fullscreen_prompt()
 	if prompt_res.is_ok():

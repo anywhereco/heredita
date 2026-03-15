@@ -6,9 +6,10 @@ extends VBoxContainer
 
 var brush_size: ReactiveInt = ReactiveInt.new(1)
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	pass  # Replace with function body.
 
 
 func _on_slider_changed(value: float) -> void:
@@ -19,7 +20,7 @@ func _on_slider_changed(value: float) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	if MapperRoot._instance.tool.value != MapperRoot.Tool.BRUSH:
 		return
-	
+
 	if event.is_action_pressed("brush_increase"):
 		h_slider.value += 1
 	if event.is_action_pressed("brush_decrease"):

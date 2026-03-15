@@ -7,7 +7,8 @@ extends VBoxContainer
 var players_listed := []
 var text_box_default_placeholder: String
 
-var muted_text := "" #used to restore text if unmuted
+var muted_text := ""  #used to restore text if unmuted
+
 
 func _ready() -> void:
 	text_box_default_placeholder = text_box.placeholder_text
@@ -18,20 +19,24 @@ func _ready() -> void:
 		send_button.disabled = false
 		send_button.pressed.connect(send_typed_message)
 		State.client.message_received.connect(receive_message)
-		
+
+
 func _process(_delta: float) -> void:
 	messages.custom_minimum_size.x = scroll.size.x - scroll.get_v_scroll_bar().size.x
-		
+
+
 func send_typed_message() -> void:
 	if text_box.text:
 		send_message(text_box.text)
 		text_box.text = ""
-		
+
+
 func send_message(message: String) -> void:
 	State.client.send("chat_message", message)
 	if Settings.getv("unfocus_on_chat_submission", true):
 		text_box.release_focus()
 	#TODO put things in chat for system events too (like banning/kicking)
+
 
 func receive_message(event: String, user_id: int, message: Variant) -> void:
 	if event == "chat_message" and message is String:
@@ -51,15 +56,19 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 			text_box.text = muted_text
 			muted_text = ""
 
+
 func add_chat_message(sender_id: int, message: String) -> void:
 	var player: Player = State.room.players.getv(sender_id)
-	add_message("[b]%s[/b]: %s" % [Markdown.bb_escape(player.username),
-								   Markdown.bb_escape(message)])
+	add_message(
+		"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username), Markdown.bb_escape(message)]
+	)
+
 
 func add_message(message: String) -> void:
 	var newline := "\n" if messages.text else ""
 	@warning_ignore("unsafe_call_argument")
 	messages.text += newline + message
+
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if text_box.has_focus():

@@ -1,13 +1,14 @@
 extends Node
 class_name ServerController
 
-const TIMEOUT: int = 10000 #ms
+const TIMEOUT: int = 10000  #ms
 
 var rooms: Dictionary[int, RoomServer]
 var peer_rooms: Dictionary[int, int]
 var ws_server := WSServer.new()
 
 var bridge: Server2ServerBridge
+
 
 func _ready() -> void:
 	bridge = Server2ServerBridge.new(self)
@@ -18,11 +19,13 @@ func _ready() -> void:
 	ws_server.connected.connect(_connected)
 	ws_server.closed.connect(_closed)
 
+
 func new_room_id() -> int:
 	var id := randi()
 	while id in rooms:
 		id = randi()
 	return id
+
 
 func create_room(data: Dictionary = {}, map_data: PackedByteArray = PackedByteArray()) -> int:
 	var id := new_room_id()
@@ -42,13 +45,16 @@ func create_room(data: Dictionary = {}, map_data: PackedByteArray = PackedByteAr
 	rooms[id] = room_server
 	add_child(room_server)
 	return id
-	
+
+
 func close_room(id: int) -> void:
 	rooms[id].close_room()
 	rooms.erase(id)
 
+
 func _room_find_id(room: RoomServer) -> int:
 	return rooms.find_key(room)
+
 
 func get_text_data(peer_id: int) -> String:
 	var peer := 0x7fffffffffffffff
@@ -56,10 +62,11 @@ func get_text_data(peer_id: int) -> String:
 	while peer != peer_id:
 		var timer := get_tree().create_timer(TIMEOUT)
 		ret = await TimedPromise.new(timer, ws_server.text_data).done
-		if not ret: #timed out
+		if not ret:  #timed out
 			return ""
 		peer = ret[0]
 	return ret[1]
+
 
 func parse_binary(data: PackedByteArray) -> Dictionary:
 	var event := data.decode_u16(0)
@@ -73,18 +80,20 @@ func parse_binary(data: PackedByteArray) -> Dictionary:
 		body_data = data.slice(5)
 	return {"event": event, "target": target, "data": body_data}
 
+
 func get_binary_data(peer_id: int) -> Dictionary:
 	var peer := 0x7fffffffffffffff
 	var ret: Array
 	while peer != peer_id:
 		var timer := get_tree().create_timer(TIMEOUT)
 		ret = await TimedPromise.new(timer, ws_server.binary_data).done
-		if not ret: #timed out
+		if not ret:  #timed out
 			return {}
 		peer = ret[0]
 	var data: PackedByteArray = ret[1]
 	return parse_binary(data)
-	
+
+
 func get_chunked_binary_data(peer_id: int) -> PackedByteArray:
 	var data := []
 	var data_length := 0
@@ -93,7 +102,7 @@ func get_chunked_binary_data(peer_id: int) -> PackedByteArray:
 	var target := -2
 	while true:
 		var chunk_data := await get_binary_data(peer_id)
-		var chunk: PackedByteArray = chunk_data['data']
+		var chunk: PackedByteArray = chunk_data["data"]
 		if not chunk:
 			return PackedByteArray([])
 		if event > -1 and chunk.decode_u16(0) != event:
@@ -109,16 +118,27 @@ func get_chunked_binary_data(peer_id: int) -> PackedByteArray:
 		data.append(chunk.slice(1))
 		chunks_recieved += 1
 		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
-		if end_hint == 1: #end signal mismatch
+		if end_hint == 1:  #end signal mismatch
 			return PackedByteArray([])
 		elif end_hint == 2:
 			break
 	return data
 
-func send_binary(peer: int, event: int, target: int, flags: int, message: PackedByteArray = PackedByteArray(), compress: bool = true) -> void:
+
+func send_binary(
+	peer: int,
+	event: int,
+	target: int,
+	flags: int,
+	message: PackedByteArray = PackedByteArray(),
+	compress: bool = true
+) -> void:
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
-	assert(target >= -32768 and target <= 32767, "The target value should fit within a 16-bit signed int")
-	
+	assert(
+		target >= -32768 and target <= 32767,
+		"The target value should fit within a 16-bit signed int"
+	)
+
 	var compression_size: int
 	if compress:
 		flags &= ISUtil.BinaryFlags.COMPRESSED
@@ -135,21 +155,22 @@ func send_binary(peer: int, event: int, target: int, flags: int, message: Packed
 	bytes.append_array(message)
 	self.ws_server.send_raw_binary(peer, bytes)
 
+
 func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArray) -> void:
 	#Compression is built into this method. If it's this big we're compressing it
 	# actually lets not
-	
+
 	self.ws_server.send_text(peer, "<Chunked binary event incoming>")
 	var compression_size := len(data)
 	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
-		
+
 	var chunk_count := ceili(compression_size / float(0x1000))
 	var flags := ISUtil.BinaryFlags.NONE
 	for i in chunk_count:
 		if i == 0:
 			@warning_ignore("int_as_enum_without_cast")
 			flags &= ISUtil.BinaryFlags.BEGIN_CHUNK
-		var chunk := data.slice(i*0x1000,(i+1)*0x1000)
+		var chunk := data.slice(i * 0x1000, (i + 1) * 0x1000)
 		var bytes := PackedByteArray()
 		bytes.resize(1)
 		bytes.encode_u8(0, chunk_count)
@@ -159,6 +180,7 @@ func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArr
 			flags &= ISUtil.BinaryFlags.LAST_CHUNK
 		send_binary(peer, event, target, flags, bytes, false)
 
+
 func parse_json(text: String) -> Result:
 	var json := JSON.new()
 	var error := json.parse(text)
@@ -166,9 +188,11 @@ func parse_json(text: String) -> Result:
 		return Result.err(error)
 	return Result.ok(json.data)
 
+
 func get_json_data(peer_id: int) -> Result:
 	var data := await get_text_data(peer_id)
 	return parse_json(data)
+
 
 func _connected(peer_id: int) -> void:
 	ws_server.send_targeted_event(peer_id, "_is2_handshake")
@@ -188,33 +212,41 @@ func _connected(peer_id: int) -> void:
 		var map_content: PackedByteArray = PackedByteArray([])
 		while true:
 			var map_data: Dictionary = await get_binary_data(peer_id)
-			var map_data_body: PackedByteArray = map_data['data']
+			var map_data_body: PackedByteArray = map_data["data"]
 			map_content.append_array(map_data_body)
-			if map_data['event'] == ISUtil.BinaryEvents.SYNC_MAP_END:
+			if map_data["event"] == ISUtil.BinaryEvents.SYNC_MAP_END:
 				break
 		@warning_ignore("unsafe_call_argument")
-		var rid := create_room(json.val()["details"], map_content.decompress(size, FileAccess.COMPRESSION_FASTLZ))
+		var rid := create_room(
+			json.val()["details"], map_content.decompress(size, FileAccess.COMPRESSION_FASTLZ)
+		)
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
 		r._connected(peer_id, true)
 		return
 	ws_server.close(peer_id, 4096, "Protocol failuree")
 
+
 func _text_data(peer_id: int, data: String) -> void:
 	if peer_id in peer_rooms:
 		rooms[peer_rooms[peer_id]]._text_data(peer_id, data)
 	else:
 		var data_json := parse_json(data)
-		if not (ISUtil.valid_event_is(data_json, "_is2_room_info") or ISUtil.valid_event_is(data_json, "_is2_create_room")):
+		if not (
+			ISUtil.valid_event_is(data_json, "_is2_room_info")
+			or ISUtil.valid_event_is(data_json, "_is2_create_room")
+		):
 			ws_server.close(peer_id, 4096, "Protocol failured")
+
 
 func _binary_data(peer_id: int, data: PackedByteArray) -> void:
 	var data_parsed := parse_binary(data)
 	if peer_id in peer_rooms:
 		rooms[peer_rooms[peer_id]]._binary_data(peer_id, data_parsed)
 	else:
-		if not data_parsed['event'] in ISUtil.BinaryEvents.values(): # == ISUtil.BinaryEvents.SYNC_MAP: # TODO probably needs to be only the map events
+		if not data_parsed["event"] in ISUtil.BinaryEvents.values():  # == ISUtil.BinaryEvents.SYNC_MAP: # TODO probably needs to be only the map events
 			ws_server.close(peer_id, 4096, "Protocol failurec")
+
 
 func _closed(peer_id: int, code: int, reason: String) -> void:
 	if peer_id in peer_rooms:

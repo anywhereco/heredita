@@ -2,17 +2,20 @@ extends VBoxContainer
 
 const GALLERY := preload("res://scenes/main_menu/pages/room_list/new_room/gallery/Gallery.tscn")
 
-var map := ReactiveImage.new(preload("uid://do2qcumlvx0lo")) #eventually this will be an actual Map object
+var map := ReactiveImage.new(preload("uid://do2qcumlvx0lo"))  #eventually this will be an actual Map object
+
 
 func change_map_texture(_map: ReactiveImage) -> void:
 	$CenterContainer/Map.texture = ImageTexture.create_from_image(map.value)
+
 
 func _ready() -> void:
 	map.value_changed.connect(change_map_texture)
 	change_map_texture(map)
 	$ChangeMap.pressed.connect(change_map)
 	$Buttons/Create.pressed.connect(create_room)
-	
+
+
 func change_map() -> void:
 	var prompt_res := Prompts.new_fullscreen_prompt()
 	if prompt_res.is_err():
@@ -21,7 +24,8 @@ func change_map() -> void:
 	var gallery := GALLERY.instantiate()
 	gallery.find_child("ImagePickerButton").image = map
 	prompt.add_child(gallery)
-	
+
+
 func create_room() -> void:
 	var create_dict: Dictionary = {}
 	if not $Name.text:
@@ -35,6 +39,7 @@ func create_room() -> void:
 	map_object.image = map.value
 	loading_prompt()
 	RoomHandler._instance.join_room("", create_dict, map_object)
+
 
 func loading_prompt() -> void:
 	var prompt_res := Prompts.new_fullscreen_prompt()

@@ -6,10 +6,24 @@ const DEFAULT_IMAGE = preload("uid://dtur4inp5a2k4")
 
 var error_tween: Tween
 
-var NO_SVG_NO_MAP_FILTER := PackedStringArray(["*.png,*.jpg,*.jpeg,*.webp,*.bmp;Image Files;image/png,image/jpeg,image/webp,image/bmp"])
-var SVG_NO_MAP_FILTER := PackedStringArray(["*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp;Image Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp"])
-var NO_SVG_MAP_FILTER := PackedStringArray(["*.png,*.jpg,*.jpeg,*.webp,*.bmp,*.her;Image and Map Files;image/png,image/jpeg,image/webp,image/bmp,application/heredita-map"])
-var SVG_MAP_FILTER := PackedStringArray(["*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp,*.her;Image and Map Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp,application/heredita-map"])
+var NO_SVG_NO_MAP_FILTER := PackedStringArray(
+	["*.png,*.jpg,*.jpeg,*.webp,*.bmp;Image Files;image/png,image/jpeg,image/webp,image/bmp"]
+)
+var SVG_NO_MAP_FILTER := PackedStringArray(
+	[
+		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp;Image Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp"
+	]
+)
+var NO_SVG_MAP_FILTER := PackedStringArray(
+	[
+		"*.png,*.jpg,*.jpeg,*.webp,*.bmp,*.her;Image and Map Files;image/png,image/jpeg,image/webp,image/bmp,application/heredita-map"
+	]
+)
+var SVG_MAP_FILTER := PackedStringArray(
+	[
+		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp,*.her;Image and Map Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp,application/heredita-map"
+	]
+)
 
 var image := ReactiveImage.new(null)
 
@@ -42,19 +56,15 @@ var is_web := OS.has_feature("web")
 
 var prev_content_size: Vector2
 
-enum PickedImageError {
-	OK,
-	UNKNOWN,
-	SVG_NOT_ACCEPTED,
-	MAP_NOT_ACCEPTED,
-	NOT_VALID_FILE_FORMAT
-}
+enum PickedImageError { OK, UNKNOWN, SVG_NOT_ACCEPTED, MAP_NOT_ACCEPTED, NOT_VALID_FILE_FORMAT }
+
 
 #region Private methods
 func _map_set(map: ReactiveImage) -> void:
 	if not freeze_label and override_label:
 		name_label.text = name_format % map.value.resource_name
 	image_rect.texture = ImageTexture.create_from_image(map.value)
+
 
 func _new_image(fname: String) -> void:
 	if not content.visible:
@@ -63,37 +73,39 @@ func _new_image(fname: String) -> void:
 	if not freeze_label:
 		name_label.text = name_format % fname
 
+
 func _ready() -> void:
 	if image_rect == null:
 		if not show_preview:
-			image_rect = content.find_child("Image") 
+			image_rect = content.find_child("Image")
 	else:
 		content.find_child("Image").hide()
-	
+
 	if name_label == null:
-		name_label = content.find_child("Filename") 
-	
+		name_label = content.find_child("Filename")
+
 	image.value_changed.connect(_map_set)
 	add_child(content)
 	prev_content_size = content.size
-	
+
 	web_file_dialog.file_mode = HTML5FileDialog.FileMode.OPEN_FILE
 	web_file_dialog.filters = PackedStringArray(["image/*"])
 	web_file_dialog.file_selected.connect(_on_file_selected_html5)
 	add_child(web_file_dialog, false, INTERNAL_MODE_BACK)
-	
+
 	file_dialog.use_native_dialog = true
 	file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	file_dialog.file_selected.connect(_on_file_selected)
 	add_child(file_dialog, false, INTERNAL_MODE_BACK)
-	
+
 	content.show()
 	content.find_child("Filename").text = text
 	text = ""
-	
+
 	if not show_preview:
 		image_rect.hide()
+
 
 func _process(_delta: float) -> void:
 	if not content:
@@ -103,6 +115,7 @@ func _process(_delta: float) -> void:
 		return
 	prev_content_size = content.size
 	custom_minimum_size = prev_content_size
+
 
 func _pressed() -> void:
 	if is_web:
@@ -121,8 +134,9 @@ func _pressed() -> void:
 		file_dialog.popup_centered(file_dialog.min_size)
 		VirtualMouse._instance.hide_mouse()
 
+
 func _err(code: PickedImageError) -> void:
-	if code == 0: 
+	if code == 0:
 		return
 	var msg := "File not accepted."
 	match code:
@@ -135,11 +149,14 @@ func _err(code: PickedImageError) -> void:
 	error.text = msg
 	if error_tween:
 		error_tween.kill()
-	error_tween = get_tree().create_tween().bind_node(self).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN)
+	error_tween = get_tree().create_tween().bind_node(self).set_trans(Tween.TRANS_QUART).set_ease(
+		Tween.EASE_IN
+	)
 	error.show()
-	error.modulate = Color(1,1,1,1)
-	error_tween.tween_property(error, "modulate", Color(1,1,1,0), 1)
+	error.modulate = Color(1, 1, 1, 1)
+	error_tween.tween_property(error, "modulate", Color(1, 1, 1, 0), 1)
 	error_tween.tween_callback(error.hide)
+
 
 func _on_file_selected_html5(file: HTML5FileHandle) -> void:
 	var res := await _file_handle_to_image(file)
@@ -148,7 +165,8 @@ func _on_file_selected_html5(file: HTML5FileHandle) -> void:
 		return
 	image.value = res.val()
 	VirtualMouse._instance.unhide_mouse()
-	_new_image(file.name_label as String) # If the name_label is not a string i will Literally die
+	_new_image(file.name_label as String)  # If the name_label is not a string i will Literally die
+
 
 func _on_file_selected(path: String) -> void:
 	if path.rsplit(".", false, 1)[1] == "svg":
@@ -162,6 +180,7 @@ func _on_file_selected(path: String) -> void:
 	image.value = img
 	VirtualMouse._instance.unhide_mouse()
 	_new_image(path.get_file())
+
 
 func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 	var fmt := file.name.rsplit(".", false, 1)[1]
@@ -192,9 +211,10 @@ func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 		return Result.err(PickedImageError.NOT_VALID_FILE_FORMAT)
 	return Result.ok(_image)
 
+
 func _state_drawer() -> void:
 	var state := get_draw_mode()
-	var modulus := Color(1,1,1,1)
+	var modulus := Color(1, 1, 1, 1)
 	match state:
 		DrawMode.DRAW_NORMAL:
 			modulus = get_theme_color("font_color")
@@ -207,11 +227,16 @@ func _state_drawer() -> void:
 		DrawMode.DRAW_HOVER_PRESSED:
 			modulus = get_theme_color("font_hover_pressed_color")
 		_:
-			assert(false, "all draw modes should have been accounted for, but drawmode %d was not!" % state)
+			assert(
+				false,
+				"all draw modes should have been accounted for, but drawmode %d was not!" % state
+			)
 	content.modulate = modulus
+
 
 #endregion
 #region Public methods
+
 
 func reset() -> void:
 	extra_data = null

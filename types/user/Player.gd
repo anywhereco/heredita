@@ -8,6 +8,7 @@ var rank: UserEnums.Rank
 var status: Dictionary
 var operator: bool
 
+
 func _init(peer: int, dict: Dictionary) -> void:
 	peer_id = peer
 	username = dict["username"]
@@ -19,24 +20,31 @@ func _init(peer: int, dict: Dictionary) -> void:
 	#clientside
 	profile = dict.get("profile", {})
 
+
 func get_info() -> Dictionary:
-	return {"username": username,
-			"logged_in": logged_in,
-			"profile": profile,
-			"operator": operator,
-			"rank": rank}
-			
+	return {
+		"username": username,
+		"logged_in": logged_in,
+		"profile": profile,
+		"operator": operator,
+		"rank": rank
+	}
+
+
 func admin_privileged() -> bool:
 	return rank >= UserEnums.Rank.ADMIN
-	
+
+
 func privileged() -> bool:
 	return operator or (rank >= UserEnums.Rank.MODERATOR)
-	
+
+
 func privileged_over(player: Player) -> bool:
 	if operator and not player.operator and player.rank < UserEnums.Rank.MODERATOR:
 		return true
 	else:
 		return rank > player.rank
-			
+
+
 static func from_info(dict: Dictionary) -> Player:
 	return Player.new(-2, dict)

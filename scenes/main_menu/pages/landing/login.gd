@@ -10,9 +10,11 @@ var error_label: ErrorLabelForLogin
 @onready var password: LineEdit = $Password
 @onready var button: Button = $Button
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	error_label = find_parent("LoginSignupPrompt").find_child("ErrorLabel")
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -28,27 +30,34 @@ func _login_btn() -> void:
 	tween.set_parallel(true)
 	tween.tween_callback(func() -> void: button.modulate = error_color)
 	tween.tween_property(button, "modulate", Color.WHITE, 2)
-	
-	State.user.failed.connect(func(response_code: int) -> void:
-		tween.kill()
-		if response_code == 401:
-			button.modulate = error_color
-			username.modulate = error_color
-			password.modulate = error_color
-			error_label.err("Invalid username or password")
-			tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT).set_parallel(true)
-			tween.tween_property(button, "modulate", Color.WHITE, 2)
-			tween.tween_property(username, "modulate", Color.WHITE, 2)
-			tween.tween_property(password, "modulate", Color.WHITE, 2)
-		else:
-			button.modulate = error_color
-			error_label.err("Server error (try again later)")
-			tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
-			tween.tween_property(button, "modulate", Color.WHITE, 2)
+
+	State.user.failed.connect(
+		func(response_code: int) -> void:
+			tween.kill()
+			if response_code == 401:
+				button.modulate = error_color
+				username.modulate = error_color
+				password.modulate = error_color
+				error_label.err("Invalid username or password")
+				tween = (
+					create_tween()
+					. set_ease(Tween.EASE_IN)
+					. set_trans(Tween.TRANS_QUINT)
+					. set_parallel(true)
+				)
+				tween.tween_property(button, "modulate", Color.WHITE, 2)
+				tween.tween_property(username, "modulate", Color.WHITE, 2)
+				tween.tween_property(password, "modulate", Color.WHITE, 2)
+			else:
+				button.modulate = error_color
+				error_label.err("Server error (try again later)")
+				tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
+				tween.tween_property(button, "modulate", Color.WHITE, 2)
 	)
 	State.user.user_initialized.connect(close)
-	
+
 	State.user.login(username.text, password.text)
+
 
 func close() -> void:
 	State.user.user_initialized.disconnect(close)

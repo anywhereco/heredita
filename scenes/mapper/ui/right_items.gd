@@ -4,8 +4,10 @@ var have_processed: bool = false
 
 const MAX_DEFAULT_CHAT_WIDTH := 225
 
+
 func _ready() -> void:
 	pass
+
 
 func _process(_delta: float) -> void:
 	if not have_processed:

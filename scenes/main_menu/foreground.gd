@@ -4,11 +4,7 @@ extends CanvasLayer
 @onready var switch_element: Control = $SwitchElement
 static var _instance: MainMenuForeground
 
-enum Page {
-	LANDING,
-	ROOM_LIST,
-	MPTEST
-}
+enum Page { LANDING, ROOM_LIST, MPTEST }
 
 var page: Page = Page.LANDING
 
@@ -17,14 +13,17 @@ const LANDING = preload("uid://crasgtic6vnmh")
 const ROOM_LIST = preload("uid://cww8q0kd7eghb")
 const MPTEST = preload("uid://dehpp1j2c2t4a")
 
+
 func _init() -> void:
 	_instance = self
+
 
 func _ready() -> void:
 	TopLevel.ui = self
 	if "--server" in OS.get_cmdline_user_args():
 		get_tree().change_scene_to_file.call_deferred("res://server/Server.tscn")
 	VirtualMouse._instance.enabled = false
+
 
 func swap_page(new_page: Page) -> void:
 	var inst: Node

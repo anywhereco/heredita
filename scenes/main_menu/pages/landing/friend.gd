@@ -10,6 +10,7 @@ var user: UserPartial
 @onready var other_actions_menu: MenuButton = $MarginContainer/HBoxContainer/OtherActionsMenu
 @onready var user_join: Button = $MarginContainer/HBoxContainer/UserJoin
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	username.text = user.username

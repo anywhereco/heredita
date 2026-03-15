@@ -5,19 +5,22 @@ var logger := CustomLogger.new()
 
 static var _inst: RichTextLabel
 
-class CustomLogger extends Logger:
+
+class CustomLogger:
+	extends Logger
+
 	func _log_message(message: String, _error: bool) -> void:
 		ConsoleLabel._inst.call_deferred(&"append_text", message)
 
 	func _log_error(
-			function: String,
-			file: String,
-			line: int,
-			code: String,
-			rationale: String,
-			_editor_notify: bool,
-			error_type: int,
-			script_backtraces: Array[ScriptBacktrace]
+		function: String,
+		file: String,
+		line: int,
+		code: String,
+		rationale: String,
+		_editor_notify: bool,
+		error_type: int,
+		script_backtraces: Array[ScriptBacktrace]
 	) -> void:
 		var prefix: String = ""
 
@@ -36,16 +39,24 @@ class CustomLogger extends Logger:
 		for backtrace in script_backtraces:
 			script_backtraces_text += backtrace.format(3) + "\n"
 
-		ConsoleLabel._inst.call_deferred(
+		(
+			ConsoleLabel
+			. _inst
+			. call_deferred(
 				&"append_text",
-				"%s %s %s[/color]\n[color=#999]%s[/color]\n[color=#999]%s[/color]" % [
+				(
+					"%s %s %s[/color]\n[color=#999]%s[/color]\n[color=#999]%s[/color]"
+					% [
 						prefix,
 						code,
 						rationale,
 						trace,
 						script_backtraces_text,
 					]
+				)
 			)
+		)
+
 
 # Use `_init()` to register the logger as early as possible, which ensures that messages
 # printed early are taken into account. However, even when using `_init()`, the engine's own

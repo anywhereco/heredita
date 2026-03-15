@@ -1,11 +1,7 @@
 class_name UserEnums
 
-enum Rank {
-	PLAYER,
-	MODERATOR,
-	ADMIN,
-	DEV
-}
+enum Rank { PLAYER, MODERATOR, ADMIN, DEV }
+
 
 static func rank_to_string(rank: Rank) -> String:
 	match rank:
@@ -21,6 +17,7 @@ static func rank_to_string(rank: Rank) -> String:
 			printerr("Unknown rank: %s" % [rank])
 			return "player"
 
+
 static func string_to_rank(rank_str: String) -> Rank:
 	match rank_str.to_lower():
 		"player":
@@ -34,6 +31,7 @@ static func string_to_rank(rank_str: String) -> Rank:
 		_:
 			printerr("Unknown rank string: %s" % [rank_str])
 			return Rank.PLAYER
+
 
 static func variant_to_rank(variant: Variant) -> Rank:
 	if typeof(variant) == TYPE_STRING:

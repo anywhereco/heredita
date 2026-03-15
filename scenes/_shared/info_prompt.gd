@@ -1,6 +1,7 @@
 extends Node
 class_name InfoPrompt
 
+
 static func prompt(description: String, button_text: String = "OK") -> void:
 	var prompt_res := Prompts.new_fullscreen_prompt()
 	if prompt_res.is_ok():
@@ -10,6 +11,7 @@ static func prompt(description: String, button_text: String = "OK") -> void:
 		info.get_node("Button").text = button_text
 		info.get_node("Button").pressed.connect(Prompts.close_top_prompt)
 		_prompt.add_child(info)
+
 
 static func custom_prompt(description: String, buttons: Dictionary) -> void:
 	var prompt_res := Prompts.new_fullscreen_prompt()

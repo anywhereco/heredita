@@ -1,7 +1,7 @@
 extends Resource
 class_name PrimaryUser
 
-signal user_initialized()
+signal user_initialized
 signal failed(response_code: int)
 
 var initialized: bool = false
@@ -18,9 +18,11 @@ var friend_requests_received: Array[UserPartial]
 
 var http: HTTPRequest
 
+
 func _init(_http: HTTPRequest = null, _token: String = "<no token>") -> void:
 	token = _token
 	http = _http
+
 
 func signup(_username: String, password: String, _email: String) -> void:
 	http.request_completed.connect(_signup_complete.bind(_username, password))
@@ -29,13 +31,24 @@ func signup(_username: String, password: String, _email: String) -> void:
 	else:
 		_email = ""
 	http.request(
-		Statics.HEREDITA_URL + "/auth/users/new?username=%s&password=%s%s" % [_username, password, _email],
-		[], 
+		(
+			Statics.HEREDITA_URL
+			+ "/auth/users/new?username=%s&password=%s%s" % [_username, password, _email]
+		),
+		[],
 		HTTPClient.METHOD_POST
 	)
-	
+
+
 @warning_ignore("unused_parameter")
-func _signup_complete(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray, _username: String, _password: String) -> void:
+func _signup_complete(
+	result: int,
+	response_code: int,
+	headers: PackedStringArray,
+	body: PackedByteArray,
+	_username: String,
+	_password: String
+) -> void:
 	http.request_completed.disconnect(_signup_complete)
 	print(http.request_completed.get_connections())
 	if response_code >= 300:
@@ -43,17 +56,21 @@ func _signup_complete(result: int, response_code: int, headers: PackedStringArra
 		return
 	login(_username, _password)
 
+
 func login(_username: String, _password: String) -> void:
 	http.request_completed.connect(_set_token)
 	http.request(
 		Statics.HEREDITA_URL + "/auth/token",
-		["Authorization: Basic", "Content-Type: application/x-www-form-urlencoded"], 
+		["Authorization: Basic", "Content-Type: application/x-www-form-urlencoded"],
 		HTTPClient.METHOD_POST,
 		"grant_type=password&username=%s&password=%s" % [_username, _password]
 	)
 
+
 @warning_ignore("unused_parameter")
-func _set_token(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+func _set_token(
+	result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray
+) -> void:
 	http.request_completed.disconnect(_set_token)
 	if response_code >= 300:
 		failed.emit(response_code)
@@ -63,7 +80,8 @@ func _set_token(result: int, response_code: int, headers: PackedStringArray, bod
 	var response: Dictionary = json.get_data()
 	token = response.access_token
 	initialize()
-	
+
+
 func initialize() -> void:
 	if not token:
 		username = ""
@@ -72,39 +90,50 @@ func initialize() -> void:
 		failed.emit(-1)
 		return
 	http.request_completed.connect(_set_details)
-	http.request(Statics.HEREDITA_URL + "/users/me", ["Authorization: Bearer " + token.strip_edges()])
+	http.request(
+		Statics.HEREDITA_URL + "/users/me", ["Authorization: Bearer " + token.strip_edges()]
+	)
+
 
 @warning_ignore("unused_parameter")
-func _set_details(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+func _set_details(
+	result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray
+) -> void:
 	http.request_completed.disconnect(_set_details)
 	if result == HTTPRequest.RESULT_CANT_CONNECT:
 		push_warning("Cannot connect to server (is your testing server set up?)")
 		return
-	
+
 	if response_code == HTTPClient.RESPONSE_UNAUTHORIZED:
 		return
-	
+
 	var json := JSON.new()
 	json.parse(body.get_string_from_utf8())
 	var response: Dictionary = json.get_data()
-	
+
 	id = response.id
 	username = response.username
 	@warning_ignore("unsafe_call_argument")
 	rank = UserEnums.string_to_rank(response.rank)
 	email = response.email if response.email != null else ""
-	
+
 	for friend: Dictionary in response.friends:
 		@warning_ignore("unsafe_call_argument")
-		friends.append(UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank)))
-		
+		friends.append(
+			UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank))
+		)
+
 	for friend: Dictionary in response.sent_friend_requests:
 		@warning_ignore("unsafe_call_argument")
-		friend_requests_sent.append(UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank)))
-		
+		friend_requests_sent.append(
+			UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank))
+		)
+
 	for friend: Dictionary in response.received_friend_requests:
 		@warning_ignore("unsafe_call_argument")
-		friend_requests_received.append(UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank)))
-	
+		friend_requests_received.append(
+			UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank))
+		)
+
 	initialized = true
 	user_initialized.emit()

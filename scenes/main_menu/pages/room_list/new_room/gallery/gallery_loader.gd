@@ -8,6 +8,7 @@ const GALLERY_ITEM = preload("uid://bj8dbj28fas7r")
 var loading_mutex := Mutex.new()
 var current_picked := "blank"
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	var http_request := HTTPRequest.new()
@@ -15,7 +16,10 @@ func _ready() -> void:
 	http_request.request_completed.connect(self._initial_request_completed)
 	http_request.request("%s/gallery/" % Statics.HEREDITA_URL)
 
-func _initial_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+
+func _initial_request_completed(
+	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
 		placeholder.text = "Failed to load gallery items."
 		return

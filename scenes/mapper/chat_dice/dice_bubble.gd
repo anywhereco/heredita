@@ -15,6 +15,7 @@ var fade_curve: Curve = preload("res://scenes/mapper/chat_dice/bubble_fade_curve
 
 var age := 0.0
 
+
 static func create(_die_string: String, _outcome: String, _roller: String) -> DiceBubble:
 	var bubble := preload("res://scenes/mapper/chat_dice/dice_bubble.tscn").instantiate()
 	bubble.die_string = _die_string
@@ -22,10 +23,12 @@ static func create(_die_string: String, _outcome: String, _roller: String) -> Di
 	bubble.roller = _roller
 	return bubble
 
+
 func _ready() -> void:
 	DieString.text = die_string
 	Outcome.text = outcome
 	Roller.text = roller
+
 
 func _process(delta: float) -> void:
 	age += delta

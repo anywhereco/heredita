@@ -14,21 +14,26 @@ var handler: RoomHandler
 @onready var description: Label = %Description
 @onready var player_count: Label = %PlayerCount
 
-static func of(handler_: RoomHandler,
-			   lobby_id_: String,
-			   title_: String,
-			   desc: String,
-			   players: int,
-			   max_players: int) -> RoomTemplate:
+
+static func of(
+	handler_: RoomHandler,
+	lobby_id_: String,
+	title_: String,
+	desc: String,
+	players: int,
+	max_players: int
+) -> RoomTemplate:
 	var inst: RoomTemplate = ROOM_TEMPLATE.instantiate()
-	inst._readied.connect(func() -> void:
-		inst.handler = handler_
-		inst.lobby_id = lobby_id_
-		inst.title.text = title_
-		inst.description.text = desc
-		inst.player_count.text = "%d/%d" % [players, max_players]
+	inst._readied.connect(
+		func() -> void:
+			inst.handler = handler_
+			inst.lobby_id = lobby_id_
+			inst.title.text = title_
+			inst.description.text = desc
+			inst.player_count.text = "%d/%d" % [players, max_players]
 	)
 	return inst
+
 
 func _ready() -> void:
 	_readied.emit()

@@ -2,6 +2,7 @@ extends Button
 
 @export var create: bool = false
 
+
 func enter_mapper() -> void:
 	const MAPPER_3D = preload("uid://bmfinmmve5h47")
 	var mapper: MapperRoot = MAPPER_3D.instantiate()
@@ -9,6 +10,7 @@ func enter_mapper() -> void:
 	get_tree().root.add_child(mapper)
 	get_tree().current_scene = mapper
 	VirtualMouse._instance.enabled = true
+
 
 func _pressed() -> void:
 	if create:

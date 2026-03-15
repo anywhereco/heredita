@@ -3,6 +3,7 @@ extends Button
 @onready var coordinator: ImagePickingCoordinator = %Coordinator
 @onready var map_picker: HBoxContainer = $"../../MarginContainer/MapPicker"
 
+
 func _pressed() -> void:
 	const MAPPER_3D = preload("uid://bmfinmmve5h47")
 	var mapper: MapperRoot = MAPPER_3D.instantiate()

@@ -21,7 +21,10 @@ enum Type {
 	LOG_PERCENT
 }
 
-func _init(_label: String, _type: Type, _default: float, _min: float, _max: float, _snap: float = -1) -> void:
+
+func _init(
+	_label: String, _type: Type, _default: float, _min: float, _max: float, _snap: float = -1
+) -> void:
 	self.label = _label
 	self.type = _type
 	self.default = _default
@@ -29,8 +32,10 @@ func _init(_label: String, _type: Type, _default: float, _min: float, _max: floa
 	self.max_value = _max
 	self.snap = _snap
 
+
 func is_percent() -> bool:
 	return type in [Type.PERCENT, Type.LOG_PERCENT]
+
 
 func is_log() -> bool:
 	return type in [Type.LOG_PERCENT]

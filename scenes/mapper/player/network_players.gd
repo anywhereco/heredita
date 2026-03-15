@@ -5,10 +5,12 @@ static var _instance: PlayerBalls
 
 var players_listed := []
 
+
 func get_player(player_id: int) -> PlayerMovement:
 	if player_id == State.client.player_id:
 		return get_parent().get_node("LocalPlayer")
 	return get_node(str(player_id))
+
 
 func _ready() -> void:
 	_instance = self
@@ -16,6 +18,7 @@ func _ready() -> void:
 		State.room.players.value_changed.connect(refresh_players)
 		State.client.message_received.connect(receive_update)
 	refresh_players(State.room.players)
+
 
 func receive_update(event: String, user_id: int, message: Variant) -> void:
 	if State.room:
@@ -27,17 +30,22 @@ func receive_update(event: String, user_id: int, message: Variant) -> void:
 			else:
 				get_node(str(user_id)).add_bubble(message)
 
+
 func add_player(player_id: int) -> void:
-	var player_node: PlayerMovement = preload("res://scenes/mapper/player/player.tscn").instantiate()
+	var player_node: PlayerMovement = (
+		preload("res://scenes/mapper/player/player.tscn").instantiate()
+	)
 	player_node.local = false
 	player_node.name = str(player_id)
 	player_node.get_node("Name").text = State.room.players.getv(player_id).username
 	add_child(player_node)
-	
+
+
 func remove_player(player_id: int) -> void:
 	var player_node := get_node(str(player_id))
 	player_node.queue_free()
-		
+
+
 func refresh_players(players: ReactiveDictionary) -> void:
 	for player: int in players.keys():
 		if player not in players_listed and player != State.client.player_id:

@@ -5,5 +5,6 @@ extends Resource
 ## The user-facing name of this setting.
 var label: String
 
+
 func _init(_label: String) -> void:
 	self.label = _label

@@ -1,22 +1,20 @@
 class_name HereditaColorPicker
 extends Control
 
-enum Mode {
-	HSV,
-	RGB,
-	HEX,
-	PRESET
-}
+enum Mode { HSV, RGB, HEX, PRESET }
 
-var color: ReactiveColor = ReactiveColor.new(Color(0,0,0))
+var color: ReactiveColor = ReactiveColor.new(Color(0, 0, 0))
 @onready var active_picker: Control = $Pickers/HSV
+
 
 func _ready() -> void:
 	color.value_changed.connect(_value_changed)
 
+
 func _value_changed(new_color: ReactiveColor) -> void:
 	$Color.color = new_color.value
 	active_picker._value_changed(new_color)
+
 
 func set_mode(mode: Mode) -> void:
 	for child in $Pickers.get_children():

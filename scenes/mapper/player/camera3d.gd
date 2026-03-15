@@ -10,10 +10,10 @@ var topdown_camera := ReactiveBool.new(false)
 @onready var camera_pivot: Node3D = $"../.."
 @onready var player: CharacterBody3D = $"../../.."
 
+
 func _process(delta: float) -> void:
-	
 	var camera_move := Vector2.ZERO
-	
+
 	if Input.is_action_pressed("camera_left"):
 		camera_move -= Vector2.LEFT * 250 * delta
 	if Input.is_action_pressed("camera_right"):
@@ -22,8 +22,9 @@ func _process(delta: float) -> void:
 		camera_move -= Vector2.UP * 250 * delta
 	if Input.is_action_pressed("camera_down"):
 		camera_move -= Vector2.DOWN * 250 * delta
-	
+
 	camera_pan(camera_move)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -33,14 +34,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			VirtualMouse._instance.set_action(VirtualMouse.Action.PANNING)
 		else:
 			VirtualMouse._instance.set_action(VirtualMouse._instance.tool_action)
-	
-	if event is InputEventMouseButton and not event.pressed and event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+
+	if (
+		event is InputEventMouseButton
+		and not event.pressed
+		and event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]
+	):
 		VirtualMouse._instance.set_action(VirtualMouse._instance.tool_action)
-	
+
 	if event.is_action_pressed("zoom_out"):
 		camera_arm.spring_length = minf(50, camera_arm.spring_length * 1.1)
 	elif event.is_action_pressed("zoom_in"):
-		camera_arm.spring_length = maxf(2.5, camera_arm.spring_length * (1/1.1))
+		camera_arm.spring_length = maxf(2.5, camera_arm.spring_length * (1 / 1.1))
 	elif event.is_action_pressed("topdown_cam"):
 		topdown_camera.value = not topdown_camera.value
 		if topdown_camera.value:
@@ -49,11 +54,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			camera_pivot.rotation.x = deg_to_rad(-45)
 
+
 func camera_pan(vec: Vector2) -> void:
 	if not topdown_camera.value:
-		camera_pivot.rotation.x -= vec.y * mouse_sensitivity * Settings.getv("camera_sensitivity") 
+		camera_pivot.rotation.x -= vec.y * mouse_sensitivity * Settings.getv("camera_sensitivity")
 		# Prevent the camera from rotating too far up or down.
-		camera_pivot.rotation.x = clampf(camera_pivot.rotation.x, -tilt_limit, tilt_limit/2)
+		camera_pivot.rotation.x = clampf(camera_pivot.rotation.x, -tilt_limit, tilt_limit / 2)
 	else:
 		camera_pivot.rotation.x = deg_to_rad(-90)
-	camera_pivot.rotation.y += vec.x * mouse_sensitivity * Settings.getv("camera_sensitivity") 
+	camera_pivot.rotation.y += vec.x * mouse_sensitivity * Settings.getv("camera_sensitivity")

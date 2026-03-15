@@ -10,26 +10,46 @@ const BADGE_OPERATOR = preload("uid://dwh3xvonrqo0u")
 
 var players_listed := []
 
+
 func _ready() -> void:
 	if State.room:
 		State.room.players.value_changed.connect(refresh_players)
 	refresh_players(State.room.players)
 
+
 func ban_player(player_id: int) -> void:
-		InfoPrompt.custom_prompt("Ban this player?",
-		{"Cancel": Prompts.close_top_prompt,
-		 "Ban": func() -> void: Prompts.close_top_prompt(); State.client.send("ban", player_id)})
-	
+	InfoPrompt.custom_prompt(
+		"Ban this player?",
+		{
+			"Cancel": Prompts.close_top_prompt,
+			"Ban": (func() -> void:
+				Prompts.close_top_prompt()
+				State.client.send("ban", player_id)
+				)
+		}
+	)
+
+
 func kick_player(player_id: int) -> void:
-		InfoPrompt.custom_prompt("Kick this player?",
-		{"Cancel": Prompts.close_top_prompt,
-		 "Kick": func() -> void: Prompts.close_top_prompt(); State.client.send("kick", player_id)})
+	InfoPrompt.custom_prompt(
+		"Kick this player?",
+		{
+			"Cancel": Prompts.close_top_prompt,
+			"Kick": (func() -> void:
+				Prompts.close_top_prompt()
+				State.client.send("kick", player_id)
+				)
+		}
+	)
+
 
 func mute_player(player_id: int) -> void:
-		State.client.send("mute", player_id)
+	State.client.send("mute", player_id)
+
 
 func unmute_player(player_id: int) -> void:
-		State.client.send("unmute", player_id)
+	State.client.send("unmute", player_id)
+
 
 func player_clicked(player_node: Control, player_id: int) -> void:
 	var menu := CPopupMenu.new()
@@ -41,16 +61,19 @@ func player_clicked(player_node: Control, player_id: int) -> void:
 			menu.add_item("Unmute", unmute_player.bind(player_id))
 		else:
 			menu.add_item("Mute", mute_player.bind(player_id))
-	if not menu.item_count(): #no items so no menu
+	if not menu.item_count():  #no items so no menu
 		menu.queue_free()
 		return
 	menu.display()
 	@warning_ignore("unsafe_call_argument")
 	menu.align_bottom(player_node.get_node("Elements/Label"))
 
+
 func add_player(player_id: int) -> void:
 	var player: Player = State.room.players.getv(player_id)
-	var player_node: PlayerListElement = preload("res://scenes/mapper/ui/player_list/player.tscn").instantiate()
+	var player_node: PlayerListElement = (
+		preload("res://scenes/mapper/ui/player_list/player.tscn").instantiate()
+	)
 	player_node.name = str(player_id)
 	player_node.get_node("Elements/Label").text = player.username
 	player_node.get_node("Button").pressed.connect(player_clicked.bind(player_node, player_id))
@@ -76,7 +99,8 @@ func add_player(player_id: int) -> void:
 func remove_player(player_id: int) -> void:
 	var player_node := get_node(str(player_id))
 	player_node.queue_free()
-		
+
+
 func refresh_players(players: ReactiveDictionary) -> void:
 	if get_child(0).visible:
 		get_child(0).hide()

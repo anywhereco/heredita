@@ -17,8 +17,10 @@ const PLAY_IMG = preload("uid://bnp8cynxn3io4")
 
 const CALENDAR_MODIFY = preload("uid://o1ehxmubcjv8")
 
+
 func _init() -> void:
 	_inst = self
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -26,39 +28,42 @@ func _ready() -> void:
 		pause.hide()
 		configure.hide()
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	calendar.process(delta)
 	date.text = calendar.date_string()
 	year.text = calendar.year_string()
 	time.text = calendar.time_string()
-	
+
+
 func calendar_sync(details: Dictionary) -> void:
 	calendar = Calendar.from_json(details)
+
 
 func _on_pause_pressed() -> void:
 	if not State.player.privileged():
 		return
-		
+
 	calendar.paused = not calendar.paused
-	
+
 	if calendar.paused:
 		pause.icon = PLAY_IMG
-	else: 
+	else:
 		pause.icon = PAUSE_IMG
-		
+
 	State.client.send("calendar_sync", calendar.to_json())
-	
+
 
 func _on_configure_pressed() -> void:
 	if not State.player.privileged():
 		return
-		
+
 	var promptres := Prompts.new_fullscreen_prompt()
 	if promptres.is_err():
 		return
 	var prompt: PromptInstance = promptres.val()
-	
+
 	var ui := CALENDAR_MODIFY.instantiate()
-	
+
 	prompt.add_child(ui)

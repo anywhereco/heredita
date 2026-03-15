@@ -7,6 +7,7 @@ const MAP_BLANK = preload("uid://do2qcumlvx0lo")
 
 var image: ReactiveImage
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	image = image_picker_button.image

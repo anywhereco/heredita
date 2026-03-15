@@ -24,9 +24,11 @@ var dice: DiceTool = DiceTool.new()
 var map_data_compressed: PackedByteArray
 var map_data_uncompr_size: int
 
+
 func _brush_size_changed(_reactive: ReactiveInt) -> void:
 	brush.size = UIRoot._instance.brush_ui.size_controller.brush_size.value
 	Map._instance.preview_plane.texture.update(brush.get_image_for_brush())
+
 
 func _tool_changed(reactive: ReactiveInt) -> void:
 	if reactive.value == Tool.NONE:
@@ -36,8 +38,10 @@ func _tool_changed(reactive: ReactiveInt) -> void:
 	elif reactive.value == Tool.DICE:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DICE)
 
+
 func _init() -> void:
 	_instance = self
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -50,10 +54,12 @@ func _ready() -> void:
 		State.client.binary_message_received.connect(sync_map)
 		State.client.connection_closed.connect(closed)
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	brush._process(delta)
 	dice._process(delta)
+
 
 func process_tool_use(event: InputEvent) -> void:
 	match tool.value:
@@ -64,14 +70,21 @@ func process_tool_use(event: InputEvent) -> void:
 		Tool.DICE:
 			dice.dice_events(event)
 		_:
-			push_error("Tool \"%s\" doesn't have code to handle events!" % MapperRoot.Tool.keys()[tool.value].to_lower())
+			push_error(
+				(
+					'Tool "%s" doesn\'t have code to handle events!'
+					% MapperRoot.Tool.keys()[tool.value].to_lower()
+				)
+			)
 			return
+
 
 func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 	if event == "map_update":
 		Map._instance.get_map_update(details as Dictionary)
 	if event == "calendar_sync":
 		TimekeepingUI._inst.calendar_sync(details as Dictionary)
+
 
 func sync_map(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
 	if event == ISUtil.BinaryEvents.SYNC_MAP_SIZE:
@@ -80,21 +93,24 @@ func sync_map(event: int, _player_id: int, _flags: int, details: PackedByteArray
 		map_data_compressed.append_array(details)
 	if event == ISUtil.BinaryEvents.SYNC_MAP_END:
 		map_data_compressed.append_array(details)
-		var decomp := map_data_compressed.decompress(map_data_uncompr_size, FileAccess.COMPRESSION_FASTLZ)
+		var decomp := map_data_compressed.decompress(
+			map_data_uncompr_size, FileAccess.COMPRESSION_FASTLZ
+		)
 		Map._instance.set_data(MapData.deserialize(decomp))
 
+
 func closed() -> void:
-	if not is_inside_tree(): #if we exited manually
+	if not is_inside_tree():  #if we exited manually
 		return
 	VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
 	var menu: Node2D = load("res://scenes/main_menu/main.tscn").instantiate()
 	get_tree().current_scene.queue_free()
 	get_tree().root.add_child(menu)
-	TopLevel.ui = menu.get_node("Foreground") #do this manually since it hasn't loaded yet
+	TopLevel.ui = menu.get_node("Foreground")  #do this manually since it hasn't loaded yet
 	#this code doesnt work because the client gets a close reason of 1002 for some reason
 	#var connection_string := State.client.socket.get_close_reason()
 	#if not connection_string:
-		#connection_string = "The connection was closed."
+	#connection_string = "The connection was closed."
 	#InfoPrompt.prompt(connection_string)
 	InfoPrompt.prompt("The connection was closed.")
 	#eventually have a more detailed message if you're kicked/banned/etc though idk how they'd send that

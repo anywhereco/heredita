@@ -7,24 +7,23 @@ var is_painting: bool = false
 var paint_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 var target_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 
+
 func _init() -> void:
 	pass
 
+
 func _map_ready() -> void:
-	UIRoot._instance.brush_ui.size_controller.brush_size.value_changed.connect(_brush_size_changed.unbind(1))
+	UIRoot._instance.brush_ui.size_controller.brush_size.value_changed.connect(
+		_brush_size_changed.unbind(1)
+	)
 	_brush_size_changed()
 	target_color = UIRoot._instance.brush_ui.target_picker.color
-	target_color.value_changed.connect(
-		func(_color: ReactiveColor) -> void:
-			_update_brush()
-	)
+	target_color.value_changed.connect(func(_color: ReactiveColor) -> void: _update_brush())
 	paint_color = UIRoot._instance.brush_ui.paint_picker.color
-	paint_color.value_changed.connect(
-		func(_color: ReactiveColor) -> void:
-			_update_brush()
-	)
-	paint_color.value = Color() #black feels more sensible as a default for paint
+	paint_color.value_changed.connect(func(_color: ReactiveColor) -> void: _update_brush())
+	paint_color.value = Color()  #black feels more sensible as a default for paint
 	target_color.value = Map._instance.default_target_color
+
 
 func get_image_for_brush() -> Image:
 	var image := shape.get_as_image(size).duplicate(true)
@@ -33,13 +32,16 @@ func get_image_for_brush() -> Image:
 
 	for y in range(height):
 		for x in range(width):
-			var pos := Vector2i(Map._instance.map_pos.value - shape.image_pixel_offset + Vector2(x, y))
+			var pos := Vector2i(
+				Map._instance.map_pos.value - shape.image_pixel_offset + Vector2(x, y)
+			)
 			var color := Map._instance.get_pixel_at(pos)
 			if color.is_equal_approx(target_color.value) && image.get_pixel(x, y) == Color.WHITE:
 				image.set_pixel(x, y, Color.WHITE)
 			else:
 				image.set_pixel(x, y, Color.TRANSPARENT)
 	return image
+
 
 func brush_events(event: InputEvent) -> void:
 	if event.is_action_pressed("pick_paint"):
@@ -50,21 +52,30 @@ func brush_events(event: InputEvent) -> void:
 		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
 		if color.a == 1:
 			UIRoot._instance.brush_ui.target_picker.color.value = color
-	
+
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		is_painting = true
-	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	if (
+		event is InputEventMouseButton
+		and not event.pressed
+		and event.button_index == MOUSE_BUTTON_LEFT
+	):
 		is_painting = false
 
-func brush_action(brush_size: int, paint: Color, target: Color, offset: Vector2 = Vector2.ZERO) -> void:
+
+func brush_action(
+	brush_size: int, paint: Color, target: Color, offset: Vector2 = Vector2.ZERO
+) -> void:
 	if offset:
 		Map._instance.set_pixels_at_targeted(shape.get_vec2s(brush_size), paint, target, offset)
 	else:
 		Map._instance.set_pixels_at_map_pos_targeted(shape.get_vec2s(brush_size), paint, target)
 
+
 func _brush_size_changed() -> void:
 	size = UIRoot._instance.brush_ui.size_controller.brush_size.value
 	_update_brush()
+
 
 func _update_brush() -> void:
 	Map._instance.preview_plane.texture.update(get_image_for_brush())
@@ -72,13 +83,18 @@ func _update_brush() -> void:
 	mod.a = 0.5
 	Map._instance.preview_plane.modulate = mod
 
+
 func _process(_delta: float) -> void:
 	if is_painting:
-		
 		brush_action(size, paint_color.value, target_color.value)
 		if State.client:
-			State.client.send("map_update", {"type": "brush",
-											 "pos": ISUtil.from_vec2(Map._instance.map_pos.value),
-											 "size": size,
-											 "paint_color": ISUtil.from_color(paint_color.value),
-											 "target_color": ISUtil.from_color(target_color.value)})
+			State.client.send(
+				"map_update",
+				{
+					"type": "brush",
+					"pos": ISUtil.from_vec2(Map._instance.map_pos.value),
+					"size": size,
+					"paint_color": ISUtil.from_color(paint_color.value),
+					"target_color": ISUtil.from_color(target_color.value)
+				}
+			)
