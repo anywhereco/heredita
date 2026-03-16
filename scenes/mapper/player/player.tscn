@@ -55,23 +55,6 @@ stencil_mode = 1
 stencil_flags = 2
 stencil_outline_thickness = 0.04
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mxy8m"]
-sky_horizon_color = Color(0.6164, 0.6369467, 0.67, 1)
-ground_bottom_color = Color(0.06887774, 0.05348716, 0.036228362, 1)
-ground_horizon_color = Color(0.3744, 0.38037997, 0.39, 1)
-ground_curve = 0.06498033
-
-[sub_resource type="Sky" id="Sky_c4ga5"]
-sky_material = SubResource("ProceduralSkyMaterial_mxy8m")
-
-[sub_resource type="Environment" id="Environment_c4ga5"]
-background_mode = 2
-background_energy_multiplier = 1.37
-sky = SubResource("Sky_c4ga5")
-ambient_light_source = 3
-ambient_light_color = Color(0.38445106, 0.4548104, 0.54517436, 1)
-reflected_light_source = 2
-
 [node name="LocalPlayer" type="CharacterBody3D" unique_id=1173620926]
 collision_layer = 2
 axis_lock_angular_x = true
@@ -113,7 +96,6 @@ collision_mask = 2147483648
 spring_length = 5.0
 
 [node name="PlayerCamera" type="Camera3D" parent="CameraPivot/CameraArm" unique_id=2089464755]
-environment = SubResource("Environment_c4ga5")
 near = 0.15
 script = ExtResource("6_4te7a")
 

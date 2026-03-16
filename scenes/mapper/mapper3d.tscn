@@ -29,6 +29,27 @@ uv1_scale = Vector3(24, 12, 2)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_l0uxc"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sm41v"]
+sky_horizon_color = Color(0.6164, 0.6369467, 0.67, 1)
+ground_bottom_color = Color(0.06887774, 0.05348716, 0.036228362, 1)
+ground_horizon_color = Color(0.3744, 0.38037997, 0.39, 1)
+ground_curve = 0.06498033
+
+[sub_resource type="Sky" id="Sky_wvm7y"]
+sky_material = SubResource("ProceduralSkyMaterial_sm41v")
+
+[sub_resource type="Environment" id="Environment_1goaf"]
+background_mode = 2
+background_energy_multiplier = 1.37
+sky = SubResource("Sky_wvm7y")
+ambient_light_source = 3
+ambient_light_color = Color(0.38445106, 0.4548104, 0.54517436, 1)
+reflected_light_source = 2
+tonemap_white = 18.65
+tonemap_agx_white = 4.69
+tonemap_agx_contrast = 1.5
+ssao_enabled = true
+
 [node name="Mapper3D" type="Node3D" unique_id=1991960011]
 script = ExtResource("1_htv7j")
 
@@ -55,6 +76,7 @@ shape = SubResource("WorldBoundaryShape3D_wvm7y")
 modulate = Color(1, 1, 1, 0.5019608)
 pixel_size = 0.0625
 axis = 1
+shaded = true
 double_sided = false
 texture_filter = 0
 render_priority = 1
@@ -79,4 +101,8 @@ mesh = SubResource("PlaneMesh_l0uxc")
 [node name="The Sun" type="DirectionalLight3D" parent="." unique_id=1949016919]
 transform = Transform3D(-4.371139e-08, 0.6427876, -0.76604444, 0, 0.76604444, 0.6427876, 1, 2.8097137e-08, -3.3484866e-08, 0, 6.882904, 0)
 light_color = Color(1, 0.9666667, 0.9, 1)
+directional_shadow_mode = 0
 directional_shadow_max_distance = 8192.0
+
+[node name="Environment" type="WorldEnvironment" parent="." unique_id=2070133541]
+environment = SubResource("Environment_1goaf")
