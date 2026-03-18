@@ -177,42 +177,51 @@ func reset_chunks() -> void:
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	for x: int in range(0, original_map_size.x, Statics.CHUNK_SIZE):
 		for y: int in range(0, original_map_size.y, Statics.CHUNK_SIZE):
-			@warning_ignore("integer_division")
-			var x_idx := x / Statics.CHUNK_SIZE
-			@warning_ignore("integer_division")
-			var y_idx := y / Statics.CHUNK_SIZE
-			var chunk_coords := Rect2i(
-				Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE)
-			)
-			var img := original_map.get_region(chunk_coords)
-			#Image.create_empty(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE, false, original_map.get_format())
-			#img.blit_rect(original_map, chunk_coords, Vector2i.ZERO)
-			var chunk := Sprite3D.new()
-			chunk.texture = ImageTexture.create_from_image(img)
-			chunk.axis = Vector3.Axis.AXIS_Y
-			chunk.double_sided = false
-			@warning_ignore("integer_division")
-			var center := map_space_to_world_space(
-				Vector2(x + (Statics.CHUNK_SIZE / 2), y + (Statics.CHUNK_SIZE / 2))
-			)
-			chunk.position = Vector3(center.x, 0, center.y)
-			chunk.name = "MapChunk%d:%d" % [x_idx, y_idx]
-			chunk.pixel_size = pixel_size
-			chunk.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-			chunk_container_node.add_child(chunk)
-			if chunks.size() <= x_idx:
-				chunks.append([])
-				chunks_edited.append([])
-				chunk_images.append([])
-			chunks.get(x_idx).insert(y_idx, chunk)
-			chunks_edited.get(x_idx).insert(y_idx, false)
-			chunk_images.get(x_idx).insert(y_idx, img)
+			initialize_chunk(x, y)
+	@warning_ignore("unsafe_call_argument")
+	brightness_change(Settings.get_reactive("brightness"))
 
+func initialize_chunk(x: int, y: int) -> void:
+	@warning_ignore("integer_division")
+	var x_idx := x / Statics.CHUNK_SIZE
+	@warning_ignore("integer_division")
+	var y_idx := y / Statics.CHUNK_SIZE
+	var chunk_coords := Rect2i(
+		Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE)
+	)
+	var img := original_map.get_region(chunk_coords)
+	#Image.create_empty(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE, false, original_map.get_format())
+	#img.blit_rect(original_map, chunk_coords, Vector2i.ZERO)
+	var chunk := Sprite3D.new()
+	chunk.texture = ImageTexture.create_from_image(img)
+	chunk.axis = Vector3.Axis.AXIS_Y
+	chunk.double_sided = false
+	@warning_ignore("integer_division")
+	var center := map_space_to_world_space(
+		Vector2(x + (Statics.CHUNK_SIZE / 2), y + (Statics.CHUNK_SIZE / 2))
+	)
+	chunk.position = Vector3(center.x, 0, center.y)
+	chunk.name = "MapChunk%d:%d" % [x_idx, y_idx]
+	chunk.pixel_size = pixel_size
+	chunk.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	chunk_container_node.add_child(chunk)
+	if chunks.size() <= x_idx:
+		chunks.append([])
+		chunks_edited.append([])
+		chunk_images.append([])
+	chunks.get(x_idx).insert(y_idx, chunk)
+	chunks_edited.get(x_idx).insert(y_idx, false)
+	chunk_images.get(x_idx).insert(y_idx, img)
 
 func _ready() -> void:
+	Settings.get_reactive("brightness").value_changed.connect(brightness_change)
 	if State.client.operator:
 		load_from_original()
 
+func brightness_change(brightness: ReactiveFloat) -> void:
+	for chunk: Sprite3D in chunk_container_node.get_children():
+		chunk.modulate = Color(brightness.value, brightness.value, brightness.value, 1)
+	preview_plane.modulate = Color(brightness.value, brightness.value, brightness.value, .5)
 
 func update_map_pos() -> void:
 	var mouse_position := VirtualMouse._instance.position
