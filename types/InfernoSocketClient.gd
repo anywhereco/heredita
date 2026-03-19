@@ -32,8 +32,13 @@ var room: Room
 var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
+var large_packet_budget_used: int = 0
+
+var eid: int = 0
+
 const TIMEOUT: int = 10000  #ms
 const BUFFER_SIZE_KB: int = 2048
+const LARGE_PACKET_BUDGET: int = (BUFFER_SIZE_KB * 1024) - 65536
 
 signal connected_to_server
 signal connection_closed
@@ -71,8 +76,6 @@ func _ready() -> void:
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
-	raw_message_received.connect(self.handle_chunked_binary_events)
-
 
 #region Encode and Decode
 func _encode_data(value: Variant) -> String:
@@ -88,7 +91,6 @@ func _decode_data(string: String) -> Result:
 
 
 #endregion
-
 
 func connect_to_url(url: String) -> int:
 	socket.supported_protocols = supported_protocols
@@ -117,7 +119,7 @@ func send(event: String, message: Variant = null) -> int:
 func send_binary(
 	event: int,
 	target: int,
-	flags: int,
+	flags: ISUtil.BinaryFlags,
 	message: PackedByteArray = PackedByteArray(),
 	compress: bool = true
 ) -> int:
@@ -131,6 +133,7 @@ func send_binary(
 	raw_message_sent.emit("<Binary event %d>" % event)
 	var compression_size: int
 	if compress:
+		@warning_ignore("int_as_enum_without_cast")
 		flags |= ISUtil.BinaryFlags.COMPRESSED
 		compression_size = len(message)
 		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
@@ -145,76 +148,6 @@ func send_binary(
 	bytes.append_array(message)
 	return socket.send(bytes)
 
-
-func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void:
-	#Compression is built into this method. If it's this big we're compressing it
-	var compression_size := len(data)
-	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
-	data = data.compress(FileAccess.COMPRESSION_FASTLZ)
-	var chunk_count := ceili(data.size() / float(0x10000))
-	var flags := ISUtil.BinaryFlags.NONE
-	for i in chunk_count:
-		if i == 0:
-			@warning_ignore("int_as_enum_without_cast")
-			flags |= ISUtil.BinaryFlags.BEGIN_CHUNK
-		var chunk := data.slice(i * 0x10000, (i + 1) * 0x10000)
-		var bytes := PackedByteArray()
-		bytes.resize(1)
-		bytes.encode_u8(0, chunk_count)
-		bytes.append_array(chunk)
-		if i == chunk_count - 1:
-			@warning_ignore("int_as_enum_without_cast")
-			flags &= ISUtil.BinaryFlags.LAST_CHUNK
-		send_binary(event, target, flags, bytes, false)
-
-
-func handle_chunked_binary_events(string: String) -> void:
-	if string.begins_with("<Chunked binary event incoming>"):
-		var data := await get_chunked_binary_data()
-		if data.event == 1:  # map event
-			print("Updating maps with %s" % data.array)
-			pass  # update map
-
-
-#region Receiving Chunked Binary
-
-
-class ChunkedBinaryData:
-	var array: PackedByteArray
-	var event: int
-
-	func _init(_array: PackedByteArray, _event: int) -> void:
-		self.array = _array
-		self.event = _event
-
-
-func get_chunked_binary_data() -> ChunkedBinaryData:
-	var data := []
-	var data_length := 0
-	var chunks_recieved := 0
-	var event := 0
-	@warning_ignore("unused_variable")
-	var target := 0
-	while true:
-		var sig_data: Variant = await self.binary_message_received
-		target = sig_data[1]
-		var flags: int = sig_data[2]
-		var chunk: PackedByteArray = sig_data[3]
-		if not chunk:
-			return ChunkedBinaryData.new(PackedByteArray([]), event)
-		var last_flag := flags & ISUtil.BinaryFlags.LAST_CHUNK
-		data_length = chunk.decode_u8(0)
-		data.append_array(chunk.slice(1))
-		chunks_recieved += 1
-		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
-		if end_hint == 1:
-			break
-		elif end_hint == 2:
-			return ChunkedBinaryData.new(PackedByteArray([]), event)
-	return ChunkedBinaryData.new(data, event)
-
-
-#endregion
 
 
 func get_message_raw() -> Variant:
@@ -253,6 +186,11 @@ func convert_players(dict: Dictionary) -> Dictionary[int, Player]:
 	for key: Variant in dict:
 		new_dict[key as int] = Player.from_info(dict[key] as Dictionary)
 	return new_dict
+
+
+func increment_eid() -> int:
+	eid += 1
+	return eid
 
 
 #region Polling

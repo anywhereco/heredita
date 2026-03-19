@@ -1,7 +1,12 @@
 extends Node
 class_name ISUtil
 
-enum BinaryFlags { NONE = 0, COMPRESSED = 1, BEGIN_CHUNK = 2, LAST_CHUNK = 4 }
+enum BinaryFlags { 
+	NONE = 0,
+	COMPRESSED = 1 << 0,
+	CHUNK_START_HEADER = 1 << 1,
+	CHUNK_PART = 1 << 2,
+}
 
 enum BinaryEvents {
 	SYNC_MAP = 0x0,
