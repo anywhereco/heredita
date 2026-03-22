@@ -3,7 +3,7 @@ class_name InfernoSocketClient
 extends Node
 
 var return_handshake := {
-	"infernosocket_version": [2, 1],
+	"infernosocket_version": [2, 2],
 	"software_version": ProjectSettings.get_setting_with_override("application/config/version")
 }
 
@@ -49,11 +49,6 @@ signal message_received(event: String, player_id: int, details: Variant)
 
 signal binary_message_received(event: int, player_id: int, flags: int, details: PackedByteArray)
 
-## Same as [code]message_recieved[/code], but shows handshake events and is not parsed.
-signal raw_message_received(string: String)
-
-signal raw_message_sent(string: String)
-
 
 func _init(
 	url: String = "",
@@ -77,6 +72,7 @@ func _ready() -> void:
 		print("Unable to connect")
 		set_process(false)
 
+
 #region Encode and Decode
 func _encode_data(value: Variant) -> String:
 	return JSON.stringify(value)
@@ -91,6 +87,7 @@ func _decode_data(string: String) -> Result:
 
 
 #endregion
+
 
 func connect_to_url(url: String) -> int:
 	socket.supported_protocols = supported_protocols
@@ -111,43 +108,34 @@ func send(event: String, message: Variant = null) -> int:
 			"details": message,
 		}
 	)
-	#print("c>s event:%s data:%s" % [event, str(message)])
-	raw_message_sent.emit(data)
 	return socket.send_text(data)
 
 
 func send_binary(
-	event: int,
-	target: int,
-	flags: ISUtil.BinaryFlags,
-	message: PackedByteArray = PackedByteArray(),
-	compress: bool = true
+	event: int, target: int, message: PackedByteArray = PackedByteArray(), compress: bool = true
 ) -> int:
 	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
 	assert(
 		target >= -32768 and target <= 32767,
 		"The target value should fit within a 16-bit signed int"
 	)
-
-	#print("c>s <Binary event %d>" % event)
-	raw_message_sent.emit("<Binary event %d>" % event)
+	var size := 5 + (4 if compress else 0)
+	var flags := 0
 	var compression_size: int
 	if compress:
 		@warning_ignore("int_as_enum_without_cast")
-		flags |= ISUtil.BinaryFlags.COMPRESSED
+		flags = ISUtil.BinaryFlags.COMPRESSED
 		compression_size = len(message)
 		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
 	var bytes := PackedByteArray()
-	bytes.resize(5)
+	bytes.resize(size)
 	bytes.encode_u16(0, event)
 	bytes.encode_s16(2, target)
 	bytes.encode_u8(4, flags)
 	if compress:
-		bytes.resize(9)
 		bytes.encode_u32(5, compression_size)
 	bytes.append_array(message)
 	return socket.send(bytes)
-
 
 
 func get_message_raw() -> Variant:
@@ -214,7 +202,6 @@ func poll() -> void:
 func _poll_loop() -> void:
 	var message_raw: Variant = get_message_raw()
 	if message_raw is String:
-		raw_message_received.emit(message_raw)
 		var message_res := _decode_data(message_raw as String)  # Godot, I promise you this String is a String. I swear.
 		if message_res.is_err():
 			return
@@ -253,7 +240,6 @@ func _poll_string(message: Dictionary) -> void:
 								else ISUtil.BinaryEvents.SYNC_MAP
 							),  # TODO move this entire thing over to actual chunk system
 							-1,
-							ISUtil.BinaryFlags.NONE,
 							map_compr.slice(
 								part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
 							),
@@ -356,9 +342,6 @@ func _poll_binary(message: PackedByteArray) -> void:
 	if compressed:
 		var compression_size := message.decode_u32(5)
 		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-
-	#print("c<s <Binary event %d, \"playerid\"=%d>" % [event, uid])
-	raw_message_received.emit('<Binary event %d, "playerid"=%d>' % [event, uid])
 	binary_message_received.emit(event, uid, flags, data)
 
 

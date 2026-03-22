@@ -1,20 +1,16 @@
 extends Node
 class_name ISUtil
 
-enum BinaryFlags { 
+enum BinaryFlags {
 	NONE = 0,
 	COMPRESSED = 1 << 0,
 	CHUNK_START_HEADER = 1 << 1,
 	CHUNK_PART = 1 << 2,
 }
 
-enum BinaryEvents {
-	SYNC_MAP = 0x0,
-	SYNC_MAP_END = 0x1,
-	SYNC_MAP_SIZE = 0x2,  # used on server only
-	#chunked events start at 0x8000
-	TODO_SYNC_MAP = 0x8000
-}
+enum BinaryEvents { SYNC_MAP = 0x0, SYNC_MAP_END = 0x1, SYNC_MAP_SIZE = 0x2 }
+
+enum BinaryEventsChunked { SYNC_MAP = 0x0 }
 
 
 static func json_event(dict: Dictionary) -> Variant:
@@ -58,3 +54,18 @@ static func from_vec3(vec: Vector3) -> Array:
 static func to_vec3(vec: Array) -> Vector3:
 	@warning_ignore("unsafe_call_argument")
 	return Vector3(vec[0], vec[1], vec[2])
+
+
+static func test_flags(flags: int, test: int) -> bool:
+	return (flags & test) == test
+
+
+static func parse_binary(message: PackedByteArray) -> void:
+	var event := message.decode_u16(0)
+	var uid := message.decode_s16(2)
+	var flags := message.decode_u8(4)
+	var header_size := 5 + (4 if test_flags(flags, BinaryFlags.COMPRESSED) else 0)
+	var data := message.slice(header_size)
+	if test_flags(flags, BinaryFlags.COMPRESSED):
+		var compression_size := message.decode_u32(5)
+		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)

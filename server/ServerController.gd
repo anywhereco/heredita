@@ -94,39 +94,6 @@ func get_binary_data(peer_id: int) -> Dictionary:
 	return parse_binary(data)
 
 
-
-func send_binary(
-	peer: int,
-	event: int,
-	target: int,
-	flags: int,
-	message: PackedByteArray = PackedByteArray(),
-	compress: bool = true
-) -> void:
-	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
-	assert(
-		target >= -32768 and target <= 32767,
-		"The target value should fit within a 16-bit signed int"
-	)
-
-	var compression_size: int
-	if compress:
-		flags &= ISUtil.BinaryFlags.COMPRESSED
-		compression_size = len(message)
-		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
-	var bytes := PackedByteArray()
-	bytes.resize(5)
-	bytes.encode_u16(0, event)
-	bytes.encode_s16(2, target)
-	bytes.encode_u8(4, flags)
-	if compress:
-		bytes.resize(9)
-		bytes.encode_u32(5, compression_size)
-	bytes.append_array(message)
-	self.ws_server.send_raw_binary(peer, bytes)
-
-
-
 func parse_json(text: String) -> Result:
 	var json := JSON.new()
 	var error := json.parse(text)
