@@ -56,18 +56,23 @@ static func to_vec3(vec: Array) -> Vector3:
 	return Vector3(vec[0], vec[1], vec[2])
 
 
-static func test_flags(flags: int, test: int) -> bool:
+static func test_all_flags(flags: int, test: int) -> bool:
 	return (flags & test) == test
+
+
+static func message_is_chunking_related(message: PackedByteArray) -> bool:
+	var flags := message.decode_u8(4)
+	return flags & (BinaryFlags.CHUNK_START_HEADER | BinaryFlags.CHUNK_PART)
 
 
 static func _parse_binary(message: PackedByteArray) -> Dictionary:
 	var event := message.decode_u16(0)
 	var uid := message.decode_s16(2)
 	var flags := message.decode_u8(4)
-	var header_size := 5 + (4 if test_flags(flags, BinaryFlags.COMPRESSED) else 0)
+	var header_size := 5 + (4 if test_all_flags(flags, BinaryFlags.COMPRESSED) else 0)
 	var data := message.slice(header_size)
 	var offset := 5
-	if test_flags(flags, BinaryFlags.COMPRESSED):
+	if test_all_flags(flags, BinaryFlags.COMPRESSED):
 		var compression_size := message.decode_u32(offset)
 		offset += 4
 		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
