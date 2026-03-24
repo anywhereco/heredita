@@ -32,6 +32,8 @@ var room: Room
 var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
+var chunker: ISUtil.Chunker
+
 const TIMEOUT: int = 10000  #ms
 const BUFFER_SIZE_KB: int = 2048
 
@@ -57,6 +59,7 @@ func _init(
 		operator = true
 	creating_room = creating
 	creating_map = map
+	chunker = ISUtil.Chunker.new(func(data: PackedByteArray) -> void: socket.send(data))
 
 
 func _ready() -> void:

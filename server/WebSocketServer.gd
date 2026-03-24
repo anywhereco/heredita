@@ -8,6 +8,7 @@ var _tcp_server: TCPServer = TCPServer.new()
 
 var _peers: Dictionary[int, WebSocketPeer] = {}
 var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
+var _peer_chunkers: Dictionary[int, ISUtil.Chunker] = {}
 
 var last_peer_id := 1
 
@@ -104,6 +105,9 @@ func _process(_delta: float) -> void:
 		ws.accept_stream(_tcp_server.take_connection())
 		_peers[last_peer_id] = ws
 		_peer_status[last_peer_id] = WebSocketPeer.STATE_CONNECTING
+		_peer_chunkers[last_peer_id] = ISUtil.Chunker.new(
+			func(data: PackedByteArray) -> void: ws.send(data)
+		)
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop
 	for peer_id: int in _peers.keys():
