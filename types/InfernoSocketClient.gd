@@ -32,13 +32,8 @@ var room: Room
 var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
-var large_packet_budget_used: int = 0
-
-var eid: int = 0
-
 const TIMEOUT: int = 10000  #ms
 const BUFFER_SIZE_KB: int = 2048
-const LARGE_PACKET_BUDGET: int = (BUFFER_SIZE_KB * 1024) - 65536
 
 signal connected_to_server
 signal connection_closed
@@ -114,28 +109,7 @@ func send(event: String, message: Variant = null) -> int:
 func send_binary(
 	event: int, target: int, message: PackedByteArray = PackedByteArray(), compress: bool = true
 ) -> int:
-	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
-	assert(
-		target >= -32768 and target <= 32767,
-		"The target value should fit within a 16-bit signed int"
-	)
-	var size := 5 + (4 if compress else 0)
-	var flags := 0
-	var compression_size: int
-	if compress:
-		@warning_ignore("int_as_enum_without_cast")
-		flags = ISUtil.BinaryFlags.COMPRESSED
-		compression_size = len(message)
-		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
-	var bytes := PackedByteArray()
-	bytes.resize(size)
-	bytes.encode_u16(0, event)
-	bytes.encode_s16(2, target)
-	bytes.encode_u8(4, flags)
-	if compress:
-		bytes.encode_u32(5, compression_size)
-	bytes.append_array(message)
-	return socket.send(bytes)
+	return socket.send(ISUtil._create_binary(event, target, message, compress))
 
 
 func get_message_raw() -> Variant:
@@ -174,11 +148,6 @@ func convert_players(dict: Dictionary) -> Dictionary[int, Player]:
 	for key: Variant in dict:
 		new_dict[key as int] = Player.from_info(dict[key] as Dictionary)
 	return new_dict
-
-
-func increment_eid() -> int:
-	eid += 1
-	return eid
 
 
 #region Polling
@@ -324,7 +293,6 @@ func _poll_string(message: Dictionary) -> void:
 				player.status = message.get("details").get("status")
 				message_received.emit("is2_player_status_update", -1, message.get("details"))
 				return
-
 			"_is2_pong":
 				return
 			_:
@@ -334,15 +302,8 @@ func _poll_string(message: Dictionary) -> void:
 
 
 func _poll_binary(message: PackedByteArray) -> void:
-	var event := message.decode_u16(0)
-	var uid := message.decode_s16(2)
-	var flags := message.decode_u8(4)
-	var compressed := flags & ISUtil.BinaryFlags.COMPRESSED
-	var data := message.slice(9 if compressed else 5)
-	if compressed:
-		var compression_size := message.decode_u32(5)
-		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-	binary_message_received.emit(event, uid, flags, data)
+	var data := ISUtil._parse_binary(message)
+	binary_message_received.emit(data.event, data.uid, data.flags, data.data)
 
 
 func _process(delta: float) -> void:

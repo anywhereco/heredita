@@ -69,16 +69,8 @@ func get_text_data(peer_id: int) -> String:
 
 
 func parse_binary(data: PackedByteArray) -> Dictionary:
-	var event := data.decode_u16(0)
-	var target := data.decode_s16(2)
-	var flags := data.decode_u8(4)
-	var body_data: PackedByteArray
-	if flags & ISUtil.BinaryFlags.COMPRESSED:
-		var compression_size := data.decode_u32(5)
-		body_data = data.slice(9).decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-	else:
-		body_data = data.slice(5)
-	return {"event": event, "target": target, "data": body_data}
+	var event := ISUtil._parse_binary(data)
+	return {"event": event.event, "target": event.uid, "data": event.data}
 
 
 func get_binary_data(peer_id: int) -> Dictionary:

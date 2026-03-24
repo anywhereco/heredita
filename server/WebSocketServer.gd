@@ -74,25 +74,9 @@ func send_targeted_event(
 
 
 func send_targeted_binary(
-	peer_id: int, event: int, message: PackedByteArray, flags: int = 0, compress: bool = true
+	peer_id: int, event: int, message: PackedByteArray, compress: bool = true
 ) -> int:
-	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
-	var compression_size: int
-	if compress:
-		flags |= ISUtil.BinaryFlags.COMPRESSED
-		compression_size = len(message)
-		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
-	var bytes := PackedByteArray()
-	bytes.resize(5)
-	bytes.encode_u16(0, event)
-	var target := 0  #unnecessary for server messages
-	bytes.encode_s16(2, target)
-	bytes.encode_u8(4, flags)
-	if compress:
-		bytes.resize(9)
-		bytes.encode_u32(5, compression_size)
-	bytes.append_array(message)
-	return send_raw_binary(peer_id, bytes)
+	return send_raw_binary(peer_id, ISUtil._create_binary(event, 0, message, compress))
 
 
 func send_global_event(event: String, details: Dictionary, origin_id := -1) -> Error:

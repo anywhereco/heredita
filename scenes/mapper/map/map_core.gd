@@ -181,14 +181,13 @@ func reset_chunks() -> void:
 	@warning_ignore("unsafe_call_argument")
 	brightness_change(Settings.get_reactive("brightness"))
 
+
 func initialize_chunk(x: int, y: int) -> void:
 	@warning_ignore("integer_division")
 	var x_idx := x / Statics.CHUNK_SIZE
 	@warning_ignore("integer_division")
 	var y_idx := y / Statics.CHUNK_SIZE
-	var chunk_coords := Rect2i(
-		Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE)
-	)
+	var chunk_coords := Rect2i(Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE))
 	var img := original_map.get_region(chunk_coords)
 	#Image.create_empty(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE, false, original_map.get_format())
 	#img.blit_rect(original_map, chunk_coords, Vector2i.ZERO)
@@ -213,15 +212,18 @@ func initialize_chunk(x: int, y: int) -> void:
 	chunks_edited.get(x_idx).insert(y_idx, false)
 	chunk_images.get(x_idx).insert(y_idx, img)
 
+
 func _ready() -> void:
 	Settings.get_reactive("brightness").value_changed.connect(brightness_change)
 	if State.client.operator:
 		load_from_original()
 
+
 func brightness_change(brightness: ReactiveFloat) -> void:
 	for chunk: Sprite3D in chunk_container_node.get_children():
 		chunk.modulate = Color(brightness.value, brightness.value, brightness.value, 1)
 	preview_plane.modulate = Color(brightness.value, brightness.value, brightness.value, .5)
+
 
 func update_map_pos() -> void:
 	var mouse_position := VirtualMouse._instance.position

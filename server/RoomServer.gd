@@ -180,9 +180,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		var sizedata := PackedByteArray()
 		sizedata.resize(4)
 		sizedata.encode_u32(0, serialized.size())
-		ws_server.send_targeted_binary(
-			peer_id, ISUtil.BinaryEvents.SYNC_MAP_SIZE, sizedata, ISUtil.BinaryFlags.NONE, false
-		)
+		ws_server.send_targeted_binary(peer_id, ISUtil.BinaryEvents.SYNC_MAP_SIZE, sizedata, false)
 
 		for part in parts:
 			var last := part == parts - 1
@@ -190,7 +188,6 @@ func _connected(peer_id: int, created: bool = false) -> void:
 				peer_id,
 				ISUtil.BinaryEvents.SYNC_MAP_END if last else ISUtil.BinaryEvents.SYNC_MAP,  # TODO move this entire thing over to actual chunk system
 				compressed.slice(part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000),
-				ISUtil.BinaryFlags.NONE,
 				false
 			)
 			await get_tree().create_timer(0.1).timeout

@@ -60,12 +60,125 @@ static func test_flags(flags: int, test: int) -> bool:
 	return (flags & test) == test
 
 
-static func parse_binary(message: PackedByteArray) -> void:
+static func _parse_binary(message: PackedByteArray) -> Dictionary:
 	var event := message.decode_u16(0)
 	var uid := message.decode_s16(2)
 	var flags := message.decode_u8(4)
 	var header_size := 5 + (4 if test_flags(flags, BinaryFlags.COMPRESSED) else 0)
 	var data := message.slice(header_size)
+	var offset := 5
 	if test_flags(flags, BinaryFlags.COMPRESSED):
-		var compression_size := message.decode_u32(5)
+		var compression_size := message.decode_u32(offset)
+		offset += 4
 		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
+	return {"event": event, "uid": uid, "flags": flags, "data": data}
+
+
+static func _create_binary(
+	event: int, target: int, message: PackedByteArray, compress: bool
+) -> PackedByteArray:
+	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
+	assert(
+		target >= -32768 and target <= 32767,
+		"The target value should fit within a 16-bit signed int"
+	)
+	var size := 5 + (4 if compress else 0)
+	var flags := 0
+	var compression_size: int
+	if compress:
+		@warning_ignore("int_as_enum_without_cast")
+		flags = ISUtil.BinaryFlags.COMPRESSED
+		compression_size = len(message)
+		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
+	var bytes := PackedByteArray()
+	bytes.resize(size)
+	bytes.encode_u16(0, event)
+	bytes.encode_s16(2, target)
+	bytes.encode_u8(4, flags)
+	if compress:
+		bytes.encode_u32(5, compression_size)
+	bytes.append_array(message)
+	return bytes
+
+
+class Chunker:
+	extends RefCounted
+
+	signal chunk_recieved(id: int)
+
+	var current_channel_count: int = 0
+
+	var chunk_id: int = 0
+
+	## The expected format for the send callable is a one-parameter function that takes in a PackedByteArray.
+	var send_to_socket: Callable
+
+	const BUFFER_SIZE_KB: int = 2048
+	const LARGE_PACKET_BUDGET: int = (BUFFER_SIZE_KB * 1024) - 65536
+	const MAX_CHANNELS: int = 2
+	const PACKETS_PER_CHANNEL: int = 4
+
+	static func _create_chunk_header(
+		event: int, target: int, uncompressed_size: int, channel: int
+	) -> PackedByteArray:
+		var bytes := PackedByteArray()
+		bytes.resize(10)
+		bytes.encode_u16(0, event)
+		bytes.encode_s16(2, target)
+		bytes.encode_u8(4, BinaryFlags.CHUNK_START_HEADER)
+		bytes.encode_u32(5, uncompressed_size)
+		bytes.encode_u8(9, channel)
+		return bytes
+
+	static func _create_chunk_data(
+		event: int, target: int, _chunk_id: int, channel: int, chunk_data: PackedByteArray
+	) -> PackedByteArray:
+		var bytes := PackedByteArray()
+		bytes.resize(10)
+		bytes.encode_u16(0, event)
+		bytes.encode_s16(2, target)
+		bytes.encode_u8(4, BinaryFlags.CHUNK_PART)
+		bytes.encode_u32(5, _chunk_id)
+		bytes.encode_u8(9, channel)
+		bytes.append_array(chunk_data)
+		return bytes
+
+	func _init(_send: Callable) -> void:
+		send_to_socket = _send
+
+	func increment_chunk_id() -> int:
+		chunk_id += 1
+		return chunk_id
+
+	func send(event: int, target: int, message: PackedByteArray) -> Error:
+		if current_channel_count == MAX_CHANNELS:
+			return ERR_BUSY
+		var channel := current_channel_count
+		current_channel_count += 1
+
+		var uncompressed_size := message.size()
+		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
+
+		var size := message.size()
+
+		@warning_ignore("integer_division")
+		var chunk_size := LARGE_PACKET_BUDGET / (PACKETS_PER_CHANNEL * MAX_CHANNELS)
+
+		var chunk_count := ceili(message.size() / (chunk_size as float))
+		var chunk_ids: Array[int] = []
+
+		chunk_recieved.connect(func(id: int) -> void: chunk_ids.erase(id))
+		send_to_socket.call(_create_chunk_header(event, target, uncompressed_size, channel))
+
+		for chunk in range(chunk_count):
+			while chunk_ids.size() >= PACKETS_PER_CHANNEL:
+				await chunk_recieved
+
+			var chunk_data := message.slice(
+				(chunk_count - 1) * chunk_size, mini((chunk_count * chunk_size) - 1, size)
+			)
+			send_to_socket.call(_create_chunk_data(event, target, chunk_id, channel, chunk_data))
+			increment_chunk_id()
+
+		current_channel_count -= 1
+		return OK
