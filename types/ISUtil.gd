@@ -63,7 +63,7 @@ static func to_vec3(vec: Array) -> Vector3:
 
 
 static func test_flags(flags: int, test: int) -> bool:
-	return (flags & test)
+	return flags & test
 
 
 static func message_is_chunking_related(message: PackedByteArray) -> bool:
@@ -183,7 +183,11 @@ class ChunkSender:
 			var chunk_data := message.slice(
 				(chunk_count - 1) * chunk_size, mini(chunk_count * chunk_size, size)
 			)
-			send_to_socket.call(_create_chunk_data(chunk_id, channel, chunk_data, chunk_count == (total_chunk_count)))
+			send_to_socket.call(
+				_create_chunk_data(
+					chunk_id, channel, chunk_data, chunk_count == (total_chunk_count)
+				)
+			)
 			increment_chunk_id()
 
 		current_channel_count -= 1
@@ -192,23 +196,23 @@ class ChunkSender:
 
 class ChunkReciever:
 	extends RefCounted
-	
+
 	signal chunked_message(event: int, target: int, data: PackedByteArray)
-	
+
 	signal chunk_received(id: int)
-	
+
 	## The int key is the channel of the message, since there cannot be two messages at once in the same channel.
 	var messages: Dictionary[int, PackedByteArray]
 	var message_uncompressed_sizes: Dictionary[int, int]
 	var message_targets: Dictionary[int, int]
 	var message_events: Dictionary[int, int]
-	
+
 	## Returns whether the message is chunking related [i.e. if it has been handled by the chunking system]
 	func handle_potential_chunked_message(message: PackedByteArray) -> bool:
 		var flags := message.decode_u8(0)
 		if not (flags & (BinaryFlags.CHUNK_START_HEADER | BinaryFlags.CHUNK_PART)):
-			return false # if this isn't chunking related we want to fast path this
-		if (flags & BinaryFlags.CHUNK_START_HEADER):
+			return false  # if this isn't chunking related we want to fast path this
+		if flags & BinaryFlags.CHUNK_START_HEADER:
 			var event := message.decode_u16(1)
 			var target := message.decode_s16(3)
 			var uncompressed_size := message.decode_u32(5)
@@ -216,12 +220,16 @@ class ChunkReciever:
 			message_events[channel] = event
 			message_targets[channel] = target
 			message_uncompressed_sizes[channel] = uncompressed_size
-		if (flags & BinaryFlags.CHUNK_PART):
+		if flags & BinaryFlags.CHUNK_PART:
 			var chunk_id := (message.decode_u16(1) << 8) | message.decode_u8(3)
 			var channel := message.decode_u8(4)
 			chunk_received.emit(chunk_id)
-			if (flags & BinaryFlags.CHUNK_PART_LAST):
-				var decompressed := messages[channel].decompress(message_uncompressed_sizes[channel], FileAccess.COMPRESSION_FASTLZ)
-				chunked_message.emit(message_events[channel], message_targets[channel], decompressed)
-				messages[channel] = PackedByteArray() # Since messages can be very large, we clean up the data here.
-		return true ## temp
+			if flags & BinaryFlags.CHUNK_PART_LAST:
+				var decompressed := messages[channel].decompress(
+					message_uncompressed_sizes[channel], FileAccess.COMPRESSION_FASTLZ
+				)
+				chunked_message.emit(
+					message_events[channel], message_targets[channel], decompressed
+				)
+				messages[channel] = PackedByteArray()  # Since messages can be very large, we clean up the data here.
+		return true
