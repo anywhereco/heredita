@@ -8,7 +8,7 @@ var _tcp_server: TCPServer = TCPServer.new()
 
 var _peers: Dictionary[int, WebSocketPeer] = {}
 var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
-var _peer_chunkers: Dictionary[int, ISUtil.Chunker] = {}
+var _peer_chunk_senders: Dictionary[int, ISUtil.ChunkSender] = {}
 
 var last_peer_id := 1
 
@@ -105,7 +105,7 @@ func _process(_delta: float) -> void:
 		ws.accept_stream(_tcp_server.take_connection())
 		_peers[last_peer_id] = ws
 		_peer_status[last_peer_id] = WebSocketPeer.STATE_CONNECTING
-		_peer_chunkers[last_peer_id] = ISUtil.Chunker.new(
+		_peer_chunk_senders[last_peer_id] = ISUtil.ChunkSender.new(
 			func(data: PackedByteArray) -> void: ws.send(data)
 		)
 

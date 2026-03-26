@@ -1,9 +1,9 @@
-## Handles InfernoSocket v2 connections.
+## Handles InfernoSocket connections.
 class_name InfernoSocketClient
 extends Node
 
 var return_handshake := {
-	"infernosocket_version": [2, 2],
+	"infernosocket_version": [3, 0],
 	"software_version": ProjectSettings.get_setting_with_override("application/config/version")
 }
 
@@ -32,7 +32,7 @@ var room: Room
 var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
-var chunker: ISUtil.Chunker
+var chunk_sender: ISUtil.ChunkSender
 
 const TIMEOUT: int = 10000  #ms
 const BUFFER_SIZE_KB: int = 2048
@@ -59,7 +59,7 @@ func _init(
 		operator = true
 	creating_room = creating
 	creating_map = map
-	chunker = ISUtil.Chunker.new(func(data: PackedByteArray) -> void: socket.send(data))
+	chunk_sender = ISUtil.ChunkSender.new(func(data: PackedByteArray) -> void: socket.send(data))
 
 
 func _ready() -> void:
