@@ -185,6 +185,8 @@ func _poll_loop() -> void:
 		var message_res := _decode_data(message_raw as String)  # Godot, I promise you this String is a String. I swear.
 		if message_res.is_err():
 			return
+			
+		prints("CLIE recv dir", message_raw as String)
 		_poll_string(message_res.val() as Dictionary)
 	else:
 		if message_raw == null:
@@ -204,31 +206,33 @@ func _poll_string(message: Dictionary) -> void:
 			)
 			return
 		match message["event"]:
-			"_is2_chunk_recieved":
-				chunk_sender.chunk_recieved.emit(message["details"])
+			"_is2_chunk_received":
+				prints("CLIE recv", message["details"])
+				chunk_sender.chunk_recieved.emit(message.get("details", 0))
 			"_is2_handshake":
 				print("handshake")
 				if creating_room:
-					var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
-					creating_room["map_file_size"] = creating_map.size()
-					send("_is2_create_room", creating_room)
-					var parts := ceili(len(map_compr) / 250000.0)
-					for part in parts:
-						var last := part == parts - 1
-						send_binary(
-							(
-								ISUtil.BinaryEvents.SYNC_MAP_END
-								if last
-								else ISUtil.BinaryEvents.SYNC_MAP
-							),  # TODO move this entire thing over to actual chunk system
-							-1,
-							map_compr.slice(
-								part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
-							),
-							false
-						)
-						await get_tree().create_timer(0.1).timeout
-					return
+					chunk_sender.send(ISUtil.BinaryEvents.SYNC_MAP, -1, creating_map)
+					#var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
+					#creating_room["map_file_size"] = creating_map.size()
+					#send("_is2_create_room", creating_room)
+					#var parts := ceili(len(map_compr) / 250000.0)
+					#for part in parts:
+						#var last := part == parts - 1
+						#send_binary(
+							#(
+								#ISUtil.BinaryEvents.SYNC_MAP_END
+								#if last
+								#else ISUtil.BinaryEvents.SYNC_MAP
+							#),  # TODO move this entire thing over to actual chunk system
+							#-1,
+							#map_compr.slice(
+								#part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
+							#),
+							#false
+						#)
+						#await get_tree().create_timer(0.1).timeout
+					#return
 				send("_is2_room_info", room_id)
 				return
 			"_is2_room_info":
@@ -315,6 +319,8 @@ func _poll_string(message: Dictionary) -> void:
 
 
 func _poll_binary(message: PackedByteArray) -> void:
+	if chunk_reciever.handle_potential_chunked_message(message):
+		return
 	var data := ISUtil._parse_binary(message)
 	binary_message_received.emit(data.event, data.uid, data.flags, data.data)
 

@@ -87,16 +87,8 @@ func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 
 
 func sync_map(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
-	if event == ISUtil.BinaryEvents.SYNC_MAP_SIZE:
-		map_data_uncompr_size = details.decode_u32(0)
 	if event == ISUtil.BinaryEvents.SYNC_MAP:
-		map_data_compressed.append_array(details)
-	if event == ISUtil.BinaryEvents.SYNC_MAP_END:
-		map_data_compressed.append_array(details)
-		var decomp := map_data_compressed.decompress(
-			map_data_uncompr_size, FileAccess.COMPRESSION_FASTLZ
-		)
-		Map._instance.set_data(MapData.deserialize(decomp))
+		Map._instance.set_data(MapData.deserialize(details))
 
 
 func closed() -> void:

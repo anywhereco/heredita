@@ -14,9 +14,14 @@ enum BinaryFlags {
 	CHUNK_PART_LAST = 1 << 3,
 }
 
-enum BinaryEvents { SYNC_MAP = 0x0, SYNC_MAP_END = 0x1, SYNC_MAP_SIZE = 0x2 }
+enum BinaryEvents { SYNC_MAP = 0x0 }
 
-enum BinaryEventsChunked { SYNC_MAP = 0x0 }
+
+## Returns "" if not a valid event.
+static func is_event(data: Variant) -> String:
+	if typeof(data) != TYPE_DICTIONARY:
+		return ""
+	return data.get("event", "")
 
 
 static func json_event(dict: Dictionary) -> Variant:
@@ -173,15 +178,18 @@ class ChunkSender:
 		var total_chunk_count := ceili(message.size() / (chunk_size as float))
 		var chunk_ids: Array[int] = []
 
-		chunk_recieved.connect(func(id: int) -> void: chunk_ids.erase(id))
+		chunk_recieved.connect(func(id: int) -> void: 
+			chunk_ids.erase(id)
+		)
 		send_to_socket.call(_create_chunk_header(event, target, uncompressed_size, channel))
 
 		for chunk_count in range(total_chunk_count):
 			while chunk_ids.size() >= PACKETS_PER_CHANNEL:
 				await chunk_recieved
-
+			chunk_ids.append(chunk_id)
+			
 			var chunk_data := message.slice(
-				(chunk_count - 1) * chunk_size, mini(chunk_count * chunk_size, size)
+				chunk_count * chunk_size, mini((chunk_count + 1) * chunk_size, size)
 			)
 			send_to_socket.call(
 				_create_chunk_data(

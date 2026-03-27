@@ -68,11 +68,18 @@ func send_raw_binary(peer_id: int, message: PackedByteArray) -> Error:
 func send_targeted_event(
 	peer_id: int, event: String, details: Variant = {}, origin_id := -1
 ) -> Error:
-	if details:
+	prints("SERV sending", event, details)
+	if details != null:
 		return send_text(
 			peer_id, JSON.stringify({"event": event, "player_id": origin_id, "details": details})
 		)
 	return send_text(peer_id, JSON.stringify({"event": event, "player_id": origin_id}))
+
+
+func send_targeted_chunk_data(
+	peer_id: int, event: int, message: PackedByteArray
+) -> int:
+	return await _peer_chunk_senders[peer_id].send(event, 0, message)
 
 
 func send_targeted_binary(
@@ -135,8 +142,17 @@ func _process(_delta: float) -> void:
 				var packet := peer.get_packet()
 				if peer.was_string_packet():
 					var packet_text := packet.get_string_from_utf8()
+					var event: Variant = JSON.parse_string(packet_text)
+					prints("serv recv:", packet_text)
+					if ISUtil.is_event(event) == "_is2_chunk_received":
+						prints("serv recv: dealing with chunk")
+						_peer_chunk_senders[peer_id].chunk_recieved.emit(event.details)
+						return
+					prints("serv recv: not dealing with chunk")
 					text_data.emit(peer_id, packet_text)
 				else:
+					if _peer_chunk_receivers[peer_id].handle_potential_chunked_message(packet):
+						return
 					var data := ISUtil._parse_binary(packet)
 					binary_message.emit(peer_id, data.event, data.target, data.flags, data.details)
 		elif peer_state == WebSocketPeer.STATE_CLOSED:

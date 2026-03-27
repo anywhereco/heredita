@@ -175,22 +175,23 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	)
 	if not created:
 		var serialized := room.map.serialize()
-		var compressed := serialized.compress(FileAccess.COMPRESSION_FASTLZ)
-		var parts := ceili(len(compressed) / 250000.0)
-		var sizedata := PackedByteArray()
-		sizedata.resize(4)
-		sizedata.encode_u32(0, serialized.size())
-		ws_server.send_targeted_binary(peer_id, ISUtil.BinaryEvents.SYNC_MAP_SIZE, sizedata, false)
-
-		for part in parts:
-			var last := part == parts - 1
-			ws_server.send_targeted_binary(
-				peer_id,
-				ISUtil.BinaryEvents.SYNC_MAP_END if last else ISUtil.BinaryEvents.SYNC_MAP,  # TODO move this entire thing over to actual chunk system
-				compressed.slice(part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000),
-				false
-			)
-			await get_tree().create_timer(0.1).timeout
+		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
+		#var compressed := serialized.compress(FileAccess.COMPRESSION_FASTLZ)
+		#var parts := ceili(len(compressed) / 250000.0)
+		#var sizedata := PackedByteArray()
+		#sizedata.resize(4)
+		#sizedata.encode_u32(0, serialized.size())
+		#ws_server.send_targeted_binary(peer_id, ISUtil.BinaryEvents.SYNC_MAP_SIZE, sizedata, false)
+#
+		#for part in parts:
+			#var last := part == parts - 1
+			#ws_server.send_targeted_binary(
+				#peer_id,
+				#ISUtil.BinaryEvents.SYNC_MAP_END if last else ISUtil.BinaryEvents.SYNC_MAP,  # TODO move this entire thing over to actual chunk system
+				#compressed.slice(part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000),
+				#false
+			#)
+			#await get_tree().create_timer(0.1).timeout
 
 	ws_server.send_targeted_event(peer_id, "calendar_sync", calendar.to_json())
 	# TODO: fix self.room.map.get_map_as_image().data not being EMPTY ):
@@ -296,6 +297,7 @@ func _text_data(peer_id: int, data: String) -> void:
 				)
 
 
+@warning_ignore("unused_parameter")
 func _binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
 	pass
 

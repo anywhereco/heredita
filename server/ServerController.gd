@@ -75,15 +75,13 @@ func parse_binary(data: PackedByteArray) -> Dictionary:
 
 func get_binary_data(peer_id: int) -> Dictionary:
 	var peer := 0x7fffffffffffffff
-	var ret: Array
+	var ret: Dictionary
 	while peer != peer_id:
 		var timer := get_tree().create_timer(TIMEOUT)
-		ret = await TimedPromise.new(timer, ws_server.binary_data).done
+		ret = await TimedPromise.new(timer, ws_server.binary_message).done
 		if not ret:  #timed out
 			return {}
-		peer = ret[0]
-	var data: PackedByteArray = ret[1]
-	return parse_binary(data)
+	return ret
 
 
 func parse_json(text: String) -> Result:
@@ -113,17 +111,12 @@ func _connected(peer_id: int) -> void:
 		r._connected(peer_id)
 		return
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
-		var size: int = json.val()["details"]["map_file_size"]
-		var map_content: PackedByteArray = PackedByteArray([])
-		while true:
-			var map_data: Dictionary = await get_binary_data(peer_id)
-			var map_data_body: PackedByteArray = map_data["data"]
-			map_content.append_array(map_data_body)
-			if map_data["event"] == ISUtil.BinaryEvents.SYNC_MAP_END:
-				break
+		var msg := await get_binary_data(peer_id)
+		if msg["data"] != ISUtil.BinaryEvents.SYNC_MAP:
+			ws_server.close(peer_id, 4096, "Expected a map")
 		@warning_ignore("unsafe_call_argument")
 		var rid := create_room(
-			json.val()["details"], map_content.decompress(size, FileAccess.COMPRESSION_FASTLZ)
+			json.val()["details"], msg["data"]
 		)
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
@@ -146,9 +139,9 @@ func _text_data(peer_id: int, data: String) -> void:
 
 func _binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
 	if peer_id in peer_rooms:
-		rooms[peer_rooms[peer_id]]._binary_data(peer_id, event, player_id, flags, details)
+		rooms[peer_rooms[peer_id]]._binary_message(peer_id, event, player_id, flags, details)
 	else:
-		if not data_parsed["event"] in ISUtil.BinaryEvents.values():  # == ISUtil.BinaryEvents.SYNC_MAP: # TODO probably needs to be only the map events
+		if not event in ISUtil.BinaryEvents.values(): # TODO probably needs to be only the map events
 			ws_server.close(peer_id, 4096, "Protocol failurec")
 
 
