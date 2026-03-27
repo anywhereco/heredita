@@ -193,7 +193,7 @@ class ChunkSender:
 			)
 			send_to_socket.call(
 				_create_chunk_data(
-					chunk_id, channel, chunk_data, chunk_count == (total_chunk_count)
+					chunk_id, channel, chunk_data, chunk_count == (total_chunk_count - 1)
 				)
 			)
 			increment_chunk_id()
@@ -228,9 +228,12 @@ class ChunkReceiver:
 			message_events[channel] = event
 			message_targets[channel] = target
 			message_uncompressed_sizes[channel] = uncompressed_size
+			if not messages.has(channel):
+				messages[channel] = PackedByteArray()
 		if flags & BinaryFlags.CHUNK_PART:
 			var chunk_id := (message.decode_u16(1) << 8) | message.decode_u8(3)
 			var channel := message.decode_u8(4)
+			messages[channel].append_array(message.slice(5))
 			chunk_received.emit(chunk_id)
 			if flags & BinaryFlags.CHUNK_PART_LAST:
 				var decompressed := messages[channel].decompress(

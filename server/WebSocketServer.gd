@@ -121,7 +121,7 @@ func _process(_delta: float) -> void:
 			send_targeted_event(last_peer_id, "_is2_chunk_received", id)
 		)
 		_peer_chunk_receivers[last_peer_id].chunked_message.connect(func(event: int, target: int, data: PackedByteArray) -> void:
-			binary_message.emit(event, target, ISUtil.BinaryFlags.NONE, data)
+			binary_message.emit(last_peer_id, event, target, ISUtil.BinaryFlags.NONE, data)
 		)
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop
@@ -147,6 +147,10 @@ func _process(_delta: float) -> void:
 					if ISUtil.is_event(event) == "_is2_chunk_received":
 						prints("serv recv: dealing with chunk")
 						_peer_chunk_senders[peer_id].chunk_recieved.emit(event.details)
+						return
+					if ISUtil.is_event(event) == "_is2_ping":
+						prints("serv recv: pinging")
+						send_targeted_event(peer_id, "_is2_pong")
 						return
 					prints("serv recv: not dealing with chunk")
 					text_data.emit(peer_id, packet_text)
