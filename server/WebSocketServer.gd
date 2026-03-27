@@ -9,6 +9,7 @@ var _tcp_server: TCPServer = TCPServer.new()
 var _peers: Dictionary[int, WebSocketPeer] = {}
 var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
 var _peer_chunk_senders: Dictionary[int, ISUtil.ChunkSender] = {}
+var _peer_chunk_receivers: Dictionary[int, ISUtil.ChunkReceiver] = {}
 
 var last_peer_id := 1
 
@@ -30,7 +31,7 @@ func _ready() -> void:
 
 signal text_data(peer_id: int, data: String)
 
-signal binary_data(peer_id: int, data: PackedByteArray)
+signal binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray)
 
 signal connected(peer_id: int)
 
@@ -108,6 +109,13 @@ func _process(_delta: float) -> void:
 		_peer_chunk_senders[last_peer_id] = ISUtil.ChunkSender.new(
 			func(data: PackedByteArray) -> void: ws.send(data)
 		)
+		_peer_chunk_receivers[last_peer_id] = ISUtil.ChunkReceiver.new()
+		_peer_chunk_receivers[last_peer_id].chunk_received.connect(func(id: int) -> void:
+			send_targeted_event(last_peer_id, "_is2_chunk_received", id)
+		)
+		_peer_chunk_receivers[last_peer_id].chunked_message.connect(func(event: int, target: int, data: PackedByteArray) -> void:
+			binary_message.emit(event, target, ISUtil.BinaryFlags.NONE, data)
+		)
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop
 	for peer_id: int in _peers.keys():
@@ -129,7 +137,8 @@ func _process(_delta: float) -> void:
 					var packet_text := packet.get_string_from_utf8()
 					text_data.emit(peer_id, packet_text)
 				else:
-					binary_data.emit(peer_id, packet)
+					var data := ISUtil._parse_binary(packet)
+					binary_message.emit(peer_id, data.event, data.target, data.flags, data.details)
 		elif peer_state == WebSocketPeer.STATE_CLOSED:
 			# Remove the disconnected peer.
 			_peers.erase(peer_id)

@@ -296,7 +296,7 @@ func _text_data(peer_id: int, data: String) -> void:
 				)
 
 
-func _binary_data(_peer_id: int, _data: Dictionary) -> void:
+func _binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
 	pass
 
 

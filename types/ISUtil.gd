@@ -194,7 +194,7 @@ class ChunkSender:
 		return OK
 
 
-class ChunkReciever:
+class ChunkReceiver:
 	extends RefCounted
 
 	signal chunked_message(event: int, target: int, data: PackedByteArray)

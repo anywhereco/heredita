@@ -15,7 +15,7 @@ func _ready() -> void:
 	add_child(bridge)
 	add_child(ws_server)
 	ws_server.text_data.connect(_text_data)
-	ws_server.binary_data.connect(_binary_data)
+	ws_server.binary_message.connect(_binary_message)
 	ws_server.connected.connect(_connected)
 	ws_server.closed.connect(_closed)
 
@@ -144,10 +144,9 @@ func _text_data(peer_id: int, data: String) -> void:
 			ws_server.close(peer_id, 4096, "Protocol failured")
 
 
-func _binary_data(peer_id: int, data: PackedByteArray) -> void:
-	var data_parsed := parse_binary(data)
+func _binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
 	if peer_id in peer_rooms:
-		rooms[peer_rooms[peer_id]]._binary_data(peer_id, data_parsed)
+		rooms[peer_rooms[peer_id]]._binary_data(peer_id, event, player_id, flags, details)
 	else:
 		if not data_parsed["event"] in ISUtil.BinaryEvents.values():  # == ISUtil.BinaryEvents.SYNC_MAP: # TODO probably needs to be only the map events
 			ws_server.close(peer_id, 4096, "Protocol failurec")

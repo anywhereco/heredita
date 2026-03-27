@@ -33,6 +33,7 @@ var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
 var chunk_sender: ISUtil.ChunkSender
+var chunk_reciever: ISUtil.ChunkReceiver
 
 const TIMEOUT: int = 10000  #ms
 const BUFFER_SIZE_KB: int = 2048
@@ -60,6 +61,13 @@ func _init(
 	creating_room = creating
 	creating_map = map
 	chunk_sender = ISUtil.ChunkSender.new(func(data: PackedByteArray) -> void: socket.send(data))
+	chunk_reciever = ISUtil.ChunkReceiver.new()
+	chunk_reciever.chunk_received.connect(func(id: int) -> void:
+		send("_is2_chunk_received", id)
+	)
+	chunk_reciever.chunked_message.connect(func(event: int, target: int, data: PackedByteArray) -> void:
+		binary_message_received.emit(event, target, ISUtil.BinaryFlags.NONE, data)
+	)
 
 
 func _ready() -> void:
@@ -196,6 +204,8 @@ func _poll_string(message: Dictionary) -> void:
 			)
 			return
 		match message["event"]:
+			"_is2_chunk_recieved":
+				chunk_sender.chunk_recieved.emit(message["details"])
 			"_is2_handshake":
 				print("handshake")
 				if creating_room:
