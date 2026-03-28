@@ -186,7 +186,6 @@ func _poll_loop() -> void:
 		if message_res.is_err():
 			return
 			
-		prints("CLIE recv dir", message_raw as String)
 		_poll_string(message_res.val() as Dictionary)
 	else:
 		if message_raw == null:
@@ -207,7 +206,6 @@ func _poll_string(message: Dictionary) -> void:
 			return
 		match message["event"]:
 			"_is2_chunk_received":
-				prints("CLIE recv", message["details"])
 				chunk_sender.chunk_recieved.emit(message.get("details", 0))
 			"_is2_handshake":
 				print("handshake")

@@ -68,7 +68,6 @@ func send_raw_binary(peer_id: int, message: PackedByteArray) -> Error:
 func send_targeted_event(
 	peer_id: int, event: String, details: Variant = {}, origin_id := -1
 ) -> Error:
-	prints("SERV sending", event, details)
 	if details != null:
 		return send_text(
 			peer_id, JSON.stringify({"event": event, "player_id": origin_id, "details": details})
@@ -143,16 +142,12 @@ func _process(_delta: float) -> void:
 				if peer.was_string_packet():
 					var packet_text := packet.get_string_from_utf8()
 					var event: Variant = JSON.parse_string(packet_text)
-					prints("serv recv:", packet_text)
 					if ISUtil.is_event(event) == "_is2_chunk_received":
-						prints("serv recv: dealing with chunk")
 						_peer_chunk_senders[peer_id].chunk_recieved.emit(event.details)
 						return
 					if ISUtil.is_event(event) == "_is2_ping":
-						prints("serv recv: pinging")
 						send_targeted_event(peer_id, "_is2_pong")
 						return
-					prints("serv recv: not dealing with chunk")
 					text_data.emit(peer_id, packet_text)
 				else:
 					if _peer_chunk_receivers[peer_id].handle_potential_chunked_message(packet):

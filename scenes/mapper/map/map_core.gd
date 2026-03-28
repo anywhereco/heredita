@@ -3,7 +3,7 @@ extends Node3D
 
 static var _instance: Map
 
-@export_range(1.0 / 16, 1, 1.0 / 16) var pixel_size: float = 1.0 / 8
+@export_range(1.0 / 32, 1, 1.0 / 32, "suffix:units/px") var pixel_size: float = 3.0 / 32
 
 @onready var player_camera: Camera3D = $"../LocalPlayer/CameraPivot/CameraArm/PlayerCamera"
 @onready var water: MeshInstance3D = $"../Water"
@@ -214,15 +214,15 @@ func initialize_chunk(x: int, y: int) -> void:
 
 
 func _ready() -> void:
-	Settings.get_reactive("brightness").value_changed.connect(brightness_change)
+	Settings.get_reactive("map_brightness").value_changed.connect(brightness_change)
 	if State.client.operator:
 		load_from_original()
+	preview_plane.pixel_size = pixel_size
 
 
 func brightness_change(brightness: ReactiveFloat) -> void:
 	for chunk: Sprite3D in chunk_container_node.get_children():
 		chunk.modulate = Color(brightness.value, brightness.value, brightness.value, 1)
-	preview_plane.modulate = Color(brightness.value, brightness.value, brightness.value, .5)
 
 
 func update_map_pos() -> void:

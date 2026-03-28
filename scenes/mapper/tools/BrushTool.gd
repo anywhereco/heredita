@@ -79,7 +79,7 @@ func _brush_size_changed() -> void:
 
 func _update_brush() -> void:
 	Map._instance.preview_plane.texture.update(get_image_for_brush())
-	var mod := paint_color.value
+	var mod: Color = paint_color.value * (Settings.getv("map_brightness") as float)
 	mod.a = 0.5
 	Map._instance.preview_plane.modulate = mod
 
