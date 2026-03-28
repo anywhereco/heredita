@@ -11,7 +11,8 @@ var settings_data: Dictionary[String, SettingsResource] = {
 	"ui_scale": SliderSetting.new("UI Scale", SliderSetting.Type.PERCENT, 1.0, 1.0, 3.0, 0.25),  # TODO: we should probably cap this based on current screen size?
 	"unfocus_on_chat_submission": ToggleSetting.new("Unfocus on chat send", true),
 	"enable_seconds": ToggleSetting.new("Enable seconds in time", false),
-	"map_brightness": SliderSetting.new("Map brightness", SliderSetting.Type.PERCENT, 1.0, .25, 1.25, 0.01)
+	"map_brightness":
+	SliderSetting.new("Map brightness", SliderSetting.Type.PERCENT, 1.0, .25, 1.25, 0.01)
 }
 var settings_tabs: Dictionary[String, Array] = {
 	"Input": ["mouse_sensitivity"],

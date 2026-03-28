@@ -31,7 +31,9 @@ func _ready() -> void:
 
 signal text_data(peer_id: int, data: String)
 
-signal binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray)
+signal binary_message(
+	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
+)
 
 signal connected(peer_id: int)
 
@@ -75,9 +77,7 @@ func send_targeted_event(
 	return send_text(peer_id, JSON.stringify({"event": event, "player_id": origin_id}))
 
 
-func send_targeted_chunk_data(
-	peer_id: int, event: int, message: PackedByteArray
-) -> int:
+func send_targeted_chunk_data(peer_id: int, event: int, message: PackedByteArray) -> int:
 	return await _peer_chunk_senders[peer_id].send(event, 0, message)
 
 
@@ -116,11 +116,12 @@ func _process(_delta: float) -> void:
 			func(data: PackedByteArray) -> void: ws.send(data)
 		)
 		_peer_chunk_receivers[last_peer_id] = ISUtil.ChunkReceiver.new()
-		_peer_chunk_receivers[last_peer_id].chunk_received.connect(func(id: int) -> void:
-			send_targeted_event(last_peer_id, "_is2_chunk_received", id)
+		_peer_chunk_receivers[last_peer_id].chunk_received.connect(
+			func(id: int) -> void: send_targeted_event(last_peer_id, "_is2_chunk_received", id)
 		)
-		_peer_chunk_receivers[last_peer_id].chunked_message.connect(func(event: int, target: int, data: PackedByteArray) -> void:
-			binary_message.emit(last_peer_id, event, target, ISUtil.BinaryFlags.NONE, data)
+		_peer_chunk_receivers[last_peer_id].chunked_message.connect(
+			func(event: int, target: int, data: PackedByteArray) -> void:
+				binary_message.emit(last_peer_id, event, target, ISUtil.BinaryFlags.NONE, data)
 		)
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop

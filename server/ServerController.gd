@@ -82,7 +82,9 @@ func get_binary_data(peer_id: int) -> Dictionary:
 		if not ret:  #timed out
 			return {}
 		peer = ret[0]
-	return {"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]}
+	return {
+		"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]
+	}
 
 
 func parse_json(text: String) -> Result:
@@ -116,9 +118,7 @@ func _connected(peer_id: int) -> void:
 		if msg["event"] != ISUtil.BinaryEvents.SYNC_MAP:
 			ws_server.close(peer_id, 4096, "Expected a map")
 		@warning_ignore("unsafe_call_argument")
-		var rid := create_room(
-			json.val()["details"], msg["data"]
-		)
+		var rid := create_room(json.val()["details"], msg["data"])
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
 		r._connected(peer_id, true)
@@ -138,11 +138,13 @@ func _text_data(peer_id: int, data: String) -> void:
 			ws_server.close(peer_id, 4096, "Protocol failured")
 
 
-func _binary_message(peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray) -> void:
+func _binary_message(
+	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
+) -> void:
 	if peer_id in peer_rooms:
 		rooms[peer_rooms[peer_id]]._binary_message(peer_id, event, player_id, flags, details)
 	else:
-		if not event in ISUtil.BinaryEvents.values(): # TODO probably needs to be only the map events
+		if not event in ISUtil.BinaryEvents.values():  # TODO probably needs to be only the map events
 			ws_server.close(peer_id, 4096, "Protocol failurec")
 
 

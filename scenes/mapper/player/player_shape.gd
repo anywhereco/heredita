@@ -1,7 +1,6 @@
 extends CSGSphere3D
 
-const TURN_SPEED := 12.0 
-
+const TURN_SPEED := 12.0
 
 @onready var player: PlayerMovement = $".."
 
@@ -9,6 +8,7 @@ var last_vel := Vector2.ZERO
 var vertical_target := 0.0
 var last_vertical_vel := 0.0
 var vertical_stretch := 1.0
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -28,18 +28,14 @@ func ghost(enable: bool) -> void:
 
 
 func _process(delta: float) -> void:
-	
 	var vel := Vector2(player.velocity.x, -player.velocity.z)
 	var angle := vel.angle()
-	
-	if vel.length_squared() > 2: # if we aren't moving we don't want to rotate
-		rotation.y -= deg_to_rad(-90) # we need to do this so the face location matches up
-		
-		rotation.y = fposmod(
-			lerp_angle(rotation.y, angle, TURN_SPEED * delta), 
-			TAU
-		)
-		
+
+	if vel.length_squared() > 2:  # if we aren't moving we don't want to rotate
+		rotation.y -= deg_to_rad(-90)  # we need to do this so the face location matches up
+
+		rotation.y = fposmod(lerp_angle(rotation.y, angle, TURN_SPEED * delta), TAU)
+
 		rotation.y += deg_to_rad(-90)
 	var vertical_stretch_target := 1.0 + (absf(player.velocity.y - vertical_target) * .04)
 	vertical_stretch += (vertical_stretch_target - vertical_stretch) * (1 - exp(-10 * delta))

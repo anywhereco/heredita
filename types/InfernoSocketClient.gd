@@ -62,11 +62,10 @@ func _init(
 	creating_map = map
 	chunk_sender = ISUtil.ChunkSender.new(func(data: PackedByteArray) -> void: socket.send(data))
 	chunk_reciever = ISUtil.ChunkReceiver.new()
-	chunk_reciever.chunk_received.connect(func(id: int) -> void:
-		send("_is2_chunk_received", id)
-	)
-	chunk_reciever.chunked_message.connect(func(event: int, target: int, data: PackedByteArray) -> void:
-		binary_message_received.emit(event, target, ISUtil.BinaryFlags.NONE, data)
+	chunk_reciever.chunk_received.connect(func(id: int) -> void: send("_is2_chunk_received", id))
+	chunk_reciever.chunked_message.connect(
+		func(event: int, target: int, data: PackedByteArray) -> void:
+			binary_message_received.emit(event, target, ISUtil.BinaryFlags.NONE, data)
 	)
 
 
@@ -185,7 +184,7 @@ func _poll_loop() -> void:
 		var message_res := _decode_data(message_raw as String)  # Godot, I promise you this String is a String. I swear.
 		if message_res.is_err():
 			return
-			
+
 		_poll_string(message_res.val() as Dictionary)
 	else:
 		if message_raw == null:
@@ -218,20 +217,20 @@ func _poll_string(message: Dictionary) -> void:
 					#send("_is2_create_room", creating_room)
 					#var parts := ceili(len(map_compr) / 250000.0)
 					#for part in parts:
-						#var last := part == parts - 1
-						#send_binary(
-							#(
-								#ISUtil.BinaryEvents.SYNC_MAP_END
-								#if last
-								#else ISUtil.BinaryEvents.SYNC_MAP
-							#),  # TODO move this entire thing over to actual chunk system
-							#-1,
-							#map_compr.slice(
-								#part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
-							#),
-							#false
-						#)
-						#await get_tree().create_timer(0.1).timeout
+					#var last := part == parts - 1
+					#send_binary(
+					#(
+					#ISUtil.BinaryEvents.SYNC_MAP_END
+					#if last
+					#else ISUtil.BinaryEvents.SYNC_MAP
+					#),  # TODO move this entire thing over to actual chunk system
+					#-1,
+					#map_compr.slice(
+					#part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
+					#),
+					#false
+					#)
+					#await get_tree().create_timer(0.1).timeout
 					#return
 				send("_is2_room_info", room_id)
 				return

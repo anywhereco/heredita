@@ -71,7 +71,14 @@ static func debug_print_array(arr: PackedByteArray, pre: Variant = "") -> void:
 	if arr.size() < 12:
 		print(pre, arr)
 	else:
-		print(pre, "%08x" % arr.decode_u32(0), "... [", arr.size(), " bytes] ...", "%08x" % arr.decode_u32(arr.size() - 4))
+		print(
+			pre,
+			"%08x" % arr.decode_u32(0),
+			"... [",
+			arr.size(),
+			" bytes] ...",
+			"%08x" % arr.decode_u32(arr.size() - 4)
+		)
 
 
 static func test_flags(flags: int, test: int) -> bool:
@@ -185,16 +192,14 @@ class ChunkSender:
 		var total_chunk_count := ceili(message.size() / (chunk_size as float))
 		var chunk_ids: Array[int] = []
 
-		chunk_recieved.connect(func(id: int) -> void: 
-			chunk_ids.erase(id)
-		)
+		chunk_recieved.connect(func(id: int) -> void: chunk_ids.erase(id))
 		send_to_socket.call(_create_chunk_header(event, target, uncompressed_size, channel))
 
 		for chunk_count in range(total_chunk_count):
 			while chunk_ids.size() >= PACKETS_PER_CHANNEL:
 				await chunk_recieved
 			chunk_ids.append(chunk_id)
-			
+
 			var chunk_data := message.slice(
 				chunk_count * chunk_size, mini((chunk_count + 1) * chunk_size, size)
 			)
