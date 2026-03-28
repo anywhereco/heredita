@@ -67,6 +67,13 @@ static func to_vec3(vec: Array) -> Vector3:
 	return Vector3(vec[0], vec[1], vec[2])
 
 
+static func debug_print_array(arr: PackedByteArray, pre: Variant = "") -> void:
+	if arr.size() < 12:
+		print(pre, arr)
+	else:
+		print(pre, "%08x" % arr.decode_u32(0), "... [", arr.size(), " bytes] ...", "%08x" % arr.decode_u32(arr.size() - 4))
+
+
 static func test_flags(flags: int, test: int) -> bool:
 	return flags & test
 
