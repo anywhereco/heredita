@@ -75,13 +75,14 @@ func parse_binary(data: PackedByteArray) -> Dictionary:
 
 func get_binary_data(peer_id: int) -> Dictionary:
 	var peer := 0x7fffffffffffffff
-	var ret: Dictionary
+	var ret: Array
 	while peer != peer_id:
 		var timer := get_tree().create_timer(TIMEOUT)
 		ret = await TimedPromise.new(timer, ws_server.binary_message).done
 		if not ret:  #timed out
 			return {}
-	return ret
+		peer = ret[0]
+	return {"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]}
 
 
 func parse_json(text: String) -> Result:
@@ -112,7 +113,7 @@ func _connected(peer_id: int) -> void:
 		return
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
 		var msg := await get_binary_data(peer_id)
-		if msg["data"] != ISUtil.BinaryEvents.SYNC_MAP:
+		if msg["event"] != ISUtil.BinaryEvents.SYNC_MAP:
 			ws_server.close(peer_id, 4096, "Expected a map")
 		@warning_ignore("unsafe_call_argument")
 		var rid := create_room(

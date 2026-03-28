@@ -212,6 +212,7 @@ func _poll_string(message: Dictionary) -> void:
 			"_is2_handshake":
 				print("handshake")
 				if creating_room:
+					send("_is2_create_room", creating_room)
 					chunk_sender.send(ISUtil.BinaryEvents.SYNC_MAP, -1, creating_map)
 					return
 					#var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
