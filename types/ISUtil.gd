@@ -233,7 +233,7 @@ class ChunkReceiver:
 		if flags & BinaryFlags.CHUNK_PART:
 			var chunk_id := (message.decode_u16(1) << 8) | message.decode_u8(3)
 			var channel := message.decode_u8(4)
-			messages[channel].append_array(message.slice(5))
+			messages[channel].append_array(message.slice(6))
 			chunk_received.emit(chunk_id)
 			if flags & BinaryFlags.CHUNK_PART_LAST:
 				var decompressed := messages[channel].decompress(
