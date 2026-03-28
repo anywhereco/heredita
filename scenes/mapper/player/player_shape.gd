@@ -1,5 +1,8 @@
 extends CSGSphere3D
 
+const TURN_SPEED := 12.0 
+
+
 @onready var player: PlayerMovement = $".."
 
 var last_vel := Vector2.ZERO
@@ -25,18 +28,15 @@ func ghost(enable: bool) -> void:
 
 
 func _process(delta: float) -> void:
+	
 	var vel := Vector2(player.velocity.x, -player.velocity.z)
-
 	var angle := vel.angle()
-
+	
 	if vel.length_squared() > 2: # if we aren't moving we don't want to rotate
-		
 		rotation.y -= deg_to_rad(-90) # we need to do this so the face location matches up
-		var turn_speed := 12.0 
 		
-
 		rotation.y = fposmod(
-			lerp_angle(rotation.y, angle, turn_speed * delta), 
+			lerp_angle(rotation.y, angle, TURN_SPEED * delta), 
 			TAU
 		)
 		
