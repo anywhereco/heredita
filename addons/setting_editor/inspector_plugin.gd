@@ -51,7 +51,7 @@ func _parse_begin(object: Object) -> void:
 	add_custom_control(vbox)
 
 func _parse_property(object: Object, type: Variant.Type, name: String, hint_type: PropertyHint, hint_string: String, usage_flags: int, wide: bool) -> bool:
-	if name in ["settings", "category_map", "settings_order"]:
+	if name in ["settings", "categories", "category_map", "settings_order"]:
 		return true 
 		
 	var holder = object as SettingsHolder
