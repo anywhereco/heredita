@@ -3,16 +3,16 @@ class_name SliderSetting
 extends SettingsResource
 
 ## The type of this slider.
-var type: Type
+@export var type: Type
 ## The default value for this slider.
-var default: float
+@export var default: float
 ## The minimum value of this slider.
-var min_value: float
+@export var min_value: float
 ## The maximum value of this slider.
-var max_value: float
+@export var max_value: float
 ## The snap value of this slider.
 ## If this is -1, there is no snap value.
-var snap: float
+@export var snap: float = -1
 
 enum Type {
 	FLOAT,
@@ -20,17 +20,6 @@ enum Type {
 	# LOG_FLOAT,
 	LOG_PERCENT
 }
-
-
-func _init(
-	_label: String, _type: Type, _default: float, _min: float, _max: float, _snap: float = -1
-) -> void:
-	self.label = _label
-	self.type = _type
-	self.default = _default
-	self.min_value = _min
-	self.max_value = _max
-	self.snap = _snap
 
 
 func is_percent() -> bool:

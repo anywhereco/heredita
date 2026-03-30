@@ -73,9 +73,11 @@ func ready_user() -> void:
 	user.http = _http_requesting_node_for_user
 
 
-func blurred_ui_handler(reactive: ReactiveBool) -> void:
-	glass_ui.set_shader_parameter("enable_blur", reactive.value)
-	popup_background.set_shader_parameter("enable_blur", reactive.value)
+func blurred_ui_handler(reactive: ReactiveBool) -> void: 
+	push_error("digi you need to fix this since your shader editing broke this")
+	push_error("hi im vscode merge conflict fixing digi. i fixed the shader. you can uncomment this now probably")
+#	glass_ui.set_shader_parameter("enable_blur", reactive.value)
+#	popup_background.set_shader_parameter("enable_blur", reactive.value)
   
   
 func _process(delta: float) -> void:

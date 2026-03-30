@@ -26,7 +26,7 @@ State="*res://singletons/state/state.gd"
 HTTP="*res://libraries/HTTP.gd"
 DebugLayer="*res://singletons/debug/DebugLayer.tscn"
 CursorLayer="*res://singletons/cursor/CursorLayer.tscn"
-Settings="*res://singletons/state/settings.gd"
+Settings="*res://singletons/settings/settings.gd"
 TopLevel="*uid://cskohnlj8smnp"
 
 [debug]
@@ -48,7 +48,7 @@ run/main_run_args="-- --heredita-url=http://localhost:9000 --gameserver-url=ws:/
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/exporttime_data/plugin.cfg", "res://addons/gdgdtoolkit/plugin.cfg", "res://addons/html5_file_dialog/plugin.cfg", "res://addons/reactive/plugin.cfg")
+enabled=PackedStringArray("res://addons/exporttime_data/plugin.cfg", "res://addons/gdgdtoolkit/plugin.cfg", "res://addons/html5_file_dialog/plugin.cfg", "res://addons/reactive/plugin.cfg", "res://addons/setting_editor/plugin.cfg")
 
 [file_customization]
 

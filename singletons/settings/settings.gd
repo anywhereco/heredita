@@ -2,31 +2,16 @@ extends Node
 
 const SAVE_PATH: String = "user://settings.json"
 
+var settings_data: SettingsHolder = preload("uid://dbu2ny70g7vwj")
+
 var settings: ReactiveDictionary = ReactiveDictionary.new({})
-var settings_data: Dictionary[String, SettingsResource] = {
-	"mouse_sensitivity":
-	SliderSetting.new("Mouse sensitivity", SliderSetting.Type.LOG_PERCENT, 1.0, 0.1, 10),
-	"camera_sensitivity":
-	SliderSetting.new("Camera sensitivity", SliderSetting.Type.LOG_PERCENT, 1.0, 0.1, 10),
-	"ui_scale": SliderSetting.new("UI Scale", SliderSetting.Type.PERCENT, 1.0, 1.0, 3.0, 0.25),  # TODO: we should probably cap this based on current screen size?
-	"unfocus_on_chat_submission": ToggleSetting.new("Unfocus on chat send", true),
-	"enable_seconds": ToggleSetting.new("Enable seconds in time", false),
-	"map_brightness":
-	SliderSetting.new("Map brightness", SliderSetting.Type.PERCENT, 1.0, .25, 1.25, 0.01),
-	"enable_blurred_ui": ToggleSetting.new("Blur background of UIs", true)
-}
-var settings_tabs: Dictionary[String, Array] = {
-	"Input": ["mouse_sensitivity"],
-	"Game": ["camera_sensitivity", "unfocus_on_chat_submission", "enable_seconds"],
-	"Display": ["ui_scale", "map_brightness", "enable_blurred_ui"]
-}
 
 
 func getv(setting: String, fallback: Variant = null) -> Variant:
 	if settings.has(setting):
 		return settings.getv(setting).value
 	if fallback == null:
-		return settings_data[setting].default
+		return settings_data.gets(setting).defaul
 	return fallback
 
 
@@ -40,19 +25,20 @@ func get_reactive(setting: String) -> Reactive:
 
 func _init() -> void:
 	_load_settings()
-	for setting in settings_data:
+	settings_data.cache_mappings()
+	for setting in settings_data.settings:
 		if settings.has(setting):
 			continue
-		if settings_data.get(setting) is SliderSetting:
-			settings.setv(
-				setting, ReactiveFloat.new((settings_data[setting] as SliderSetting).default)
-			)
-		if settings_data.get(setting) is ToggleSetting:
-			settings.setv(
-				setting, ReactiveBool.new((settings_data[setting] as ToggleSetting).default)
-			)
+		
+		var res := settings_data.gets(setting)
+		if res is SliderSetting:
+			@warning_ignore("unsafe_call_argument")
+			settings.setv(setting, ReactiveFloat.new(res.default))
+		elif res is ToggleSetting:
+			@warning_ignore("unsafe_call_argument")
+			settings.setv(setting, ReactiveBool.new(res.default))
+			
 	settings.value_changed.connect(_save_settings.unbind(1))
-
 
 func _ready() -> void:
 	pass

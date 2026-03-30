@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="SettingsHolder" format=3 uid="uid://dbu2ny70g7vwj"]
+
+[ext_resource type="Script" uid="uid://bh3v065a10fqk" path="res://singletons/settings/SettingsHolder.gd" id="1_358j1"]
+[ext_resource type="Script" uid="uid://cgbiblsmqmkmr" path="res://types/settings/SettingsResource.gd" id="2_ymawa"]
+[ext_resource type="Script" uid="uid://1b56554y51k6" path="res://types/settings/SliderSetting.gd" id="3_4fprb"]
+[ext_resource type="Script" uid="uid://by0s3pb5h6oq2" path="res://types/settings/ToggleSetting.gd" id="4_5phhm"]
+
+[sub_resource type="Resource" id="Resource_svqm0"]
+script = ExtResource("3_4fprb")
+type = 2
+default = 1.0
+min_value = 0.1
+max_value = 10.0
+category = &"Input"
+label = "Camera sensitivity"
+metadata/_custom_type_script = "uid://1b56554y51k6"
+
+[sub_resource type="Resource" id="Resource_daedb"]
+script = ExtResource("4_5phhm")
+default = true
+category = &"Display"
+label = "Blur background of UIs"
+metadata/_custom_type_script = "uid://by0s3pb5h6oq2"
+
+[sub_resource type="Resource" id="Resource_n0nuc"]
+script = ExtResource("4_5phhm")
+category = &"Display"
+label = "Enable seconds on clock"
+metadata/_custom_type_script = "uid://by0s3pb5h6oq2"
+
+[sub_resource type="Resource" id="Resource_g6pd6"]
+script = ExtResource("3_4fprb")
+type = 2
+default = 1.0
+min_value = 0.5
+max_value = 1.0
+snap = 0.01
+category = &"Display"
+label = "Map brightness"
+metadata/_custom_type_script = "uid://1b56554y51k6"
+
+[sub_resource type="Resource" id="Resource_p0q25"]
+script = ExtResource("3_4fprb")
+type = 2
+default = 1.0
+min_value = 0.1
+max_value = 10.0
+category = &"Input"
+label = "Mouse sensitivity"
+metadata/_custom_type_script = "uid://1b56554y51k6"
+
+[sub_resource type="Resource" id="Resource_inmpi"]
+script = ExtResource("3_4fprb")
+type = 1
+default = 1.0
+min_value = 0.25
+max_value = 3.0
+snap = 0.25
+category = &"Display"
+label = "UI scale"
+metadata/_custom_type_script = "uid://1b56554y51k6"
+
+[sub_resource type="Resource" id="Resource_e55rr"]
+script = ExtResource("4_5phhm")
+default = true
+category = &"Input"
+label = "Unfocus on chat submission"
+metadata/_custom_type_script = "uid://by0s3pb5h6oq2"
+
+[resource]
+script = ExtResource("1_358j1")
+categories = Array[StringName]([&"Input", &"Display", &"General"])
+settings = Dictionary[StringName, ExtResource("2_ymawa")]({
+&"camera_sensitivity": SubResource("Resource_svqm0"),
+&"enable_blurred_ui": SubResource("Resource_daedb"),
+&"enable_seconds": SubResource("Resource_n0nuc"),
+&"map_brightness": SubResource("Resource_g6pd6"),
+&"mouse_sensitivity": SubResource("Resource_p0q25"),
+&"ui_scale": SubResource("Resource_inmpi"),
+&"unfocus_on_chat_submission": SubResource("Resource_e55rr")
+})
+settings_order = Array[StringName]([&"camera_sensitivity", &"map_brightness", &"mouse_sensitivity", &"ui_scale", &"enable_seconds", &"enable_blurred_ui", &"unfocus_on_chat_submission"])
+metadata/_custom_type_script = "uid://bh3v065a10fqk"
