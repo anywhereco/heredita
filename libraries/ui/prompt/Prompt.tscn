@@ -1,16 +1,11 @@
 [gd_scene format=3 uid="uid://cxu7q8mwkl5uk"]
 
-[ext_resource type="Shader" uid="uid://bcof33k4xv0vs" path="res://libraries/ui/prompt/darkblur.gdshader" id="1_5c6b7"]
+[ext_resource type="Material" uid="uid://csqrvtuylh0sx" path="res://libraries/ui/prompt/darkblur.tres" id="1_5llpd"]
 [ext_resource type="Script" uid="uid://cd7t1uxpoa7mr" path="res://libraries/ui/prompt/prompt.gd" id="3_22k1l"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jleb1"]
-shader = ExtResource("1_5c6b7")
-shader_parameter/strength = 2.0
-shader_parameter/mix_percentage = 0.25
 
 [node name="PromptBackgroundBlur" type="ColorRect" unique_id=1781783196]
 top_level = true
-material = SubResource("ShaderMaterial_jleb1")
+material = ExtResource("1_5llpd")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
