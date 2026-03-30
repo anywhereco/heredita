@@ -32,6 +32,8 @@ var map_pos: ReactiveVector2 = ReactiveVector2.new(Vector2.INF)
 
 var brush_shape_map: BrushShapeMap = BrushShapeMap.new()
 
+var loaded := false
+
 var pending_resync := ReactiveBool.new(false)
 
 var queued_changes: Array[Dictionary] = []
@@ -156,7 +158,7 @@ func set_data(data: MapData) -> void:
 	original_map = data.image
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
-	if not State.client.operator:
+	if not State.client.operator or loaded:
 		load_from_original()
 	if pending_resync.value:
 		return
@@ -197,10 +199,8 @@ func reset_chunks() -> void:
 	add_chunks()
 	@warning_ignore("unsafe_call_argument")
 	brightness_change(Settings.get_reactive("map_brightness"))
-
-
-
-
+	loaded = true
+	
 
 func initialize_chunk(index: int, row_size: int) -> void:
 	var x_idx := index % row_size
