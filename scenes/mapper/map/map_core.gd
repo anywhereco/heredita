@@ -280,12 +280,17 @@ func resync() -> void:
 	pending_resync.value = true
 	State.client.send("map_resync")
 
+func finish_resync() -> void:
+	pending_resync.value = false
+	for event in queued_changes:
+		get_map_update(event)
+
 func get_map_update(details: Dictionary) -> void:
 	var type: String = details["type"]
+	if pending_resync.value:
+		queued_changes.append(details)
+		return
 	if type == "brush":
-		if pending_resync.value:
-			queued_changes.append(details)
-			return
 		@warning_ignore("unsafe_call_argument")
 		Map._instance.set_pixels_at_targeted(
 			brush_shape_map.get_vec2s(details["size"]),

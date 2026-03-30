@@ -2,7 +2,7 @@
 extends Node
 
 var glass_ui: ShaderMaterial = preload("uid://dayrr5lupf1h2")
-var popup_background: ShaderMaterial = preload("uid://csqrvtuylh0sx")
+var popup_background: ShaderMaterial = preload("uid://dayrr5lupf1h2")
 
 var refocus_debounce := 0.0
 

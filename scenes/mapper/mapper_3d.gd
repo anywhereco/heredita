@@ -24,7 +24,6 @@ var dice: DiceTool = DiceTool.new()
 var map_data_compressed: PackedByteArray
 var map_data_uncompr_size: int
 
-
 func _brush_size_changed(_reactive: ReactiveInt) -> void:
 	brush.size = UIRoot._instance.brush_ui.size_controller.brush_size.value
 	Map._instance.preview_plane.texture.update(brush.get_image_for_brush())
@@ -89,6 +88,7 @@ func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 func binary_message_recieved(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
 	if event == ISUtil.BinaryEvents.SYNC_MAP:
 		Map._instance.set_data(MapData.deserialize(details))
+		Map._instance.finish_resync()
 
 
 func closed() -> void:
