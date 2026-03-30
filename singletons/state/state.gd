@@ -1,6 +1,8 @@
 ## The game state singleton.
 extends Node
 
+var refocus_debounce := 0.0
+
 @onready var display := DisplayManager.new()
 
 @onready var threading := ThreadingManager.new()
@@ -21,8 +23,14 @@ var guest_username := ""
 
 var _http_requesting_node_for_user: HTTPRequest
 
+var refocus_callback: JavaScriptObject
 
 func _ready() -> void:
+	if OS.get_name() == "Web":
+		refocus_callback = JavaScriptBridge.create_callback(_refocus_callback)
+		var window := JavaScriptBridge.get_interface("window")
+		window.addEventListener("focus", refocus_callback)
+
 	Statics.initialize()
 
 	add_child(display)
@@ -56,3 +64,14 @@ func reset_user() -> void:
 ## This function should be called if a user has just logged in and needs to be given an HTTPRequest node.
 func ready_user() -> void:
 	user.http = _http_requesting_node_for_user
+
+func _process(delta: float) -> void:
+	refocus_debounce -= delta
+	
+
+func _refocus_callback(_args: Array) -> void:
+	if refocus_debounce > 0:
+		return
+	refocus_debounce = 60
+	if Map._instance:
+		Map._instance.resync()
