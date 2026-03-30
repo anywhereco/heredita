@@ -9,8 +9,11 @@ var original_text: String
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	@warning_ignore("unsafe_call_argument")
-	label.text = label.text.replace(
-		"!VER", ProjectSettings.get_setting("application/config/version")
+	label.text = label.text.format(
+		{
+			"ver": ProjectSettings.get_setting("application/config/version"),
+			"detail": ExportData.BUILD_STR
+		}
 	)
 	original_text = label.text
 

@@ -15,7 +15,7 @@ func _ready() -> void:
 	add_child(bridge)
 	add_child(ws_server)
 	ws_server.text_data.connect(_text_data)
-	ws_server.binary_data.connect(_binary_data)
+	ws_server.binary_message.connect(_binary_message)
 	ws_server.connected.connect(_connected)
 	ws_server.closed.connect(_closed)
 
@@ -69,16 +69,8 @@ func get_text_data(peer_id: int) -> String:
 
 
 func parse_binary(data: PackedByteArray) -> Dictionary:
-	var event := data.decode_u16(0)
-	var target := data.decode_s16(2)
-	var flags := data.decode_u8(4)
-	var body_data: PackedByteArray
-	if flags & ISUtil.BinaryFlags.COMPRESSED:
-		var compression_size := data.decode_u32(5)
-		body_data = data.slice(9).decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-	else:
-		body_data = data.slice(5)
-	return {"event": event, "target": target, "data": body_data}
+	var event := ISUtil._parse_binary(data)
+	return {"event": event.event, "target": event.uid, "data": event.data}
 
 
 func get_binary_data(peer_id: int) -> Dictionary:
@@ -86,99 +78,13 @@ func get_binary_data(peer_id: int) -> Dictionary:
 	var ret: Array
 	while peer != peer_id:
 		var timer := get_tree().create_timer(TIMEOUT)
-		ret = await TimedPromise.new(timer, ws_server.binary_data).done
+		ret = await TimedPromise.new(timer, ws_server.binary_message).done
 		if not ret:  #timed out
 			return {}
 		peer = ret[0]
-	var data: PackedByteArray = ret[1]
-	return parse_binary(data)
-
-
-func get_chunked_binary_data(peer_id: int) -> PackedByteArray:
-	var data := []
-	var data_length := 0
-	var chunks_recieved := 0
-	var event := -1
-	var target := -2
-	while true:
-		var chunk_data := await get_binary_data(peer_id)
-		var chunk: PackedByteArray = chunk_data["data"]
-		if not chunk:
-			return PackedByteArray([])
-		if event > -1 and chunk.decode_u16(0) != event:
-			continue
-		elif event == -1:
-			event = chunk.decode_u16(0)
-		if target > -2 and chunk.decode_s16(2) != target:
-			continue
-		elif event == -2:
-			target = chunk.decode_s16(2)
-		var last_flag := chunk.decode_u8(4) & ISUtil.BinaryFlags.LAST_CHUNK
-		data_length = chunk.decode_u8(5)
-		data.append(chunk.slice(1))
-		chunks_recieved += 1
-		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
-		if end_hint == 1:  #end signal mismatch
-			return PackedByteArray([])
-		elif end_hint == 2:
-			break
-	return data
-
-
-func send_binary(
-	peer: int,
-	event: int,
-	target: int,
-	flags: int,
-	message: PackedByteArray = PackedByteArray(),
-	compress: bool = true
-) -> void:
-	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
-	assert(
-		target >= -32768 and target <= 32767,
-		"The target value should fit within a 16-bit signed int"
-	)
-
-	var compression_size: int
-	if compress:
-		flags &= ISUtil.BinaryFlags.COMPRESSED
-		compression_size = len(message)
-		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
-	var bytes := PackedByteArray()
-	bytes.resize(5)
-	bytes.encode_u16(0, event)
-	bytes.encode_s16(2, target)
-	bytes.encode_u8(4, flags)
-	if compress:
-		bytes.resize(9)
-		bytes.encode_u32(5, compression_size)
-	bytes.append_array(message)
-	self.ws_server.send_raw_binary(peer, bytes)
-
-
-func send_chunked_binary(peer: int, event: int, target: int, data: PackedByteArray) -> void:
-	#Compression is built into this method. If it's this big we're compressing it
-	# actually lets not
-
-	self.ws_server.send_text(peer, "<Chunked binary event incoming>")
-	var compression_size := len(data)
-	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
-
-	var chunk_count := ceili(compression_size / float(0x1000))
-	var flags := ISUtil.BinaryFlags.NONE
-	for i in chunk_count:
-		if i == 0:
-			@warning_ignore("int_as_enum_without_cast")
-			flags &= ISUtil.BinaryFlags.BEGIN_CHUNK
-		var chunk := data.slice(i * 0x1000, (i + 1) * 0x1000)
-		var bytes := PackedByteArray()
-		bytes.resize(1)
-		bytes.encode_u8(0, chunk_count)
-		bytes.append_array(chunk)
-		if i == (chunk_count - 1):
-			@warning_ignore("int_as_enum_without_cast")
-			flags &= ISUtil.BinaryFlags.LAST_CHUNK
-		send_binary(peer, event, target, flags, bytes, false)
+	return {
+		"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]
+	}
 
 
 func parse_json(text: String) -> Result:
@@ -208,18 +114,11 @@ func _connected(peer_id: int) -> void:
 		r._connected(peer_id)
 		return
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
-		var size: int = json.val()["details"]["map_file_size"]
-		var map_content: PackedByteArray = PackedByteArray([])
-		while true:
-			var map_data: Dictionary = await get_binary_data(peer_id)
-			var map_data_body: PackedByteArray = map_data["data"]
-			map_content.append_array(map_data_body)
-			if map_data["event"] == ISUtil.BinaryEvents.SYNC_MAP_END:
-				break
+		var msg := await get_binary_data(peer_id)
+		if msg["event"] != ISUtil.BinaryEvents.SYNC_MAP:
+			ws_server.close(peer_id, 4096, "Expected a map")
 		@warning_ignore("unsafe_call_argument")
-		var rid := create_room(
-			json.val()["details"], map_content.decompress(size, FileAccess.COMPRESSION_FASTLZ)
-		)
+		var rid := create_room(json.val()["details"], msg["data"])
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
 		r._connected(peer_id, true)
@@ -239,12 +138,13 @@ func _text_data(peer_id: int, data: String) -> void:
 			ws_server.close(peer_id, 4096, "Protocol failured")
 
 
-func _binary_data(peer_id: int, data: PackedByteArray) -> void:
-	var data_parsed := parse_binary(data)
+func _binary_message(
+	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
+) -> void:
 	if peer_id in peer_rooms:
-		rooms[peer_rooms[peer_id]]._binary_data(peer_id, data_parsed)
+		rooms[peer_rooms[peer_id]]._binary_message(peer_id, event, player_id, flags, details)
 	else:
-		if not data_parsed["event"] in ISUtil.BinaryEvents.values():  # == ISUtil.BinaryEvents.SYNC_MAP: # TODO probably needs to be only the map events
+		if not event in ISUtil.BinaryEvents.values():  # TODO probably needs to be only the map events
 			ws_server.close(peer_id, 4096, "Protocol failurec")
 
 

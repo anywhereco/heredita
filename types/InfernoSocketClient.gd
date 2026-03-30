@@ -1,9 +1,9 @@
-## Handles InfernoSocket v2 connections.
+## Handles InfernoSocket connections.
 class_name InfernoSocketClient
 extends Node
 
 var return_handshake := {
-	"infernosocket_version": [2, 1],
+	"infernosocket_version": [3, 0],
 	"software_version": ProjectSettings.get_setting_with_override("application/config/version")
 }
 
@@ -32,6 +32,9 @@ var room: Room
 var creating_room := {}
 var creating_map: PackedByteArray = PackedByteArray()
 
+var chunk_sender: ISUtil.ChunkSender
+var chunk_reciever: ISUtil.ChunkReceiver
+
 const TIMEOUT: int = 10000  #ms
 const BUFFER_SIZE_KB: int = 2048
 
@@ -43,11 +46,6 @@ signal handshake_complete
 signal message_received(event: String, player_id: int, details: Variant)
 
 signal binary_message_received(event: int, player_id: int, flags: int, details: PackedByteArray)
-
-## Same as [code]message_recieved[/code], but shows handshake events and is not parsed.
-signal raw_message_received(string: String)
-
-signal raw_message_sent(string: String)
 
 
 func _init(
@@ -62,6 +60,13 @@ func _init(
 		operator = true
 	creating_room = creating
 	creating_map = map
+	chunk_sender = ISUtil.ChunkSender.new(func(data: PackedByteArray) -> void: socket.send(data))
+	chunk_reciever = ISUtil.ChunkReceiver.new()
+	chunk_reciever.chunk_received.connect(func(id: int) -> void: send("_is2_chunk_received", id))
+	chunk_reciever.chunked_message.connect(
+		func(event: int, target: int, data: PackedByteArray) -> void:
+			binary_message_received.emit(event, target, ISUtil.BinaryFlags.NONE, data)
+	)
 
 
 func _ready() -> void:
@@ -71,7 +76,6 @@ func _ready() -> void:
 	if err != OK:
 		print("Unable to connect")
 		set_process(false)
-	raw_message_received.connect(self.handle_chunked_binary_events)
 
 
 #region Encode and Decode
@@ -109,112 +113,13 @@ func send(event: String, message: Variant = null) -> int:
 			"details": message,
 		}
 	)
-	#print("c>s event:%s data:%s" % [event, str(message)])
-	raw_message_sent.emit(data)
 	return socket.send_text(data)
 
 
 func send_binary(
-	event: int,
-	target: int,
-	flags: int,
-	message: PackedByteArray = PackedByteArray(),
-	compress: bool = true
+	event: int, target: int, message: PackedByteArray = PackedByteArray(), compress: bool = true
 ) -> int:
-	assert(event >= 0 and event <= 65535, "The event value should fit within a 16-bit int")
-	assert(
-		target >= -32768 and target <= 32767,
-		"The target value should fit within a 16-bit signed int"
-	)
-
-	#print("c>s <Binary event %d>" % event)
-	raw_message_sent.emit("<Binary event %d>" % event)
-	var compression_size: int
-	if compress:
-		flags |= ISUtil.BinaryFlags.COMPRESSED
-		compression_size = len(message)
-		message = message.compress(FileAccess.COMPRESSION_FASTLZ)
-	var bytes := PackedByteArray()
-	bytes.resize(5)
-	bytes.encode_u16(0, event)
-	bytes.encode_s16(2, target)
-	bytes.encode_u8(4, flags)
-	if compress:
-		bytes.resize(9)
-		bytes.encode_u32(5, compression_size)
-	bytes.append_array(message)
-	return socket.send(bytes)
-
-
-func send_chunked_binary(event: int, target: int, data: PackedByteArray) -> void:
-	#Compression is built into this method. If it's this big we're compressing it
-	var compression_size := len(data)
-	assert(compression_size < 0xFFFFFFFF, "Why are you sending a 4 GB file")
-	data = data.compress(FileAccess.COMPRESSION_FASTLZ)
-	var chunk_count := ceili(data.size() / float(0x10000))
-	var flags := ISUtil.BinaryFlags.NONE
-	for i in chunk_count:
-		if i == 0:
-			@warning_ignore("int_as_enum_without_cast")
-			flags |= ISUtil.BinaryFlags.BEGIN_CHUNK
-		var chunk := data.slice(i * 0x10000, (i + 1) * 0x10000)
-		var bytes := PackedByteArray()
-		bytes.resize(1)
-		bytes.encode_u8(0, chunk_count)
-		bytes.append_array(chunk)
-		if i == chunk_count - 1:
-			@warning_ignore("int_as_enum_without_cast")
-			flags &= ISUtil.BinaryFlags.LAST_CHUNK
-		send_binary(event, target, flags, bytes, false)
-
-
-func handle_chunked_binary_events(string: String) -> void:
-	if string.begins_with("<Chunked binary event incoming>"):
-		var data := await get_chunked_binary_data()
-		if data.event == 1:  # map event
-			print("Updating maps with %s" % data.array)
-			pass  # update map
-
-
-#region Receiving Chunked Binary
-
-
-class ChunkedBinaryData:
-	var array: PackedByteArray
-	var event: int
-
-	func _init(_array: PackedByteArray, _event: int) -> void:
-		self.array = _array
-		self.event = _event
-
-
-func get_chunked_binary_data() -> ChunkedBinaryData:
-	var data := []
-	var data_length := 0
-	var chunks_recieved := 0
-	var event := 0
-	@warning_ignore("unused_variable")
-	var target := 0
-	while true:
-		var sig_data: Variant = await self.binary_message_received
-		target = sig_data[1]
-		var flags: int = sig_data[2]
-		var chunk: PackedByteArray = sig_data[3]
-		if not chunk:
-			return ChunkedBinaryData.new(PackedByteArray([]), event)
-		var last_flag := flags & ISUtil.BinaryFlags.LAST_CHUNK
-		data_length = chunk.decode_u8(0)
-		data.append_array(chunk.slice(1))
-		chunks_recieved += 1
-		var end_hint := int(chunks_recieved >= data_length) + int(last_flag != 0)
-		if end_hint == 1:
-			break
-		elif end_hint == 2:
-			return ChunkedBinaryData.new(PackedByteArray([]), event)
-	return ChunkedBinaryData.new(data, event)
-
-
-#endregion
+	return socket.send(ISUtil._create_binary(event, target, message, compress))
 
 
 func get_message_raw() -> Variant:
@@ -276,10 +181,10 @@ func poll() -> void:
 func _poll_loop() -> void:
 	var message_raw: Variant = get_message_raw()
 	if message_raw is String:
-		raw_message_received.emit(message_raw)
 		var message_res := _decode_data(message_raw as String)  # Godot, I promise you this String is a String. I swear.
 		if message_res.is_err():
 			return
+
 		_poll_string(message_res.val() as Dictionary)
 	else:
 		if message_raw == null:
@@ -299,30 +204,34 @@ func _poll_string(message: Dictionary) -> void:
 			)
 			return
 		match message["event"]:
+			"_is2_chunk_received":
+				chunk_sender.chunk_recieved.emit(message.get("details", 0))
 			"_is2_handshake":
 				print("handshake")
 				if creating_room:
-					var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
-					creating_room["map_file_size"] = creating_map.size()
 					send("_is2_create_room", creating_room)
-					var parts := ceili(len(map_compr) / 250000.0)
-					for part in parts:
-						var last := part == parts - 1
-						send_binary(
-							(
-								ISUtil.BinaryEvents.SYNC_MAP_END
-								if last
-								else ISUtil.BinaryEvents.SYNC_MAP
-							),  # TODO move this entire thing over to actual chunk system
-							-1,
-							ISUtil.BinaryFlags.NONE,
-							map_compr.slice(
-								part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
-							),
-							false
-						)
-						await get_tree().create_timer(0.1).timeout
+					chunk_sender.send(ISUtil.BinaryEvents.SYNC_MAP, -1, creating_map)
 					return
+					#var map_compr := creating_map.compress(FileAccess.COMPRESSION_FASTLZ)
+					#creating_room["map_file_size"] = creating_map.size()
+					#send("_is2_create_room", creating_room)
+					#var parts := ceili(len(map_compr) / 250000.0)
+					#for part in parts:
+					#var last := part == parts - 1
+					#send_binary(
+					#(
+					#ISUtil.BinaryEvents.SYNC_MAP_END
+					#if last
+					#else ISUtil.BinaryEvents.SYNC_MAP
+					#),  # TODO move this entire thing over to actual chunk system
+					#-1,
+					#map_compr.slice(
+					#part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000
+					#),
+					#false
+					#)
+					#await get_tree().create_timer(0.1).timeout
+					#return
 				send("_is2_room_info", room_id)
 				return
 			"_is2_room_info":
@@ -400,7 +309,6 @@ func _poll_string(message: Dictionary) -> void:
 				player.status = message.get("details").get("status")
 				message_received.emit("is2_player_status_update", -1, message.get("details"))
 				return
-
 			"_is2_pong":
 				return
 			_:
@@ -410,18 +318,10 @@ func _poll_string(message: Dictionary) -> void:
 
 
 func _poll_binary(message: PackedByteArray) -> void:
-	var event := message.decode_u16(0)
-	var uid := message.decode_s16(2)
-	var flags := message.decode_u8(4)
-	var compressed := flags & ISUtil.BinaryFlags.COMPRESSED
-	var data := message.slice(9 if compressed else 5)
-	if compressed:
-		var compression_size := message.decode_u32(5)
-		data = data.decompress(compression_size, FileAccess.COMPRESSION_FASTLZ)
-
-	#print("c<s <Binary event %d, \"playerid\"=%d>" % [event, uid])
-	raw_message_received.emit('<Binary event %d, "playerid"=%d>' % [event, uid])
-	binary_message_received.emit(event, uid, flags, data)
+	if chunk_reciever.handle_potential_chunked_message(message):
+		return
+	var data := ISUtil._parse_binary(message)
+	binary_message_received.emit(data.event, data.uid, data.flags, data.data)
 
 
 func _process(delta: float) -> void:

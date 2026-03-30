@@ -3,7 +3,7 @@ extends Node3D
 
 static var _instance: Map
 
-@export_range(1.0 / 16, 1, 1.0 / 16) var pixel_size: float = 1.0 / 8
+@export_range(1.0 / 32, 1, 1.0 / 32, "suffix:units/px") var pixel_size: float = 3.0 / 32
 
 @onready var player_camera: Camera3D = $"../LocalPlayer/CameraPivot/CameraArm/PlayerCamera"
 @onready var water: MeshInstance3D = $"../Water"
@@ -13,6 +13,7 @@ static var _instance: Map
 
 var default_target_color: Color = Color(1, 1, 1)
 
+var chunk_creation_mutex := Mutex.new()
 ## Array[Array[bool]], x,y/z order
 var chunks_edited: Array[Array] = []
 ## Array[Array[Sprite3D]], x,y/z order
@@ -31,6 +32,9 @@ var map_pos: ReactiveVector2 = ReactiveVector2.new(Vector2.INF)
 
 var brush_shape_map: BrushShapeMap = BrushShapeMap.new()
 
+var pending_resync := ReactiveBool.new(false)
+
+var queued_changes: Array[Dictionary] = []
 
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:
 	return (
@@ -154,6 +158,8 @@ func set_data(data: MapData) -> void:
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	if not State.client.operator:
 		load_from_original()
+	if pending_resync.value:
+		return
 
 
 func _init() -> void:
@@ -175,20 +181,29 @@ func reset_chunks() -> void:
 			child.queue_free()
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
-	for x: int in range(0, original_map_size.x, Statics.CHUNK_SIZE):
-		for y: int in range(0, original_map_size.y, Statics.CHUNK_SIZE):
-			initialize_chunk(x, y)
+	var row_size := ceili(original_map_size.x/Statics.CHUNK_SIZE)
+	for chunk_row in row_size:
+		chunks.append([])
+		chunks_edited.append([])
+		chunk_images.append([])
+	var chunk_count := row_size * ceili(original_map_size.y/Statics.CHUNK_SIZE)
+	var id := WorkerThreadPool.add_group_task(initialize_chunk.bind(row_size), chunk_count)
+	WorkerThreadPool.wait_for_group_task_completion(id)
+	add_chunks()
 	@warning_ignore("unsafe_call_argument")
-	brightness_change(Settings.get_reactive("brightness"))
+	brightness_change(Settings.get_reactive("map_brightness"))
 
-func initialize_chunk(x: int, y: int) -> void:
-	@warning_ignore("integer_division")
-	var x_idx := x / Statics.CHUNK_SIZE
-	@warning_ignore("integer_division")
-	var y_idx := y / Statics.CHUNK_SIZE
-	var chunk_coords := Rect2i(
-		Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE)
-	)
+
+
+
+
+func initialize_chunk(index: int, row_size: int) -> void:
+	var x_idx := index % row_size
+	var y_idx := floori(index / (row_size as float))
+	prints(index, row_size, x_idx, y_idx)
+	var x := x_idx * Statics.CHUNK_SIZE
+	var y := y_idx * Statics.CHUNK_SIZE
+	var chunk_coords := Rect2i(Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE))
 	var img := original_map.get_region(chunk_coords)
 	#Image.create_empty(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE, false, original_map.get_format())
 	#img.blit_rect(original_map, chunk_coords, Vector2i.ZERO)
@@ -204,24 +219,30 @@ func initialize_chunk(x: int, y: int) -> void:
 	chunk.name = "MapChunk%d:%d" % [x_idx, y_idx]
 	chunk.pixel_size = pixel_size
 	chunk.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	chunk_container_node.add_child(chunk)
-	if chunks.size() <= x_idx:
-		chunks.append([])
-		chunks_edited.append([])
-		chunk_images.append([])
+	chunk_creation_mutex.lock()
 	chunks.get(x_idx).insert(y_idx, chunk)
 	chunks_edited.get(x_idx).insert(y_idx, false)
 	chunk_images.get(x_idx).insert(y_idx, img)
+	chunk_creation_mutex.unlock()
+
+
+func add_chunks() -> void:
+	for row in chunks:
+		for chunk: Sprite3D in row:
+			chunk_container_node.add_child(chunk)
+
 
 func _ready() -> void:
-	Settings.get_reactive("brightness").value_changed.connect(brightness_change)
+	Settings.get_reactive("map_brightness").value_changed.connect(brightness_change)
 	if State.client.operator:
 		load_from_original()
+	preview_plane.pixel_size = pixel_size
+
 
 func brightness_change(brightness: ReactiveFloat) -> void:
 	for chunk: Sprite3D in chunk_container_node.get_children():
 		chunk.modulate = Color(brightness.value, brightness.value, brightness.value, 1)
-	preview_plane.modulate = Color(brightness.value, brightness.value, brightness.value, .5)
+
 
 func update_map_pos() -> void:
 	var mouse_position := VirtualMouse._instance.position
@@ -254,9 +275,16 @@ func update_brush_preview() -> void:
 	MapperRoot._instance.brush._update_brush()
 
 
+func resync() -> void:
+	pending_resync.value = true
+	State.client.send("map_resync")
+
 func get_map_update(details: Dictionary) -> void:
 	var type: String = details["type"]
 	if type == "brush":
+		if pending_resync.value:
+			queued_changes.append(details)
+			return
 		@warning_ignore("unsafe_call_argument")
 		Map._instance.set_pixels_at_targeted(
 			brush_shape_map.get_vec2s(details["size"]),

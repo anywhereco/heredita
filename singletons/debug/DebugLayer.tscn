@@ -93,7 +93,8 @@ offset_top = 10.0
 offset_right = 240.0
 offset_bottom = 31.0
 mouse_behavior_recursive = 1
-text = "Heredita version !VER at %d/%d FPS
+text = "Heredita at %d/%d FPS
+Build {ver} ({detail})
 Shift+F3 to show console
 F3 to exit"
 label_settings = SubResource("LabelSettings_ovp2x")
