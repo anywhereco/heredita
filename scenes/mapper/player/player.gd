@@ -87,9 +87,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			left = event.is_pressed()
 		if event.is_action("move_right"):
 			right = event.is_pressed()
-		if event is InputEventKey:
-			if event.pressed and event.keycode == KEY_BACKSLASH:
-				Map._instance.resync()
 
 
 func _physics_process(delta: float) -> void:

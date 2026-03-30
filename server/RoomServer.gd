@@ -311,13 +311,13 @@ func _ready() -> void:
 	tasks.append(Task.new(sync_calendar, 5))
 
 	## ctrl+k this to show the server map
-	#var trect := TextureRect.new()
-	#trect.texture = ImageTexture.create_from_image(room.map.image)
-	#trect.scale = Vector2.ONE / 16
-	#tasks.append(Task.new(func() -> void:
-	#trect.texture.update(room.map.image)
-	#, 1))
-	#add_child(trect)
+	var trect := TextureRect.new()
+	trect.texture = ImageTexture.create_from_image(room.map.image)
+	trect.scale = Vector2.ONE / 8
+	tasks.append(Task.new(func() -> void:
+		trect.texture.update(room.map.image)
+	, 1))
+	add_child(trect)
 
 
 func _process(delta: float) -> void:
