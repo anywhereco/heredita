@@ -1,6 +1,11 @@
 @tool
 extends EditorInspectorPlugin
 
+var plugin: EditorPlugin
+
+func _init(_plugin: EditorPlugin) -> void:
+	plugin = _plugin
+
 func _can_handle(object: Object) -> bool:
 	return object is SettingsHolder
 
@@ -33,14 +38,11 @@ func _parse_begin(object: Object) -> void:
 			
 		var new_dict = holder.settings.duplicate()
 		new_dict[key] = null
-		holder.settings = new_dict
 		
 		var new_order = holder.settings_order.duplicate()
 		new_order.append(key)
-		holder.settings_order = new_order
 		
-		holder.emit_changed()
-		holder.notify_property_list_changed()
+		_commit_action(holder, "Add New Setting", new_dict, new_order)
 	)
 	header.add_child(add_btn)
 	
@@ -49,7 +51,7 @@ func _parse_begin(object: Object) -> void:
 	add_custom_control(vbox)
 
 func _parse_property(object: Object, type: Variant.Type, name: String, hint_type: PropertyHint, hint_string: String, usage_flags: int, wide: bool) -> bool:
-	if name in ["settings", "categories", "category_map", "settings_order"]:
+	if name in ["settings", "category_map", "settings_order"]:
 		return true 
 		
 	var holder = object as SettingsHolder
@@ -80,15 +82,12 @@ func _parse_property(object: Object, type: Variant.Type, name: String, hint_type
 			var new_dict = holder.settings.duplicate()
 			new_dict[new_key] = new_dict[key]
 			new_dict.erase(key)
-			holder.settings = new_dict
 			
 			var new_order = holder.settings_order.duplicate()
 			var idx = new_order.find(key)
 			if idx != -1: new_order[idx] = new_key
-			holder.settings_order = new_order
 			
-			holder.emit_changed()
-			holder.notify_property_list_changed()
+			_commit_action(holder, "Rename Setting Key", new_dict, new_order)
 		)
 		
 		var up_btn = Button.new()
@@ -105,14 +104,11 @@ func _parse_property(object: Object, type: Variant.Type, name: String, hint_type
 		del_btn.pressed.connect(func():
 			var new_dict = holder.settings.duplicate()
 			new_dict.erase(key)
-			holder.settings = new_dict
 			
 			var new_order = holder.settings_order.duplicate()
 			new_order.erase(key)
-			holder.settings_order = new_order
 			
-			holder.emit_changed()
-			holder.notify_property_list_changed()
+			_commit_action(holder, "Delete Setting Key", new_dict, new_order)
 		)
 		
 		hbox.add_child(label)
@@ -132,13 +128,45 @@ func _move_key(holder: SettingsHolder, key: StringName, dir: int):
 	var idx = new_order.find(key)
 	if idx == -1: return
 	
-	var target = idx + dir
-	if target < 0 or target >= new_order.size(): return
+	var res = holder.settings.get(key)
+	var cat = res.category if res and res.category else &"Uncategorized"
 	
-	var temp = new_order[target]
-	new_order[target] = key
+	var target_idx = -1
+	var curr_idx = idx + dir
+	
+	while curr_idx >= 0 and curr_idx < new_order.size():
+		var other_key = new_order[curr_idx]
+		var other_res = holder.settings.get(other_key)
+		var other_cat = other_res.category if other_res and other_res.category else &"Uncategorized"
+		
+		if other_cat == cat:
+			target_idx = curr_idx
+			break
+			
+		curr_idx += dir
+	
+	if target_idx == -1:
+		return
+	
+	var temp = new_order[target_idx]
+	new_order[target_idx] = key
 	new_order[idx] = temp
 	
-	holder.settings_order = new_order
-	holder.emit_changed()
-	holder.notify_property_list_changed()
+	_commit_action(holder, "Move Setting Order", holder.settings.duplicate(), new_order)
+
+
+func _commit_action(holder: SettingsHolder, action_name: String, new_dict: Dictionary, new_order: Array) -> void:
+	var ur = plugin.get_undo_redo()
+	ur.create_action(action_name)
+	
+	ur.add_do_property(holder, "settings", new_dict)
+	ur.add_do_property(holder, "settings_order", new_order)
+	ur.add_do_method(holder, "cache_mappings")
+	ur.add_do_method(holder, "notify_property_list_changed")
+	
+	ur.add_undo_property(holder, "settings", holder.settings.duplicate())
+	ur.add_undo_property(holder, "settings_order", holder.settings_order.duplicate())
+	ur.add_undo_method(holder, "cache_mappings")
+	ur.add_undo_method(holder, "notify_property_list_changed")
+	
+	ur.commit_action()
