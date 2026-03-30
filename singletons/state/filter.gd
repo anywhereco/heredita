@@ -10,7 +10,8 @@ enum {
 static var filter_mode := MODE_OFFENSIVE
 
 const filter_offensive = [
-	"fag"
+	"fag",
+	"badword"
 ]
 
 const filter_other = [
@@ -18,7 +19,7 @@ const filter_other = [
 ]
 
 static func grawlix(text: String) -> String:
-	return "*".repeat(text.length())
+	return "-".repeat(text.length())
 
 static func substr_replace(text: String, with: String, start: int, end: int) -> String:
 	return text.substr(0,start) + with + text.substr(end)
