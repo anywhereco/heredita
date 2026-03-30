@@ -176,6 +176,10 @@ func load_from_original() -> void:
 
 
 func reset_chunks() -> void:
+	chunk_creation_mutexes.clear()
+	chunks_edited.clear()
+	chunks.clear()
+	chunk_images.clear()
 	if chunk_container_node.get_children().size() > 0:
 		for child in chunk_container_node.get_children():
 			child.queue_free()

@@ -29,13 +29,12 @@ func _lock_unlock(val: ReactiveBool) -> void:
 
 
 func _resyncing(val: ReactiveBool) -> void:
-	if resyncing_tween:
-		if val.value:
-			resyncing_message.show()
-			resyncing_tween = create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE).set_loops()
-			resyncing_tween.tween_property(resyncing_message, "modulate", Color(.7, .7, .7, 1), .667)
-			resyncing_tween.tween_property(resyncing_message, "modulate", Color(1, 1, 1, 1), .667)
-		else:
-			resyncing_tween.kill()
-			resyncing_message.modulate = Color(1, 1, 1, 1)
-			resyncing_message.hide()
+	if val.value:
+		resyncing_message.show()
+		resyncing_tween = create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE).set_loops()
+		resyncing_tween.tween_property(resyncing_message, "modulate", Color(.7, .7, .7, 1), .667)
+		resyncing_tween.tween_property(resyncing_message, "modulate", Color(1, 1, 1, 1), .667)
+	elif resyncing_tween:
+		resyncing_tween.kill()
+		resyncing_message.modulate = Color(1, 1, 1, 1)
+		resyncing_message.hide()
