@@ -6,6 +6,7 @@ extends Resource
 @export var settings: Dictionary[StringName, SettingsResource]
 @export var settings_order: Array[StringName] 
 
+## Dictionary[StringName category, Dictionary[StringName id, SettingsResource]]
 var category_map: Dictionary[StringName, Dictionary]
 
 func cache_mappings() -> void:
