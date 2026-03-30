@@ -1,10 +1,10 @@
 ## The top level settings resource which all classes are expected to branch from.
+@abstract
 class_name SettingsResource
 extends Resource
 
-## The user-facing name of this setting.
-var label: String
+## The category of this resource.
+@export var category: StringName = &"General"
 
-
-func _init(_label: String) -> void:
-	self.label = _label
+## The label to be shown alongside this resource.
+@export var label: String
