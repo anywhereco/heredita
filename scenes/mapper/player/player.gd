@@ -149,7 +149,7 @@ func _physics_process(delta: float) -> void:
 
 
 func add_bubble(message: String) -> void:
-	var bubble := ChatBubble.create(message)
+	var bubble := ChatBubble.create(TextFilter.filter_text(message))
 	bubble.root_position = $BubbleAnchor.position
 	if $Name.visible:
 		bubble.root_position.y += $Name.pixel_size * $Name.font_size

@@ -60,7 +60,7 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 func add_chat_message(sender_id: int, message: String) -> void:
 	var player: Player = State.room.players.getv(sender_id)
 	add_message(
-		"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username), Markdown.bb_escape(message)]
+		"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username), TextFilter.filter_text(Markdown.bb_escape(message))]
 	)
 
 
