@@ -2,7 +2,7 @@
 extends Node
 
 var glass_ui: ShaderMaterial = preload("uid://dayrr5lupf1h2")
-var popup_background: ShaderMaterial = preload("uid://dayrr5lupf1h2")
+var prompt_blur: ShaderMaterial = preload("uid://csqrvtuylh0sx")
 
 var refocus_debounce := 0.0
 
@@ -74,11 +74,8 @@ func ready_user() -> void:
 
 
 func blurred_ui_handler(reactive: ReactiveBool) -> void: 
-	push_error("digi you need to fix this since your shader editing broke this")
-	push_error("hi im vscode merge conflict fixing digi. i fixed the shader. you can uncomment this now probably")
-#	glass_ui.set_shader_parameter("enable_blur", reactive.value)
-#	popup_background.set_shader_parameter("enable_blur", reactive.value)
-  
+	glass_ui.set_shader_parameter("enable_blur", reactive.value)
+	prompt_blur.set_shader_parameter("enable_blur", reactive.value)
   
 func _process(delta: float) -> void:
 	refocus_debounce -= delta
