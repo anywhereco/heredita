@@ -51,7 +51,7 @@ func _ready() -> void:
 	dice._map_ready()
 	if State.client:
 		State.client.message_received.connect(message_recieved)
-		State.client.binary_message_received.connect(sync_map)
+		State.client.binary_message_received.connect(binary_message_recieved)
 		State.client.connection_closed.connect(closed)
 
 
@@ -86,7 +86,7 @@ func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 		TimekeepingUI._inst.calendar_sync(details as Dictionary)
 
 
-func sync_map(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
+func binary_message_recieved(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
 	if event == ISUtil.BinaryEvents.SYNC_MAP:
 		Map._instance.set_data(MapData.deserialize(details))
 

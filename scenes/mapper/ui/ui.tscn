@@ -668,6 +668,13 @@ mouse_filter = 2
 alignment = 1
 script = ExtResource("34_v8jk4")
 
+[node name="ResyncingMessage" type="Label" parent="AlertRow" unique_id=900565163]
+visible = false
+modulate = Color(0.79570293, 0.79570293, 0.79570293, 1)
+layout_mode = 2
+text = "Resyncing..."
+label_settings = SubResource("LabelSettings_5rjrm")
+
 [node name="LockMessage" type="Label" parent="AlertRow" unique_id=887406348]
 visible = false
 layout_mode = 2

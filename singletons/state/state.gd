@@ -4,6 +4,8 @@ extends Node
 var glass_ui: ShaderMaterial = preload("uid://dayrr5lupf1h2")
 var popup_background: ShaderMaterial = preload("uid://csqrvtuylh0sx")
 
+var refocus_debounce := 0.0
+
 @onready var display := DisplayManager.new()
 
 @onready var threading := ThreadingManager.new()
@@ -24,8 +26,14 @@ var guest_username := ""
 
 var _http_requesting_node_for_user: HTTPRequest
 
+var refocus_callback: JavaScriptObject
 
 func _ready() -> void:
+	if OS.get_name() == "Web":
+		refocus_callback = JavaScriptBridge.create_callback(_refocus_callback)
+		var window := JavaScriptBridge.get_interface("window")
+		window.addEventListener("focus", refocus_callback)
+
 	Statics.initialize()
 	
 	Settings.get_reactive("enable_blurred_ui").value_changed.connect(blurred_ui_handler)
@@ -68,3 +76,15 @@ func ready_user() -> void:
 func blurred_ui_handler(reactive: ReactiveBool) -> void:
 	glass_ui.set_shader_parameter("enable_blur", reactive.value)
 	popup_background.set_shader_parameter("enable_blur", reactive.value)
+  
+  
+func _process(delta: float) -> void:
+	refocus_debounce -= delta
+	
+
+func _refocus_callback(_args: Array) -> void:
+	if refocus_debounce > 0:
+		return
+	refocus_debounce = 60
+	if Map._instance:
+		Map._instance.resync()

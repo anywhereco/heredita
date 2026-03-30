@@ -75,7 +75,6 @@ shape = SubResource("WorldBoundaryShape3D_wvm7y")
 modulate = Color(1, 1, 1, 0.5019608)
 pixel_size = 0.0625
 axis = 1
-shaded = true
 double_sided = false
 texture_filter = 0
 render_priority = 1
