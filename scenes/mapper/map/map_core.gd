@@ -13,7 +13,7 @@ static var _instance: Map
 
 var default_target_color: Color = Color(1, 1, 1)
 
-var chunk_creation_mutex := Mutex.new()
+var chunk_creation_mutexes: Array[Mutex] = []
 ## Array[Array[bool]], x,y/z order
 var chunks_edited: Array[Array] = []
 ## Array[Array[Sprite3D]], x,y/z order
@@ -186,6 +186,7 @@ func reset_chunks() -> void:
 		chunks.append([])
 		chunks_edited.append([])
 		chunk_images.append([])
+		chunk_creation_mutexes.append(Mutex.new())
 	var chunk_count := row_size * ceili(original_map_size.y/Statics.CHUNK_SIZE)
 	var id := WorkerThreadPool.add_group_task(initialize_chunk.bind(row_size), chunk_count)
 	WorkerThreadPool.wait_for_group_task_completion(id)
@@ -219,11 +220,11 @@ func initialize_chunk(index: int, row_size: int) -> void:
 	chunk.name = "MapChunk%d:%d" % [x_idx, y_idx]
 	chunk.pixel_size = pixel_size
 	chunk.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	chunk_creation_mutex.lock()
+	chunk_creation_mutexes[x_idx].lock()
 	chunks.get(x_idx).insert(y_idx, chunk)
 	chunks_edited.get(x_idx).insert(y_idx, false)
 	chunk_images.get(x_idx).insert(y_idx, img)
-	chunk_creation_mutex.unlock()
+	chunk_creation_mutexes[x_idx].unlock()
 
 
 func add_chunks() -> void:

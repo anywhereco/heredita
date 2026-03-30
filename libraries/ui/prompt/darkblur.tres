@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://csqrvtuylh0sx"]
+
+[ext_resource type="Shader" uid="uid://bcof33k4xv0vs" path="res://libraries/ui/prompt/darkblur.gdshader" id="1_ax8w7"]
+
+[resource]
+shader = ExtResource("1_ax8w7")
+shader_parameter/strength = 2.0
+shader_parameter/mix_percentage = 0.25

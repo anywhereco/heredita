@@ -8,6 +8,10 @@ uniform sampler2D SCREEN_TEXTURE: hint_screen_texture,repeat_disable, filter_nea
 * Limited to 20 because of performance, if you want feel free to break it.
 */
 uniform float strength : hint_range(0.1, 20.0) = 3.3;
+/** 
+* Whether blurring should be used at all.
+*/
+uniform bool enable_blur = true;
 /**
 * How dark the blur will be
 */
@@ -39,8 +43,13 @@ vec3 gaussianblur(sampler2D sampler, vec2 pos, vec2 pixel_size, float sigmaUsed,
     return blurredPixel;
 }
 void fragment() {
-    vec3 PixelBlurred = gaussianblur(SCREEN_TEXTURE, SCREEN_UV, SCREEN_PIXEL_SIZE, strength, int(round(3.0 * strength)));
-	vec3 color = mix(PixelBlurred, vec3(0.0), mix_percentage);
+	vec3 pixel;
+	if (enable_blur) {
+		pixel = gaussianblur(SCREEN_TEXTURE, SCREEN_UV, SCREEN_PIXEL_SIZE, strength, int(round(3.0 * strength)));
+	} else {
+		pixel = texture(SCREEN_TEXTURE, SCREEN_UV).rgb;
+	}
+	vec3 color = mix(pixel, vec3(0.0), mix_percentage);
     // The radius is 3*strength because it is the point where the Gaussian weight is near zero.
-    COLOR = vec4(color, 1.);
+    COLOR = vec4(color, 1);
 }

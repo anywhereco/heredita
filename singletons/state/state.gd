@@ -1,6 +1,9 @@
 ## The game state singleton.
 extends Node
 
+var glass_ui: ShaderMaterial = preload("uid://dayrr5lupf1h2")
+var popup_background: ShaderMaterial = preload("uid://csqrvtuylh0sx")
+
 var refocus_debounce := 0.0
 
 @onready var display := DisplayManager.new()
@@ -32,7 +35,11 @@ func _ready() -> void:
 		window.addEventListener("focus", refocus_callback)
 
 	Statics.initialize()
-
+	
+	Settings.get_reactive("enable_blurred_ui").value_changed.connect(blurred_ui_handler)
+	@warning_ignore("unsafe_call_argument")
+	blurred_ui_handler(Settings.get_reactive("enable_blurred_ui"))
+	
 	add_child(display)
 	display.name = "DisplayManager"
 	_http_requesting_node_for_user = HTTPRequest.new()
@@ -65,6 +72,12 @@ func reset_user() -> void:
 func ready_user() -> void:
 	user.http = _http_requesting_node_for_user
 
+
+func blurred_ui_handler(reactive: ReactiveBool) -> void:
+	glass_ui.set_shader_parameter("enable_blur", reactive.value)
+	popup_background.set_shader_parameter("enable_blur", reactive.value)
+  
+  
 func _process(delta: float) -> void:
 	refocus_debounce -= delta
 	
