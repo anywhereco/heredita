@@ -27,6 +27,14 @@ func make_toggle(_setting_data: ToggleSetting) -> Control:
 	return node
 
 
+func make_dropdown(setting_data: DropdownSetting) -> Control:
+	var node: Control = preload("res://scenes/_settings/dropdown.tscn").instantiate()
+	var dropdown: Control = node.find_child("Value")
+	for option in setting_data.options:
+		dropdown.add_item(option)
+	return node
+
+
 func tab_add_setting(tab: Container, setting: StringName, setting_data: SettingsResource) -> void:
 	var setting_node: Control
 	
@@ -36,6 +44,9 @@ func tab_add_setting(tab: Container, setting: StringName, setting_data: Settings
 	elif setting_data is ToggleSetting:
 		@warning_ignore("unsafe_call_argument")
 		setting_node = make_toggle(setting_data)
+	elif setting_data is DropdownSetting:
+		@warning_ignore("unsafe_call_argument")
+		setting_node = make_dropdown(setting_data)
 	else:
 		push_error("Cannot make setting node for type %s" % setting_data.get_class())
 		return

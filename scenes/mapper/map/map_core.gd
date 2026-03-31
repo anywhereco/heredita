@@ -205,7 +205,7 @@ func reset_chunks() -> void:
 func initialize_chunk(index: int, row_size: int) -> void:
 	var x_idx := index % row_size
 	var y_idx := floori(index / (row_size as float))
-	prints(index, row_size, x_idx, y_idx)
+	#prints(index, row_size, x_idx, y_idx)
 	var x := x_idx * Statics.CHUNK_SIZE
 	var y := y_idx * Statics.CHUNK_SIZE
 	var chunk_coords := Rect2i(Vector2i(x, y), Vector2i(Statics.CHUNK_SIZE, Statics.CHUNK_SIZE))

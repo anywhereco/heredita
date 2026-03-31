@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cgbiblsmqmkmr" path="res://types/settings/SettingsResource.gd" id="2_ymawa"]
 [ext_resource type="Script" uid="uid://1b56554y51k6" path="res://types/settings/SliderSetting.gd" id="3_4fprb"]
 [ext_resource type="Script" uid="uid://by0s3pb5h6oq2" path="res://types/settings/ToggleSetting.gd" id="4_5phhm"]
+[ext_resource type="Script" uid="uid://dhxhe38j1we0q" path="res://types/settings/DropdownSetting.gd" id="5_5phhm"]
 
 [sub_resource type="Resource" id="Resource_svqm0"]
 script = ExtResource("3_4fprb")
@@ -63,21 +64,30 @@ metadata/_custom_type_script = "uid://1b56554y51k6"
 [sub_resource type="Resource" id="Resource_e55rr"]
 script = ExtResource("4_5phhm")
 default = true
-category = &"Input"
+category = &"Chat"
 label = "Unfocus on chat submission"
 metadata/_custom_type_script = "uid://by0s3pb5h6oq2"
 
+[sub_resource type="Resource" id="Resource_dbskh"]
+script = ExtResource("5_5phhm")
+default = 1
+options = Array[String](["Off", "Offensive", "Full"])
+category = &"Chat"
+label = "Filter"
+metadata/_custom_type_script = "uid://dhxhe38j1we0q"
+
 [resource]
 script = ExtResource("1_358j1")
-categories = Array[StringName]([&"Input", &"Display", &"General"])
+categories = Array[StringName]([&"Input", &"Display", &"General", &"Chat"])
 settings = Dictionary[StringName, ExtResource("2_ymawa")]({
 &"camera_sensitivity": SubResource("Resource_svqm0"),
 &"enable_blurred_ui": SubResource("Resource_daedb"),
 &"enable_seconds": SubResource("Resource_n0nuc"),
+&"filter_mode": SubResource("Resource_dbskh"),
 &"map_brightness": SubResource("Resource_g6pd6"),
 &"mouse_sensitivity": SubResource("Resource_p0q25"),
 &"ui_scale": SubResource("Resource_inmpi"),
 &"unfocus_on_chat_submission": SubResource("Resource_e55rr")
 })
-settings_order = Array[StringName]([&"camera_sensitivity", &"map_brightness", &"mouse_sensitivity", &"ui_scale", &"enable_seconds", &"enable_blurred_ui", &"unfocus_on_chat_submission"])
+settings_order = Array[StringName]([&"camera_sensitivity", &"map_brightness", &"mouse_sensitivity", &"ui_scale", &"enable_seconds", &"enable_blurred_ui", &"unfocus_on_chat_submission", &"filter_mode"])
 metadata/_custom_type_script = "uid://bh3v065a10fqk"

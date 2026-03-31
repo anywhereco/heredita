@@ -36,6 +36,7 @@ static func substr_replace(text: String, with: String, start: int, end: int) -> 
 	return text.substr(0,start) + with + text.substr(end)
 
 static func filter_text(text: String) -> String:
+	filter_mode = Settings.getv("filter_mode")
 	if filter_mode == MODE_NONE:
 		return text
 	var to_filter := filter_offensive

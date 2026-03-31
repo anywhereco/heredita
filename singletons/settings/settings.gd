@@ -11,7 +11,7 @@ func getv(setting: String, fallback: Variant = null) -> Variant:
 	if settings.has(setting):
 		return settings.getv(setting).value
 	if fallback == null:
-		return settings_data.gets(setting).defaul
+		return settings_data.gets(setting).default
 	return fallback
 
 
@@ -37,6 +37,9 @@ func _init() -> void:
 		elif res is ToggleSetting:
 			@warning_ignore("unsafe_call_argument")
 			settings.setv(setting, ReactiveBool.new(res.default))
+		elif res is DropdownSetting:
+			@warning_ignore("unsafe_call_argument")
+			settings.setv(setting, ReactiveInt.new(res.default))
 			
 	settings.value_changed.connect(_save_settings.unbind(1))
 
@@ -61,12 +64,19 @@ func _load_settings() -> bool:
 				elif res is ToggleSetting:
 					@warning_ignore("unsafe_call_argument")
 					settings.setv(setting, ReactiveBool.new(res.default))
+				elif res is DropdownSetting:
+					@warning_ignore("unsafe_call_argument")
+					settings.setv(setting, ReactiveInt.new(res.default))
+				continue
 			if typeof(value) == TYPE_BOOL:
 				@warning_ignore("unsafe_call_argument")
 				value = ReactiveBool.new(value)
 			if typeof(value) == TYPE_FLOAT:
 				@warning_ignore("unsafe_call_argument")
 				value = ReactiveFloat.new(value)
+			if typeof(value) == TYPE_INT:
+				@warning_ignore("unsafe_call_argument")
+				value = ReactiveInt.new(value)
 			settings.setv(setting, value)
 			
 	return OK

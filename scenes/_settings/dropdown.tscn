@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://co0b13q703hjk"]
+
+[ext_resource type="Script" uid="uid://bfrq3bc5k3w3t" path="res://scenes/_settings/dropdown.gd" id="1_pqyut"]
+
+[node name="Dropdown" type="HBoxContainer" unique_id=1769327676]
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+script = ExtResource("1_pqyut")
+
+[node name="Value" type="OptionButton" parent="." unique_id=970300474]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+flat = true
+
+[connection signal="item_selected" from="Value" to="." method="_on_item_selected"]

@@ -73,7 +73,7 @@ func hide_mouse() -> void:
 
 func unhide_mouse() -> void:
 	global_position = get_global_mouse_position()
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	Input.set_mouse_mode.call_deferred(Input.MOUSE_MODE_CAPTURED)
 	show()
 	var rect: Rect2 = get_viewport().get_visible_rect()
 	if (
