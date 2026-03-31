@@ -5,28 +5,38 @@ extends Camera3D
 @export var tilt_limit := deg_to_rad(75)
 
 var topdown_camera := ReactiveBool.new(false)
+var camera_left := false
+var camera_right := false
+var camera_up := false
+var camera_down := false
 
 @onready var camera_arm: SpringArm3D = $".."
 @onready var camera_pivot: Node3D = $"../.."
 @onready var player: CharacterBody3D = $"../../.."
 
-
 func _process(delta: float) -> void:
 	var camera_move := Vector2.ZERO
-
-	if Input.is_action_pressed("camera_left"):
-		camera_move -= Vector2.LEFT * 250 * delta
-	if Input.is_action_pressed("camera_right"):
-		camera_move -= Vector2.RIGHT * 250 * delta
-	if Input.is_action_pressed("camera_up"):
-		camera_move -= Vector2.UP * 250 * delta
-	if Input.is_action_pressed("camera_down"):
-		camera_move -= Vector2.DOWN * 250 * delta
-
-	camera_pan(camera_move)
+	if camera_left:
+		camera_move -= Vector2.LEFT * 250
+	if camera_right:
+		camera_move -= Vector2.RIGHT * 250
+	if camera_up:
+		camera_move -= Vector2.UP * 250
+	if camera_down:
+		camera_move -= Vector2.DOWN * 250
+	camera_pan(camera_move * delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action("camera_left"):
+		camera_left = event.is_pressed()
+	if event.is_action("camera_right"):
+		camera_right = event.is_pressed()
+	if event.is_action("camera_up"):
+		camera_up = event.is_pressed()
+	if event.is_action("camera_down"):
+		camera_down = event.is_pressed()
+
 	if event is InputEventMouseMotion:
 		if (event.button_mask & (MOUSE_BUTTON_MASK_RIGHT | MOUSE_BUTTON_MASK_MIDDLE)) != 0:
 			@warning_ignore("unsafe_call_argument")

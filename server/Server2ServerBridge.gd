@@ -16,6 +16,7 @@ static func get_event_id() -> int:
 
 func _init(_controller: ServerController) -> void:
 	controller = _controller
+	print("connecting to pyserver")
 	socket.connect_to_url("ws" + Statics.HEREDITA_URL.right(-4) + "/__internal__heredita__/s2s")
 
 
@@ -29,6 +30,7 @@ func poll() -> void:
 		socket.poll()
 	else:
 		socket = WebSocketPeer.new()
+		print("connecting to pyserver")
 		socket.connect_to_url("ws" + Statics.HEREDITA_URL.right(-4) + "/__internal__heredita__/s2s")
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
 		_poll_loop()
