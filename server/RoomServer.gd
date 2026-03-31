@@ -247,7 +247,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			var banned_peer: int = player.peer_id
-			room.banned_ips.append(ws_server.peer_ip(banned_peer))
+			#room.banned_ips.append(ws_server.peer_ip(banned_peer))
 			ws_server.close(banned_peer, 5000, "Banned from this room")
 	elif data["event"] == "kick":
 		if not Verify.is_numeric(data["details"]):

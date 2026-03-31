@@ -11,11 +11,22 @@ static var filter_mode := MODE_OFFENSIVE
 
 const filter_offensive = [
 	"fag",
-	"badword"
+	"faggot",
+	"tranny",
+	"trannies",
+	"retard"
 ]
 
 const filter_other = [
-	"fuck"
+	"fuck",
+	"fucked",
+	"fucking",
+	"fucker",
+	"shit",
+	"shat",
+	"shitted",
+	"shitting",
+	"cunt"
 ]
 
 static func grawlix(text: String) -> String:

@@ -2,8 +2,8 @@
 class_name Statics
 extends Object
 
-static var HEREDITA_URL := "https://beta.heredita.net"
-static var SERVER_URL := "wss://beta-gameserver.heredita.net"
+static var HEREDITA_URL := "https://app-beta.heredita.net"
+static var SERVER_URL := "wss://gameserver-beta.heredita.net"
 
 const CHUNK_SIZE: int = 256
 const CHUNK_SIZE_FLOAT: float = float(CHUNK_SIZE)
