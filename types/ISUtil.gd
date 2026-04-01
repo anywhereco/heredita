@@ -45,8 +45,12 @@ static func from_color(color: Color) -> Array:
 
 
 static func to_color(color: Array) -> Color:
-	@warning_ignore("unsafe_call_argument")
-	return Color(color[0], color[1], color[2])
+	if color.size() >= 3:
+		@warning_ignore("unsafe_call_argument")
+		return Color(color[0], color[1], color[2])
+	else:
+		assert(false, "Color is too small")
+		return Color.WHITE
 
 
 static func from_vec2(vec: Vector2) -> Array:
@@ -54,8 +58,12 @@ static func from_vec2(vec: Vector2) -> Array:
 
 
 static func to_vec2(vec: Array) -> Vector2:
-	@warning_ignore("unsafe_call_argument")
-	return Vector2(vec[0], vec[1])
+	if vec.size() >= 2:
+		@warning_ignore("unsafe_call_argument")
+		return Vector2(vec[0], vec[1])
+	else:
+		assert(false, "Vec2 is too small")
+		return Vector2.ZERO
 
 
 static func from_vec3(vec: Vector3) -> Array:
@@ -63,9 +71,12 @@ static func from_vec3(vec: Vector3) -> Array:
 
 
 static func to_vec3(vec: Array) -> Vector3:
-	@warning_ignore("unsafe_call_argument")
-	return Vector3(vec[0], vec[1], vec[2])
-
+	if vec.size() >= 2:
+		@warning_ignore("unsafe_call_argument")
+		return Vector3(vec[0], vec[1], vec[2])
+	else:
+		assert(false, "Vec2 is too small")
+		return Vector3.ZERO
 
 static func debug_print_array(arr: PackedByteArray, pre: Variant = "") -> void:
 	if arr.size() < 12:

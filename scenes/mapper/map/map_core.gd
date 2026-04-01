@@ -295,6 +295,15 @@ func get_map_update(details: Dictionary) -> void:
 		queued_changes.append(details)
 		return
 	if type == "brush":
+		if not details.has("size")\
+		or not details.has("paint_color")\
+		or not details.has("target_color")\
+		or not details.has("pos")\
+		or not Verify.is_numeric(details["size"])\
+		or not Verify.array_is_type(details["paint_color"], TYPE_FLOAT)\
+		or not Verify.array_is_type(details["target_color"], TYPE_FLOAT)\
+		or not Verify.array_is_type(details["pos"], TYPE_FLOAT):
+			return
 		@warning_ignore("unsafe_call_argument")
 		Map._instance.set_pixels_at_targeted(
 			brush_shape_map.get_vec2s(details["size"]),

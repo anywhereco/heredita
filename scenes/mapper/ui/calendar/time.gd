@@ -38,7 +38,7 @@ func _process(delta: float) -> void:
 
 
 func calendar_sync(details: Dictionary) -> void:
-	calendar = Calendar.from_json(details)
+	calendar = Calendar.from_json_safe(details)
 
 
 func _on_pause_pressed() -> void:
