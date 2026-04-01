@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://yb2j237qhuec"]
 
 [ext_resource type="Script" uid="uid://8x5gnweq47eb" path="res://scenes/mapper/ui/ui_root.gd" id="1_em4te"]
-[ext_resource type="Script" uid="uid://i3124dmjaoj6" path="res://scenes/mapper/ui/right_items.gd" id="1_itatv"]
 [ext_resource type="Material" uid="uid://dayrr5lupf1h2" path="res://scenes/_shared/glass.tres" id="2_tv71d"]
 [ext_resource type="Texture2D" uid="uid://dl2432kvta2xt" path="res://assets/icons/exit.svg" id="3_2eddf"]
 [ext_resource type="Script" uid="uid://b6i1m2ju6n7mu" path="res://libraries/ui/BumpedPanelContainer.gd" id="3_y5csc"]
@@ -40,6 +39,26 @@
 [sub_resource type="LabelSettings" id="LabelSettings_5g5qp"]
 font = ExtResource("6_wbt2f")
 font_size = 29
+
+[sub_resource type="GDScript" id="GDScript_m62g0"]
+script/source = "extends VBoxContainer
+
+var have_processed: bool = false
+
+const MAX_DEFAULT_CHAT_WIDTH := 225
+
+
+func _ready() -> void:
+	pass
+
+
+func _process(_delta: float) -> void:
+	if not have_processed:
+		if size.x >= MAX_DEFAULT_CHAT_WIDTH:
+			size_flags_stretch_ratio = (MAX_DEFAULT_CHAT_WIDTH / size.x)
+		have_processed = true
+	# TODO: maybe always change on resize? user can still manually resize the chat bar if they want anyway
+"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rficw"]
 content_margin_left = 5.0
@@ -278,6 +297,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+dragging_enabled = false
 dragger_visibility = 1
 drag_area_offset = 3
 
@@ -290,9 +310,10 @@ focus_behavior_recursive = 1
 mouse_filter = 2
 
 [node name="RightItems" type="VBoxContainer" parent="MenubarContainer/Bottom/ChatSplit" unique_id=1861129681]
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
-size_flags_horizontal = 3
-script = ExtResource("1_itatv")
+size_flags_horizontal = 10
+script = SubResource("GDScript_m62g0")
 
 [node name="ChatPanel" type="PanelContainer" parent="MenubarContainer/Bottom/ChatSplit/RightItems" unique_id=304546746]
 material = ExtResource("2_tv71d")
