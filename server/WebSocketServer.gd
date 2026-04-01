@@ -2,12 +2,19 @@ extends Node
 class_name WSServer
 
 var PORT := 443
+
+var x509_cert: X509Certificate = null
+var private_key: CryptoKey = null
+var tlsoptions: TLSOptions = null
+
 const BUFFER_SIZE_KB := 2048
 
 var _tcp_server: TCPServer = TCPServer.new()
 
 var _peers: Dictionary[int, WebSocketPeer] = {}
 var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
+## Will be empty if TLS is disabled.
+var _peer_tls: Dictionary[int, StreamPeerTLS] = {}
 var _peer_chunk_senders: Dictionary[int, ISUtil.ChunkSender] = {}
 var _peer_chunk_receivers: Dictionary[int, ISUtil.ChunkReceiver] = {}
 
@@ -19,6 +26,33 @@ func _ready() -> void:
 	for arg in args:
 		if arg.begins_with("--server-port="):
 			PORT = int(arg.split("=")[1])
+		if arg.begins_with("--certificate-path="):
+			x509_cert = X509Certificate.new()
+			var x509_err := x509_cert.load(arg.split("=")[1])
+			if x509_err:
+				push_error("Failed to set the x509 certificate, exiting! Error code ", x509_err)
+				get_tree().quit()
+		if arg.begins_with("--private-key="):
+			private_key = CryptoKey.new()
+			var pk_err := private_key.load(arg.split("=")[1])
+			if pk_err:
+				push_error("Failed to set the private key, exiting! Error code ", pk_err)
+				get_tree().quit()
+	if x509_cert == null and private_key == null:
+		if OS.has_feature("editor"):
+			print("Running without a certificate.")
+		elif OS.has_feature("debug"):
+			push_warning("Running without a certificate! This might not be what you want.")
+		else:
+			push_error("Running without a certificate, exiting! You can get around this by using a debug build.")
+			get_tree().quit()
+	elif x509_cert != null and private_key != null:
+		print("We signed up in here :DDDD")
+		tlsoptions = TLSOptions.server(private_key, x509_cert)
+	else:
+		push_error("Only a private key or certificate was set, you need both. Exiting!")
+		get_tree().quit()
+		
 	print(PORT)
 	var err := _tcp_server.listen(PORT)
 	if err == OK:
@@ -109,7 +143,12 @@ func _process(_delta: float) -> void:
 		var ws := WebSocketPeer.new()
 		ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
 		ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
-		ws.accept_stream(_tcp_server.take_connection())
+		if tlsoptions != null:
+			_peer_tls[last_peer_id] = StreamPeerTLS.new()
+			_peer_tls[last_peer_id].accept_stream(_tcp_server.take_connection(), tlsoptions)
+			ws.accept_stream(_peer_tls[last_peer_id])
+		else:
+			ws.accept_stream(_tcp_server.take_connection())
 		_peers[last_peer_id] = ws
 		_peer_status[last_peer_id] = WebSocketPeer.STATE_CONNECTING
 		_peer_chunk_senders[last_peer_id] = ISUtil.ChunkSender.new(
