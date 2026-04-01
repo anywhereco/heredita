@@ -29,6 +29,14 @@ category = &"Display"
 label = "Enable seconds on clock"
 metadata/_custom_type_script = "uid://by0s3pb5h6oq2"
 
+[sub_resource type="Resource" id="Resource_dbskh"]
+script = ExtResource("5_5phhm")
+default = 1
+options = Array[String](["Off", "Offensive", "Full"])
+category = &"Chat"
+label = "Filter"
+metadata/_custom_type_script = "uid://dhxhe38j1we0q"
+
 [sub_resource type="Resource" id="Resource_g6pd6"]
 script = ExtResource("3_4fprb")
 type = 2
@@ -67,14 +75,6 @@ default = true
 category = &"Chat"
 label = "Unfocus on chat submission"
 metadata/_custom_type_script = "uid://by0s3pb5h6oq2"
-
-[sub_resource type="Resource" id="Resource_dbskh"]
-script = ExtResource("5_5phhm")
-default = 1
-options = Array[String](["Off", "Offensive", "Full"])
-category = &"Chat"
-label = "Filter"
-metadata/_custom_type_script = "uid://dhxhe38j1we0q"
 
 [resource]
 script = ExtResource("1_358j1")

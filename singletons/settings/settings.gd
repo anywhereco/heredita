@@ -55,7 +55,7 @@ func _load_settings() -> bool:
 		return err
 	for category in settings_data.categories:
 		for setting: StringName in settings_data.category_map[category]:
-			var value: Variant = config.get_value(category, setting)
+			var value: Variant = config.get_value(category, setting, null)
 			if value == null:
 				var res := settings_data.gets(setting)
 				if res is SliderSetting:
