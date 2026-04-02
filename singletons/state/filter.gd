@@ -9,25 +9,18 @@ enum {
 
 static var filter_mode := MODE_OFFENSIVE
 
-const filter_offensive = [
-	"fag",
-	"faggot",
-	"tranny",
-	"trannies",
-	"retard"
-]
+static var filter_offensive := []
 
-const filter_other = [
-	"fuck",
-	"fucked",
-	"fucking",
-	"fucker",
-	"shit",
-	"shat",
-	"shitted",
-	"shitting",
-	"cunt"
-]
+static var filter_other := []
+
+static func _static_init() -> void:
+	HTTP.ready.connect(load_filter_lists)
+
+static func load_filter_lists() -> void:
+	var filters := await HTTP.request(Statics.HEREDITA_URL, "filter")
+	#if filter doesnt work the rest probably doesnt work either. so idk
+	filter_offensive = filters.val().get("offensive")
+	filter_other = filters.val().get("other")
 
 static func grawlix(text: String) -> String:
 	return "-".repeat(text.length())
