@@ -1,6 +1,7 @@
 class_name ReactiveFloat
 extends Reactive
 
+## The [float] value of this ReactiveFloat.
 var value: float:
 	set = _set_value
 
@@ -14,7 +15,4 @@ func _set_value(new_value: float) -> float:
 func _init(initial_value: float, initial_owner: Reactive = null) -> void:
 	super._init(initial_owner)
 	value = initial_value
-
-
-func deep_unconvert() -> float:
-	return value
+	

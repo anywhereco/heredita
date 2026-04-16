@@ -1,6 +1,9 @@
+## A reactive Dictionary, with utility methods.
 class_name ReactiveDictionary
 extends Reactive
 
+## The [Dictionary] value of this ReactiveDictionary. [br] [br]
+## [b]Note:[/b] Dictionaries are reference-based, so you may need to occasionally call [method Reactive.emit] if you do not re-set the [code]value[/code].
 var value: Dictionary:
 	set = _set_value
 
@@ -16,42 +19,55 @@ func _init(initial_value: Dictionary, initial_owner: Reactive = null) -> void:
 	value = initial_value
 
 
-func getv(index: Variant, fallback: Variant = null) -> Variant:
-	if value.has(index) or fallback == null:  # We want to error out if no fallback is provided
-		return value[index]
+## Get the value at the key, equivalent to [code]dict[key][/code]. [br] [br]
+## [b]Note:[/b] You may provide a fallback to be given instead of erroring.
+func getv(key: Variant, fallback: Variant = null) -> Variant:
+	if value.has(key) or fallback == null:
+		return value[key]
 	return fallback
 
 
-func get_or_add(index: Variant, fallback: Variant = null) -> Variant:
+## Get the value at the key, or adds it if it does not exist.
+func get_or_add(key: Variant, fallback: Variant = null) -> Variant:
 	if fallback is Reactive:
 		fallback._set_owner(self)
-	return value.get_or_add(index, fallback)
+	return value.get_or_add(key, fallback)
 
 
-func setv(index: Variant, new_value: Variant) -> void:
-	if new_value is Reactive:
+## Sets the value at the key, equivalent to [code]dict[key] = foo[/code]. [br] [br]
+## [b]Note:[/b] This function will automatically set the owner of other Reactives to this one. 
+## If this is undesired, set the [code]set_owner[/code] parameter to false.
+func setv(key: Variant, new_value: Variant, set_owner: bool = true) -> void:
+	if new_value is Reactive and set_owner:
 		new_value._set_owner(self)
-	value[index] = new_value
+	value[key] = new_value
 	value_changed.emit(self)
 
 
+## Get all the keys in this ReactiveDictionary.
 func keys() -> Array:
 	return value.keys()
+	
 
-
+## Returns the hash of the ReactiveDictionary.
 func hash() -> int:
 	return value.hash()
 
 
+## Returns the number of entries in the ReactiveDictionary.
 func size() -> int:
 	return value.size()
 
 
-func has(index: Variant) -> bool:
-	return value.has(index)
+## Returns true if the ReactiveDictionary has the key.
+func has(key: Variant) -> bool:
+	return value.has(key)
 
 
-func assign(dict: Dictionary) -> void:
+## Assigns elements of a Dictionary into this ReactiveDictionary. [br] [br]
+## [b]Note:[/b] This function will automatically set the owner of other Reactives to this one. 
+## If this is undesired, set the [code]set_owner[/code] parameter to false.
+func assign(dict: Dictionary, set_owner: bool = true) -> void:
 	for key in dict:
 		if dict[key] is Reactive:
 			dict[key]._set_owner(self)
@@ -59,26 +75,20 @@ func assign(dict: Dictionary) -> void:
 	value_changed.emit(self)
 
 
+## Clear this ReactiveDictionary.
 func clear() -> void:
 	value.clear()
 	value_changed.emit(self)
 
 
-func erase(val: Variant) -> void:
-	value.erase(val)
+## Erase the key of the ReactiveDictionary.
+func erase(key: Variant) -> bool:
+	var retval := value.erase(key)
 	value_changed.emit(self)
+	return retval
 
 
+## Sorts the ReactiveDictionary's keys in ascending order.
 func sort() -> void:
 	value.sort()
 	value_changed.emit(self)
-
-
-func deep_unconvert() -> Array:
-	var dict = {}
-	for i in value:
-		if value[i] is Reactive:
-			dict[i] = value[i].deep_unconvert()
-		else:
-			dict[i] = value[i]
-	return dict

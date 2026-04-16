@@ -1,8 +1,8 @@
 @tool
 extends EditorPlugin
 
+const ReactiveCreationMenu = preload("create/create_reactive.gd")
 var rcm := ReactiveCreationMenu.new()
-
 
 func _enable_plugin() -> void:
 	pass

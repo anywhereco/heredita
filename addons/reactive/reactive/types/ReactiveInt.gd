@@ -1,6 +1,7 @@
 class_name ReactiveInt
 extends Reactive
 
+## The [int] value of this ReactiveInt.
 var value: int:
 	set = _set_value
 
@@ -14,7 +15,3 @@ func _set_value(new_value: int) -> int:
 func _init(initial_value: int, initial_owner: Reactive = null) -> void:
 	super._init(initial_owner)
 	value = initial_value
-
-
-func deep_unconvert() -> int:
-	return value

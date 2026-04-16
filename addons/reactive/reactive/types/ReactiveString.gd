@@ -1,6 +1,7 @@
 class_name ReactiveString
 extends Reactive
 
+## The [String] value of this ReactiveString.
 var value: String:
 	set = _set_value
 
@@ -14,7 +15,3 @@ func _set_value(new_value: String) -> String:
 func _init(initial_value: String, initial_owner: Reactive = null) -> void:
 	super._init(initial_owner)
 	value = initial_value
-
-
-func deep_unconvert() -> String:
-	return value

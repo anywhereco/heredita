@@ -1,6 +1,7 @@
 class_name ReactiveBool
 extends Reactive
 
+## The [bool] value of this ReactiveBool.
 var value: bool:
 	set = _set_value
 
@@ -14,7 +15,3 @@ func _set_value(new_value: bool):
 func _init(initial_value: bool, initial_owner: Reactive = null) -> void:
 	super._init(initial_owner)
 	value = initial_value
-
-
-func deep_unconvert() -> bool:
-	return value

@@ -1,50 +1,75 @@
 [gd_scene format=3 uid="uid://be4wb3jw46n8j"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eyhrn"]
+content_margin_left = 7.0
+content_margin_top = 7.0
+content_margin_right = 7.0
+content_margin_bottom = 7.0
+bg_color = Color(0.076, 0.1, 0.0996, 1)
+
 [node name="ReactiveCreateInterface" type="Window" unique_id=586815550]
 oversampling_override = 1.0
-size = Vector2i(200, 100)
+title = "Create new Reactive"
+position = Vector2i(0, 36)
+size = Vector2i(350, 150)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1333440820]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1917670545]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_right = -10.0
 grow_horizontal = 2
 grow_vertical = 2
-alignment = 1
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=598363870]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1333440820]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=1259101043]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=598363870]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1259101043]
 layout_mode = 2
 text = "File name:"
 
-[node name="ClassName" type="LineEdit" parent="VBoxContainer/HBoxContainer" unique_id=1014164785]
+[node name="ClassName" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1014164785]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=102106369]
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=102106369]
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer2" unique_id=1152856232]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1152856232]
 layout_mode = 2
 text = "Wraps:"
 
-[node name="Wrapping" type="LineEdit" parent="VBoxContainer/HBoxContainer2" unique_id=264960068]
+[node name="Wrapping" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer2" unique_id=264960068]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Create" type="Button" parent="VBoxContainer" unique_id=336404768]
+[node name="Pad" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1957807076]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Create" type="Button" parent="MarginContainer/VBoxContainer" unique_id=336404768]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Create"
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=253128180]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Panel" type="Panel" parent="." unique_id=1032419142]
+unique_name_in_owner = true
+z_index = -3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_eyhrn")

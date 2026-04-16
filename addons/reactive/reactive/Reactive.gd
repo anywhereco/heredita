@@ -3,6 +3,7 @@
 extends Resource
 class_name Reactive
 
+## Emitted when the value of the Reactive has changed. You can safely cast this to the Reactive of the type that has changed.
 signal value_changed(reactive: Reactive)
 
 ## The owner of this Reactive. [br]
@@ -26,6 +27,8 @@ func _init(init_owner: Reactive = null) -> void:
 func _propagate(_other: Reactive = null) -> void:
 	value_changed.emit(self)
 
-
-func _emit() -> void:
+## Emit that the value of this Reactive has changed. Can be useful for manual modifications.
+func emit() -> void:
 	value_changed.emit(self)
+
+## Create a GDScript resource that wraps 
