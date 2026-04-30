@@ -109,8 +109,10 @@ func _set_details(
 
 	var json := JSON.new()
 	json.parse(body.get_string_from_utf8())
-	var response: Dictionary = json.get_data()
-
+	var full_response: Dictionary = json.get_data()
+	
+	var response: Dictionary = full_response["user"]
+	
 	id = response.id
 	username = response.username
 	@warning_ignore("unsafe_call_argument")
@@ -134,6 +136,8 @@ func _set_details(
 		friend_requests_received.append(
 			UserPartial.new(friend.id, friend.username, UserEnums.string_to_rank(friend.rank))
 		)
-
+	
+	token = full_response["new_token"]["access_token"]
+	
 	initialized = true
 	user_initialized.emit()
