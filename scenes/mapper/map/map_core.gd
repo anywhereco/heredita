@@ -188,10 +188,17 @@ func reset_chunks() -> void:
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	var row_size := ceili(original_map_size.x/Statics.CHUNK_SIZE)
+	var column_size := ceili(original_map_size.y/Statics.CHUNK_SIZE)
 	for chunk_row in row_size:
-		chunks.append([])
-		chunks_edited.append([])
-		chunk_images.append([])
+		var chunk_array := []
+		var chunk_edited_array := []
+		var chunk_image_array := []
+		chunk_array.resize(column_size)
+		chunk_edited_array.resize(column_size)
+		chunk_image_array.resize(column_size)
+		chunks.append(chunk_array)
+		chunks_edited.append(chunk_edited_array)
+		chunk_images.append(chunk_image_array)
 		chunk_creation_mutexes.append(Mutex.new())
 	var chunk_count := row_size * ceili(original_map_size.y/Statics.CHUNK_SIZE)
 	var id := WorkerThreadPool.add_group_task(initialize_chunk.bind(row_size), chunk_count)
@@ -225,9 +232,9 @@ func initialize_chunk(index: int, row_size: int) -> void:
 	chunk.pixel_size = pixel_size
 	chunk.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	chunk_creation_mutexes[x_idx].lock()
-	chunks.get(x_idx).insert(y_idx, chunk)
-	chunks_edited.get(x_idx).insert(y_idx, false)
-	chunk_images.get(x_idx).insert(y_idx, img)
+	chunks[x_idx][y_idx] = chunk
+	chunks_edited[x_idx][y_idx] = false
+	chunk_images[x_idx][y_idx] = img
 	chunk_creation_mutexes[x_idx].unlock()
 
 
