@@ -242,7 +242,7 @@ func _poll_string(message: Dictionary) -> void:
 				#hosts = message.get("details").get("hosts")
 				return
 			"_is2_login":
-				_prompt_instance = load("res://types/ui/PasswordPrompt.tscn").instantiate()
+				_prompt_instance = load("res://libraries/ui/infernosocket/PasswordPrompt.tscn").instantiate()
 				(_prompt_instance.find_child("PasswordEdit") as LineEdit).text_submitted.connect(
 					func password_attempt(pwd: String) -> void: send("_is2_password_attempt", pwd)
 				)
