@@ -1,5 +1,4 @@
 class_name Verify
-extends Object
 
 
 ## Asserts that an array's elements are all of a variant type [code]type[/code].

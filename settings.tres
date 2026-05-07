@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="SettingsHolder" format=3 uid="uid://dbu2ny70g7vwj"]
 
-[ext_resource type="Script" uid="uid://bh3v065a10fqk" path="res://singletons/settings/SettingsHolder.gd" id="1_358j1"]
-[ext_resource type="Script" uid="uid://cgbiblsmqmkmr" path="res://types/settings/SettingsResource.gd" id="2_ymawa"]
-[ext_resource type="Script" uid="uid://1b56554y51k6" path="res://types/settings/SliderSetting.gd" id="3_4fprb"]
-[ext_resource type="Script" uid="uid://by0s3pb5h6oq2" path="res://types/settings/ToggleSetting.gd" id="4_5phhm"]
-[ext_resource type="Script" uid="uid://dhxhe38j1we0q" path="res://types/settings/DropdownSetting.gd" id="5_5phhm"]
+[ext_resource type="Script" uid="uid://bh3v065a10fqk" path="res://libraries/typing/settings/SettingsHolder.gd" id="1_358j1"]
+[ext_resource type="Script" uid="uid://cgbiblsmqmkmr" path="res://libraries/typing/settings/SettingsResource.gd" id="2_ymawa"]
+[ext_resource type="Script" uid="uid://1b56554y51k6" path="res://libraries/typing/settings/SliderSetting.gd" id="3_4fprb"]
+[ext_resource type="Script" uid="uid://by0s3pb5h6oq2" path="res://libraries/typing/settings/ToggleSetting.gd" id="4_5phhm"]
+[ext_resource type="Script" uid="uid://dhxhe38j1we0q" path="res://libraries/typing/settings/DropdownSetting.gd" id="5_5phhm"]
 
 [sub_resource type="Resource" id="Resource_svqm0"]
 script = ExtResource("3_4fprb")

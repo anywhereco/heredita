@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://rjf5ra67d3m6"
-path="res://.godot/imported/PinnedScrollContainer.svg-b5018cdbee4bc9a8987ec82acb1713d7.ctex"
+path="res://.godot/imported/PinnedScrollContainer.svg-a54ca1b01db3e95e1ab1101d4a6812f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://types/ui/PinnedScrollContainer.svg"
-dest_files=["res://.godot/imported/PinnedScrollContainer.svg-b5018cdbee4bc9a8987ec82acb1713d7.ctex"]
+source_file="res://libraries/ui/PinnedScrollContainer.svg"
+dest_files=["res://.godot/imported/PinnedScrollContainer.svg-a54ca1b01db3e95e1ab1101d4a6812f2.ctex"]
 
 [params]
 

@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://d2a2syuqfdlh7"]
 
-[ext_resource type="Script" uid="uid://dqqewyeqhmscd" path="res://singletons/debug/DebugLayer.gd" id="1_8p4q4"]
+[ext_resource type="Script" uid="uid://dqqewyeqhmscd" path="res://libraries/autoloading/debug/DebugLayer.gd" id="1_8p4q4"]
 [ext_resource type="FontVariation" uid="uid://svrxcxvd4unm" path="res://assets/font/_variants/code.tres" id="2_tdgdu"]
 [ext_resource type="FontVariation" uid="uid://dd56hif2mvma5" path="res://assets/font/_variants/codebold.tres" id="3_d4uou"]
 [ext_resource type="FontVariation" uid="uid://c5o5yviiq8mck" path="res://assets/font/_variants/codebolditalics.tres" id="4_y11d2"]
 [ext_resource type="FontVariation" uid="uid://dk2rf8cuamptn" path="res://assets/font/_variants/codeitalics.tres" id="5_gchyr"]
-[ext_resource type="Script" uid="uid://ddtc3svvdjmwj" path="res://singletons/debug/console.gd" id="6_gchyr"]
+[ext_resource type="Script" uid="uid://ddtc3svvdjmwj" path="res://libraries/autoloading/debug/ConsoleLabel.gd" id="6_gchyr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gchyr"]
 content_margin_left = 0.0

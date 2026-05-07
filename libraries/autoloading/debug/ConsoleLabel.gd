@@ -3,7 +3,7 @@ extends RichTextLabel
 
 var logger := CustomLogger.new()
 
-static var _inst: RichTextLabel
+static var _inst: ConsoleLabel
 
 
 class CustomLogger:

@@ -20,13 +20,12 @@ config/icon="uid://c1kanb7wy7l6u"
 
 [autoload]
 
-Prompts="*res://libraries/Prompts.gd"
-QueryParams="*res://libraries/QueryParams.gd"
-State="*res://singletons/state/state.gd"
-HTTP="*res://libraries/HTTP.gd"
-DebugLayer="*res://singletons/debug/DebugLayer.tscn"
-CursorLayer="*res://singletons/cursor/CursorLayer.tscn"
-Settings="*res://singletons/settings/settings.gd"
+Prompts="*res://libraries/autoloading/Prompts.gd"
+State="*res://libraries/autoloading/state/State.gd"
+HTTP="*res://libraries/autoloading/HTTP.gd"
+DebugLayer="*res://libraries/autoloading/debug/DebugLayer.tscn"
+CursorLayer="*res://libraries/autoloading/cursor/CursorLayer.tscn"
+Settings="*res://libraries/autoloading/Settings.gd"
 TopLevel="*uid://cskohnlj8smnp"
 
 [debug]
@@ -58,9 +57,7 @@ folder_colors={
 "res://libraries/": "purple",
 "res://scenes/": "orange",
 "res://server/": "yellow",
-"res://singletons/": "pink",
-"res://tests/": "teal",
-"res://types/": "red"
+"res://tests/": "teal"
 }
 
 [gui]

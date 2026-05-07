@@ -2,7 +2,7 @@ extends Node
 
 const SAVE_PATH: String = "user://settings.cfg"
 
-var settings_data: SettingsHolder = preload("uid://dbu2ny70g7vwj")
+var settings_data: SettingsHolder = preload("res://settings.tres")
 
 var settings: ReactiveDictionary = ReactiveDictionary.new({})
 

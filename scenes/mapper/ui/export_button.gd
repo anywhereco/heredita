@@ -7,4 +7,4 @@ func _pressed() -> void:
 		var buffer := img.save_png_to_buffer()
 		JavaScriptBridge.download_buffer(buffer, "saved_map.png", "image/png")
 	else:
-		img.save_png("saved_map.png")
+		img.save_png("user://saved_map.png")

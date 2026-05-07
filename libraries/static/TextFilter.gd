@@ -19,6 +19,8 @@ static func _static_init() -> void:
 static func load_filter_lists() -> void:
 	var filters := await HTTP.request(Statics.HEREDITA_URL, "filter")
 	#if filter doesnt work the rest probably doesnt work either. so idk
+	if filters.is_err():
+		return
 	filter_offensive = filters.val().get("offensive")
 	filter_other = filters.val().get("other")
 

@@ -8,8 +8,6 @@ var refocus_debounce := 0.0
 
 @onready var display := DisplayManager.new()
 
-@onready var threading := ThreadingManager.new()
-
 @onready var brush_shape_map := BrushShapeMap.new()
 
 var client: InfernoSocketClient = null
