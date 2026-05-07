@@ -57,7 +57,7 @@ folder_colors={
 "res://libraries/": "purple",
 "res://scenes/": "orange",
 "res://server/": "yellow",
-"res://tests/": "teal"
+"res://tests/": "gray"
 }
 
 [gui]
