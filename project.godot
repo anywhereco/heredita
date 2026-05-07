@@ -48,7 +48,7 @@ run/main_run_args="-- --heredita-url=http://localhost:9000 --gameserver-url=ws:/
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/exporttime_data/plugin.cfg", "res://addons/gdgdtoolkit/plugin.cfg", "res://addons/html5_file_dialog/plugin.cfg", "res://addons/reactive/plugin.cfg", "res://addons/setting_editor/plugin.cfg")
+enabled=PackedStringArray("res://addons/exporttime_data/plugin.cfg", "res://addons/gdUnit4/plugin.cfg", "res://addons/gdgdtoolkit/plugin.cfg", "res://addons/html5_file_dialog/plugin.cfg", "res://addons/reactive/plugin.cfg", "res://addons/setting_editor/plugin.cfg")
 
 [file_customization]
 
@@ -59,6 +59,7 @@ folder_colors={
 "res://scenes/": "orange",
 "res://server/": "yellow",
 "res://singletons/": "pink",
+"res://tests/": "teal",
 "res://types/": "red"
 }
 
