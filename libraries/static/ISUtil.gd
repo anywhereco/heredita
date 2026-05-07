@@ -1,4 +1,3 @@
-extends Node
 class_name ISUtil
 
 const BUFFER_SIZE_KB: int = 2048
