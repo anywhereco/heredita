@@ -54,6 +54,14 @@ func set_action_tool(new_action: Action) -> void:
 func _ready() -> void:
 	position = get_local_mouse_position()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	Settings.get_reactive("ui_scale").value_changed.connect(resize_mouse.unbind(1))
+	State.display.scale.value_changed.connect(resize_mouse.unbind(1))
+	resize_mouse()
+
+
+func resize_mouse() -> void:
+	var display_scale := State.display.scale.value
+	scale = (Vector2.ONE * (1/display_scale))
 
 
 func _process(_delta: float) -> void:
