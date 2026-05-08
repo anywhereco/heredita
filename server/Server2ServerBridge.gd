@@ -28,6 +28,7 @@ func get_msg() -> Dictionary:
 
 
 func poll(delta: float) -> void:
+	timeout -= delta
 	if socket.get_ready_state() != socket.STATE_CLOSED:
 		socket.poll()
 	elif timeout <= 0:
@@ -35,8 +36,6 @@ func poll(delta: float) -> void:
 		print("connecting to pyserver")
 		socket.connect_to_url("ws" + Statics.HEREDITA_URL.right(-4) + "/__internal__heredita__/s2s")
 		timeout = 5.0
-	else:
-		timeout -= delta
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
 		_poll_loop()
 
