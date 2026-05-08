@@ -22,14 +22,20 @@ func connect_buttons_recursively(node: Node) -> void:
 
 
 func _on_button_pressed(button_name: String) -> void:
-	mapper.tool.value = MapperRoot.Tool.get(button_name.to_upper())
+	var tool: MapperRoot.Tool = MapperRoot.Tool.get(button_name.to_upper())
+	if mapper.tool.value == tool:
+		mapper.tool.value = MapperRoot.Tool.NONE
+		(find_child(button_name) as Button).button_pressed = false
+	else:
+		mapper.tool.value = tool
+		(find_child(button_name) as Button).button_pressed = true
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed("tool_brush"):
-		mapper.tool.value = MapperRoot.Tool.BRUSH
+		_on_button_pressed("Brush")
 	elif event.is_action_pressed("tool_dice"):
-		mapper.tool.value = MapperRoot.Tool.DICE
+		_on_button_pressed("Dice")
 
 
 func try_resize() -> void:
