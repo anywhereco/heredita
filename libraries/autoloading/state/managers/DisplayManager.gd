@@ -8,7 +8,7 @@ signal root_window_moved_or_resized
 const DEFAULT_VIEWPORT_SIZE: Vector2 = Vector2(720, 480)
 
 ## The root window's script.
-const ROOT_WINDOW_SCRIPT: Script = preload("res://singletons/state/window_notification_handling.gd")
+const ROOT_WINDOW_SCRIPT: Script = preload("res://libraries/autoloading/state/managers/window_notification_handling.gd")
 
 ## The root window.
 @onready var root_window: Window = get_tree().root

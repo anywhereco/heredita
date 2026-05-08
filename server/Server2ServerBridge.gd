@@ -3,6 +3,8 @@ extends Node
 
 static var event_id := 0
 
+var timeout: float = 0
+
 var socket := WebSocketPeer.new()
 var controller: ServerController
 
@@ -25,13 +27,16 @@ func get_msg() -> Dictionary:
 	return JSON.parse_string(pkt)
 
 
-func poll() -> void:
+func poll(delta: float) -> void:
 	if socket.get_ready_state() != socket.STATE_CLOSED:
 		socket.poll()
-	else:
+	elif timeout <= 0:
 		socket = WebSocketPeer.new()
 		print("connecting to pyserver")
 		socket.connect_to_url("ws" + Statics.HEREDITA_URL.right(-4) + "/__internal__heredita__/s2s")
+		timeout = 5.0
+	else:
+		timeout -= delta
 	while socket.get_ready_state() == socket.STATE_OPEN and socket.get_available_packet_count():
 		_poll_loop()
 
@@ -71,5 +76,5 @@ func validate_token_request(token: String) -> int:
 	return send_event("validate", {"token": token})
 
 
-func _process(_delta: float) -> void:
-	poll()
+func _process(delta: float) -> void:
+	poll(delta)
