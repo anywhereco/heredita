@@ -6,7 +6,7 @@ var shape: BrushShapeMap = BrushShapeMap.new()
 var is_painting: bool = false
 var paint_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 var target_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
-
+var is_targeted: ReactiveBool = ReactiveBool.new(true)
 
 func _init() -> void:
 	pass
@@ -23,6 +23,20 @@ func _map_ready() -> void:
 	paint_color.value_changed.connect(func(_color: ReactiveColor) -> void: _update_brush())
 	paint_color.value = Color()  #black feels more sensible as a default for paint
 	target_color.value = Map._instance.default_target_color
+	UIRoot._instance.brush_ui.untargeted_checkbox.toggled.connect(
+		func(toggled: bool) -> void:
+			is_targeted.value = not toggled
+	)
+	is_targeted.value_changed.connect(
+		func(targeted: ReactiveBool) -> void:
+			_update_brush()
+			UIRoot._instance.brush_ui.untargeted_checkbox.button_pressed = not targeted.value
+			if not targeted.value:
+				UIRoot._instance.brush_ui.target_picker.modulate = Color(1,1,1,.5)
+			else:
+				UIRoot._instance.brush_ui.target_picker.modulate = Color(1,1,1,1)
+	)
+
 
 
 func get_image_for_brush() -> Image:
@@ -36,10 +50,17 @@ func get_image_for_brush() -> Image:
 				Map._instance.map_pos.value - shape.image_pixel_offset + Vector2(x, y)
 			)
 			var color := Map._instance.get_pixel_at(pos)
-			if color.is_equal_approx(target_color.value) && image.get_pixel(x, y) == Color.WHITE:
-				image.set_pixel(x, y, Color.WHITE)
+			if not is_targeted.value:
+				if color.a > 0 and image.get_pixel(x, y) == Color.WHITE:
+					image.set_pixel(x, y, Color.WHITE)
+				else:
+					image.set_pixel(x, y, Color.TRANSPARENT)
+				
 			else:
-				image.set_pixel(x, y, Color.TRANSPARENT)
+				if color.is_equal_approx(target_color.value) and image.get_pixel(x, y) == Color.WHITE:
+					image.set_pixel(x, y, Color.WHITE)
+				else:
+					image.set_pixel(x, y, Color.TRANSPARENT)
 	return image
 
 
@@ -52,6 +73,8 @@ func brush_events(event: InputEvent) -> void:
 		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
 		if color.a == 1:
 			UIRoot._instance.brush_ui.target_picker.color.value = color
+	if event.is_action_pressed("switch_targeting_status"):
+		is_targeted.value = not is_targeted.value
 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		is_painting = true
@@ -67,9 +90,9 @@ func brush_action(
 	brush_size: int, paint: Color, target: Color, offset: Vector2 = Vector2.ZERO
 ) -> void:
 	if offset:
-		Map._instance.set_pixels_at_targeted(shape.get_vec2s(brush_size), paint, target, offset)
+		Map._instance.set_pixels_at_maybe_targeted(shape.get_vec2s(brush_size), paint, target, is_targeted.value, offset)
 	else:
-		Map._instance.set_pixels_at_map_pos_targeted(shape.get_vec2s(brush_size), paint, target)
+		Map._instance.set_pixels_at_map_pos_targeted(shape.get_vec2s(brush_size), paint, target, is_targeted.value)
 
 
 func _brush_size_changed() -> void:

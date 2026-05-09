@@ -8,6 +8,7 @@ extends VBoxContainer
 @onready var target_picker: HereditaColorPicker = $HBoxContainer2/Target/ColorPicker
 
 @onready var size_controller: BrushSizeController = $HBoxContainer/BrushSize
+@onready var untargeted_checkbox: CheckBox = $HBoxContainer3/UntargetedCheckbox
 
 const PRO_450 = preload("uid://hwc3xdnlf3ke")
 const PRO_650 = preload("uid://dci33svbxkhv6")

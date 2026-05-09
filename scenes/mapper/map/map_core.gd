@@ -100,8 +100,9 @@ func set_pixel_at(pos: Vector2, color: Color) -> bool:
 	return true
 
 
-func set_pixels_at(positions: PackedVector2Array, color: Color) -> void:
+func set_pixels_at(positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO) -> void:
 	for pos in positions:
+		pos += offset
 		if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 			continue
 		var chunk_coords := get_chunk_grid_coords(pos)
@@ -125,10 +126,34 @@ func set_pixels_at_targeted(
 			chunks_edited[chunk_coords.x][chunk_coords.y] = true
 
 
-func set_pixels_at_map_pos_targeted(
-	positions: PackedVector2Array, color: Color, target: Color
+func set_pixels_at_land(
+	positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO
 ) -> void:
-	set_pixels_at_targeted(positions, color, target, Vector2(Vector2i(map_pos.value)))
+	for pos in positions:
+		pos += offset
+		if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
+			continue
+		var chunk_coords := get_chunk_grid_coords(pos)
+		var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
+		var relative_coords := get_chunk_relative_coords(pos)
+		if chunk.get_pixelv(relative_coords).a > 0:
+			chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
+			chunks_edited[chunk_coords.x][chunk_coords.y] = true
+
+
+func set_pixels_at_maybe_targeted(
+	positions: PackedVector2Array, color: Color, target: Color, targeted: bool, offset: Vector2 = Vector2.ZERO
+) -> void:
+	if targeted:
+		set_pixels_at_targeted(positions, color, target, offset)
+	else:
+		set_pixels_at_land(positions, color, offset)
+		
+
+func set_pixels_at_map_pos_targeted(
+	positions: PackedVector2Array, color: Color, target: Color, targeted: bool = true
+) -> void:
+	set_pixels_at_maybe_targeted(positions, color, target, targeted, Vector2(Vector2i(map_pos.value)))
 
 
 func get_map_as_image() -> Image:
@@ -306,16 +331,19 @@ func get_map_update(details: Dictionary) -> void:
 		or not details.has("paint_color")\
 		or not details.has("target_color")\
 		or not details.has("pos")\
+		or not details.has("targeted")\
 		or not Verify.is_numeric(details["size"])\
 		or not Verify.array_is_type(details["paint_color"], TYPE_FLOAT)\
 		or not Verify.array_is_type(details["target_color"], TYPE_FLOAT)\
-		or not Verify.array_is_type(details["pos"], TYPE_FLOAT):
+		or not Verify.array_is_type(details["pos"], TYPE_FLOAT)\
+		or not typeof(details["targeted"]) == TYPE_BOOL:
 			return
 		@warning_ignore("unsafe_call_argument")
-		Map._instance.set_pixels_at_targeted(
+		Map._instance.set_pixels_at_maybe_targeted(
 			brush_shape_map.get_vec2s(details["size"]),
 			ISUtil.to_color(details["paint_color"]),
 			ISUtil.to_color(details["target_color"]),
+			details["targeted"],
 			ISUtil.to_vec2(details["pos"])
 		)
 

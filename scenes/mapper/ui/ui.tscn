@@ -658,6 +658,16 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Preset"
 
+[node name="Control" type="Control" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1350587308]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UntargetedCheckbox" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=107558011]
+layout_mode = 2
+theme_override_constants/icon_max_width = 16
+theme_override_font_sizes/font_size = 12
+text = "Untargeted [T]"
+
 [node name="dice" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=889499975]
 visible = false
 layout_mode = 2
