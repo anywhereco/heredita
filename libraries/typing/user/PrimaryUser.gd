@@ -85,9 +85,14 @@ func _set_token(
 func initialize() -> void:
 	if not token:
 		username = ""
+		email = ""
+		friends = []
+		friend_requests_received = []
+		friend_requests_sent = []
 		id = -1
+		rank = UserEnums.Rank.PLAYER
 		initialized = false
-		failed.emit(-1)
+		failed.emit(-1) 
 		return
 	http.request_completed.connect(_set_details)
 	http.request(
@@ -104,12 +109,20 @@ func _set_details(
 		push_warning("Cannot connect to server (is your testing server set up?)")
 		return
 
-	if response_code == HTTPClient.RESPONSE_UNAUTHORIZED:
-		return
-
 	var json := JSON.new()
 	json.parse(body.get_string_from_utf8())
 	var full_response: Dictionary = json.get_data()
+	
+	if response_code == HTTPClient.RESPONSE_UNAUTHORIZED:
+		if full_response["detail"] == "These credentials have expired":
+			for header: String in headers:
+				var header_split := header.split(": ", false, 1)
+				if header_split[0] == "x-username":
+					username = header_split[1]
+			failed.emit(HTTPClient.RESPONSE_IM_A_TEAPOT)
+			return
+		failed.emit(HTTPClient.RESPONSE_UNAUTHORIZED)
+		return
 	
 	var response: Dictionary = full_response["user"]
 	

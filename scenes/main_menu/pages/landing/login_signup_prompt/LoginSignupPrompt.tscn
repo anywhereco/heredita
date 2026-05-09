@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://opivht8lbmfs"]
 
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="1_8hng6"]
-[ext_resource type="Script" uid="uid://wj7e6v5fpr73" path="res://scenes/main_menu/pages/landing/login.gd" id="1_10o6o"]
+[ext_resource type="Script" uid="uid://wj7e6v5fpr73" path="res://scenes/main_menu/pages/landing/login_signup_prompt/login.gd" id="1_10o6o"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="2_uquub"]
-[ext_resource type="Script" uid="uid://cinuw1uhd7ddo" path="res://scenes/main_menu/pages/landing/signup.gd" id="3_7ilia"]
+[ext_resource type="Script" uid="uid://cinuw1uhd7ddo" path="res://scenes/main_menu/pages/landing/login_signup_prompt/signup.gd" id="3_7ilia"]
 [ext_resource type="Script" uid="uid://o2x3vyai2ya6" path="res://scenes/main_menu/pages/error_label.gd" id="3_uquub"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_7ilia"]

@@ -14,6 +14,9 @@ var error_label: ErrorLabelForLogin
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	error_label = find_parent("LoginSignupPrompt").find_child("ErrorLabel")
+	if State.user.username != "":
+		username.text = State.user.username
+		password.grab_focus()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -54,7 +57,14 @@ func _login_btn() -> void:
 				tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 				tween.tween_property(button, "modulate", Color.WHITE, 2)
 	)
-	State.user.user_initialized.connect(close)
+	
+	if not State.user.user_initialized.get_connections().has({
+		"signal": State.user.user_initialized,
+		"callable": close,
+		"flags": 0
+	}):
+		print(State.user.user_initialized.get_connections())
+		State.user.user_initialized.connect(close)
 
 	State.user.login(username.text, password.text)
 

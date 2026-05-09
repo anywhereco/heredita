@@ -1,6 +1,6 @@
 extends Button
 
-const LOGIN_SIGNUP_PROMPT = preload("res://scenes/main_menu/pages/landing/LoginSignupPrompt.tscn")
+const LOGIN_SIGNUP_PROMPT = preload("res://scenes/main_menu/pages/landing/login_signup_prompt/LoginSignupPrompt.tscn")
 
 
 # Called when the node enters the scene tree for the first time.
@@ -39,7 +39,12 @@ func logged_out_pressed() -> void:
 
 func logged_in() -> void:
 	text = "Log out  "
+	modulate = Color.WHITE
 
 
-func logged_out(_id: int) -> void:
+func logged_out(id: int) -> void:
 	text = "Log in  "
+	if id == HTTPClient.RESPONSE_IM_A_TEAPOT:
+		text = "Log back in  "
+		modulate = Color(1, .6, .6)
+		
