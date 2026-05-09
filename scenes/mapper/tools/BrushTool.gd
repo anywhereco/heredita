@@ -121,6 +121,7 @@ func _process(_delta: float) -> void:
 					"pos": ISUtil.from_vec2(Map._instance.map_pos.value),
 					"size": size,
 					"paint_color": ISUtil.from_color(paint_color.value),
-					"target_color": ISUtil.from_color(target_color.value)
+					"target_color": ISUtil.from_color(target_color.value),
+					"targeted": is_targeted.value
 				}
 			)

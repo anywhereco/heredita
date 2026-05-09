@@ -35,16 +35,18 @@ func get_map_update(details: Dictionary) -> void:
 	if type == "brush":
 		if (
 			typeof(details["size"]) != TYPE_FLOAT
+			or typeof(details["targeted"]) != TYPE_BOOL
 			or not Verify.array_is_type(details["paint_color"], TYPE_FLOAT)
 			or not Verify.array_is_type(details["target_color"], TYPE_FLOAT)
 			or not Verify.array_is_type(details["pos"], TYPE_FLOAT)
 		):
 			return
 		@warning_ignore("unsafe_call_argument")
-		set_pixels_at_targeted(
+		set_pixels_at_maybe_targeted(
 			State.brush_shape_map.get_vec2s(details["size"]),
 			ISUtil.to_color(details["paint_color"]),
 			ISUtil.to_color(details["target_color"]),
+			details["targeted"],
 			ISUtil.to_vec2(details["pos"])
 		)
 
@@ -67,3 +69,21 @@ func set_pixels_at_targeted(
 			continue
 		if image.get_pixelv(pos).is_equal_approx(target):
 			image.set_pixelv(Vector2i(pos), color)
+
+func set_pixels_at(
+	positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO
+) -> void:
+	for pos in positions:
+		pos += offset
+		if not is_in_bounding_box(pos, Vector2.ZERO, image.get_size() - Vector2i(1, 1)):
+			continue
+		if image.get_pixelv(pos).a > 0:
+			image.set_pixelv(Vector2i(pos), color)
+
+func set_pixels_at_maybe_targeted(
+	positions: PackedVector2Array, color: Color, target: Color, targeted: bool, offset: Vector2 = Vector2.ZERO
+) -> void:
+	if targeted:
+		set_pixels_at_targeted(positions, color, target, offset)
+	else:
+		set_pixels_at(positions, color, offset)
