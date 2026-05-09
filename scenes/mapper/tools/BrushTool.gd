@@ -43,12 +43,15 @@ func get_image_for_brush() -> Image:
 	var image := shape.get_as_image(size).duplicate(true)
 	var width: int = image.get_width()
 	var height: int = image.get_height()
-
+	var float_base_pos: Vector2 = Map._instance.map_pos.value - shape.image_pixel_offset
+	var base_pos := Vector2i(float_base_pos.floor()) 
+	if float_base_pos.x < -(shape.BRUSH_SIZE_MAX - 1):
+		base_pos.x += 1
+	if float_base_pos.y < -(shape.BRUSH_SIZE_MAX - 1):
+		base_pos.y += 1
 	for y in range(height):
 		for x in range(width):
-			var pos := Vector2i(
-				Map._instance.map_pos.value - shape.image_pixel_offset + Vector2(x, y)
-			)
+			var pos := base_pos + Vector2i(x, y)
 			var color := Map._instance.get_pixel_at(pos)
 			if not is_targeted.value:
 				if color.a > 0 and image.get_pixel(x, y) == Color.WHITE:

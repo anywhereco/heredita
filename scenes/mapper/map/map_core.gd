@@ -74,6 +74,7 @@ func get_chunk_relative_coords(pos: Vector2) -> Vector2:
 
 ## If a position is invalid, returns Color(-1, -1, -1, -1).
 func get_pixel_at(pos: Vector2) -> Color:
+	pos = pos.floor()
 	if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 		return Color(-1, -1, -1, -1)
 	var chunk_coords := get_chunk_grid_coords(pos)
@@ -91,6 +92,7 @@ func get_pixel_at(pos: Vector2) -> Color:
 
 
 func set_pixel_at(pos: Vector2, color: Color) -> bool:
+	pos = pos.floor()
 	if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 		return false
 	var chunk_coords := get_chunk_grid_coords(pos)
@@ -101,6 +103,7 @@ func set_pixel_at(pos: Vector2, color: Color) -> bool:
 
 
 func set_pixels_at(positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO) -> void:
+	offset = offset.floor()
 	for pos in positions:
 		pos += offset
 		if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
@@ -299,7 +302,7 @@ func update_map_pos() -> void:
 	):
 		return
 	if (
-		Vector2i(prev_pos) != Vector2i(map_pos.value)
+		Vector2i(prev_pos.floor()) != Vector2i(map_pos.value.floor())
 		and MapperRoot._instance.tool.value == MapperRoot.Tool.BRUSH
 	):
 		update_brush_preview()
