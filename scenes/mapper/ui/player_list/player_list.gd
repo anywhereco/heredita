@@ -17,6 +17,18 @@ func _ready() -> void:
 	refresh_players(State.room.players)
 
 
+func purge_paint_player(player_id: int) -> void:
+	InfoPrompt.custom_prompt(
+		"Purge this player's paint?",
+		{
+			"Cancel": Prompts.close_top_prompt,
+			"Purge paint": (func() -> void:
+				Prompts.close_top_prompt()
+				State.client.send("purge_player", player_id)
+				)
+		}
+	)
+
 func ban_player(player_id: int) -> void:
 	InfoPrompt.custom_prompt(
 		"Ban this player?",
@@ -24,6 +36,11 @@ func ban_player(player_id: int) -> void:
 			"Cancel": Prompts.close_top_prompt,
 			"Ban": (func() -> void:
 				Prompts.close_top_prompt()
+				State.client.send("ban", player_id)
+				),
+			"Ban and clear paint": (func() -> void:
+				Prompts.close_top_prompt()
+				State.client.send("purge_player", player_id)
 				State.client.send("ban", player_id)
 				)
 		}
@@ -37,6 +54,11 @@ func kick_player(player_id: int) -> void:
 			"Cancel": Prompts.close_top_prompt,
 			"Kick": (func() -> void:
 				Prompts.close_top_prompt()
+				State.client.send("kick", player_id)
+				),
+			"Kick and clear paint": (func() -> void:
+				Prompts.close_top_prompt()
+				State.client.send("purge_player", player_id)
 				State.client.send("kick", player_id)
 				)
 		}
@@ -57,6 +79,7 @@ func player_clicked(player_node: Control, player_id: int) -> void:
 	if State.player.privileged_over(player) and player_id != State.client.player_id:
 		menu.add_item("Ban", ban_player.bind(player_id))
 		menu.add_item("Kick", kick_player.bind(player_id))
+		menu.add_item("Purge paint", purge_paint_player.bind(player_id))
 		if player.status.get("muted", false):
 			menu.add_item("Unmute", unmute_player.bind(player_id))
 		else:

@@ -30,7 +30,7 @@ func new_room_id() -> int:
 func create_room(data: Dictionary = {}, map_data: PackedByteArray = PackedByteArray()) -> int:
 	var id := new_room_id()
 	var room := Room.new()
-	room.map = MapData.deserialize(map_data)
+	room.map = MapData.deserialize(map_data, true)
 	for key: String in data:
 		if key == "name":
 			room.name = data[key]

@@ -2,7 +2,6 @@ extends Node
 class_name RoomServer
 
 var room: Room = null
-var map_controller: RoomMap = RoomMap.new()
 var calendar: Calendar = Calendar.new(12, 1984)  # heh
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
@@ -70,6 +69,14 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 		var error := ws_server.send_text(
 			peer_id, JSON.stringify({"event": event, "player_id": origin_id, "details": details})
 		)
+		if error:
+			return error
+	return OK
+
+func send_binary_event(event: int, details: PackedByteArray) -> Error:
+	for player_id: int in room.players.keys():
+		var peer_id: int = room.players.getv(player_id).peer_id
+		var error := ws_server.send_targeted_binary(peer_id, event, details)
 		if error:
 			return error
 	return OK
@@ -176,29 +183,8 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	if not created:
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
-		#var compressed := serialized.compress(FileAccess.COMPRESSION_FASTLZ)
-		#var parts := ceili(len(compressed) / 250000.0)
-		#var sizedata := PackedByteArray()
-		#sizedata.resize(4)
-		#sizedata.encode_u32(0, serialized.size())
-		#ws_server.send_targeted_binary(peer_id, ISUtil.BinaryEvents.SYNC_MAP_SIZE, sizedata, false)
-#
-	#for part in parts:
-	#var last := part == parts - 1
-	#ws_server.send_targeted_binary(
-	#peer_id,
-	#ISUtil.BinaryEvents.SYNC_MAP_END if last else ISUtil.BinaryEvents.SYNC_MAP,  # TODO move this entire thing over to actual chunk system
-	#compressed.slice(part * 250000, 0xFFFFFFFF if last else (part + 1) * 250000),
-	#false
-	#)
-	#await get_tree().create_timer(0.1).timeout
 
 	ws_server.send_targeted_event(peer_id, "calendar_sync", calendar.to_json())
-	# TODO: fix self.room.map.get_map_as_image().data not being EMPTY ):
-	var data := []
-	for v in 3:
-		data.append(5)
-	#self.server_controller.send_chunked_binary(peer_id, 1, 1, PackedByteArray(data))
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
@@ -206,7 +192,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] == "map_update":
 		@warning_ignore("unsafe_call_argument")
-		room.map.get_map_update(data["details"])
+		room.map.get_map_update(data["details"], peer_id)
 	elif data["event"] == "map_resync":
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
@@ -276,12 +262,32 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			player.status["muted"] = false
 			update_player_status(id)
+	elif data["event"] == "purge_player":
+		if not Verify.is_numeric(data["details"]):
+			return false
+		@warning_ignore("unsafe_call_argument")
+		var id := int(data["details"])
+		var player: Player = room.players.getv(id)
+		print(room.players.getv(peer_player_id(peer_id)).privileged_over(player))
+		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
+			revert_peer_drawing(id)
 	elif data["event"] == "chat_message":
 		var player: Player = room.players.getv(peer_player_id(peer_id))
 		return not player.status.get("muted", false)
 
 	#return value is true if it should be broadcasted to the rest of the server
 	return true
+
+
+func revert_peer_drawing(peer: int) -> void:
+	for x in room.map.image.get_width():
+		for y in room.map.image.get_height():
+			if room.map.map_last_painter[y * room.map.map_width + x] == peer:
+				print("UWAAAA")
+				room.map.image.set_pixel(x, y, room.map.map_last_color[y * room.map.map_width + x])
+				room.map.map_last_painter[y * room.map.map_width + x] = -1
+	
+	send_binary_event(ISUtil.BinaryEvents.FORCE_RESYNC_MAP, room.map.serialize())
 
 
 func _closed(peer_id: int, _code: int, _reason: String) -> void:

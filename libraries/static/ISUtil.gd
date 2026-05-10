@@ -13,7 +13,10 @@ enum BinaryFlags {
 	CHUNK_PART_LAST = 1 << 3,
 }
 
-enum BinaryEvents { SYNC_MAP = 0x0 }
+enum BinaryEvents { 
+	SYNC_MAP = 0x0,
+	FORCE_RESYNC_MAP = 0x1
+}
 
 
 ## Returns "" if not a valid event.
