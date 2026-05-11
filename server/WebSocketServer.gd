@@ -117,7 +117,7 @@ func send_targeted_chunk_data(peer_id: int, event: int, message: PackedByteArray
 
 func send_targeted_binary(
 	peer_id: int, event: int, message: PackedByteArray, compress: bool = true
-) -> int:
+) -> Error:
 	return send_raw_binary(peer_id, ISUtil._create_binary(event, 0, message, compress))
 
 

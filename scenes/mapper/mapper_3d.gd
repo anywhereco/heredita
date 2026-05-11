@@ -89,6 +89,10 @@ func binary_message_recieved(event: int, _player_id: int, _flags: int, details: 
 	if event == ISUtil.BinaryEvents.SYNC_MAP:
 		Map._instance.set_data(MapData.deserialize(details))
 		Map._instance.finish_resync()
+	elif event == ISUtil.BinaryEvents.FORCE_RESYNC_MAP:
+		Map._instance.pending_resync.value = true
+		Map._instance.set_data(MapData.deserialize(details))
+		Map._instance.finish_resync()
 
 
 func closed() -> void:
