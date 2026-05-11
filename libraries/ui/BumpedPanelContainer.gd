@@ -77,14 +77,14 @@ func _notification(what: int) -> void:
 				)
 			)
 			fit_child_in_rect(
-				Left, Rect2(offset.x, offset.y, fit_size.x - bump_size.x / 2, fit_size.y)
+				Left, Rect2(offset.x, offset.y, fit_size.x / 2 - bump_size.x / 2, fit_size.y)
 			)
 			fit_child_in_rect(
 				Right,
 				Rect2(
 					offset.x + fit_size.x / 2 + bump_size.x / 2,
 					offset.y,
-					fit_size.x - bump_size.x / 2,
+					fit_size.x / 2 - bump_size.x / 2,
 					fit_size.y
 				)
 			)

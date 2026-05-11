@@ -27,13 +27,7 @@ func taken_usernames() -> Array[String]:
 func player_info() -> Dictionary:
 	var l := {}
 	for player_id: int in players.keys():
-		l[player_id] = {
-			"username": players.getv(player_id).username,
-			"logged_in": players.getv(player_id).logged_in,
-			"profile": players.getv(player_id).profile,
-			"operator": players.getv(player_id).operator,
-			"rank": players.getv(player_id).rank
-		}
+		l[player_id] = players.getv(player_id).get_info()
 	return l
 
 

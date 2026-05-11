@@ -29,6 +29,7 @@
 [ext_resource type="Script" uid="uid://4l3n0jimw2sw" path="res://scenes/mapper/ui/chat_box.gd" id="14_0eah7"]
 [ext_resource type="Texture2D" uid="uid://b8edvgt68hm01" path="res://assets/icons/calendar/gear-full.svg" id="15_5g5qp"]
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
+[ext_resource type="Script" uid="uid://dhpdfhubeju8m" path="res://scenes/mapper/ui/change_name_button.gd" id="16_v8jk4"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
@@ -221,10 +222,6 @@ expand_icon = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SideSpacer2" type="Control" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1382616942]
-custom_minimum_size = Vector2(5, 0)
-layout_mode = 2
-
 [node name="Time" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=117182332]
 layout_mode = 2
 alignment = 1
@@ -283,6 +280,22 @@ icon = ExtResource("15_5g5qp")
 [node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=713196267]
 layout_mode = 2
 alignment = 2
+
+[node name="ChangeName" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=43959448]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+theme_override_font_sizes/font_size = 14
+text = " Change Name "
+icon = ExtResource("5_5g7k5")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+script = ExtResource("16_v8jk4")
+
+[node name="SideSpacer2" type="Control" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=1382616942]
+custom_minimum_size = Vector2(5, 0)
+layout_mode = 2
 
 [node name="Bottom" type="Control" parent="MenubarContainer" unique_id=218551915]
 layout_mode = 2
