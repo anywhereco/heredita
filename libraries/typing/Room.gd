@@ -7,7 +7,7 @@ var password := ""
 
 var map: MapData
 
-# ReactiveDictionary[ServerUser]
+## ReactiveDictionary[int, Player]
 var players: ReactiveDictionary = ReactiveDictionary.new({})
 var player_ids_chronological: Array[int] = []
 var id_iterator := 0  #next id for use

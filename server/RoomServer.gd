@@ -268,7 +268,6 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		@warning_ignore("unsafe_call_argument")
 		var id := int(data["details"])
 		var player: Player = room.players.getv(id)
-		print(room.players.getv(peer_player_id(peer_id)).privileged_over(player))
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			revert_peer_drawing(id)
 	elif data["event"] == "chat_message":
@@ -280,15 +279,14 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 
 
 func revert_peer_drawing(peer: int) -> void:
+	var user: int = room.players.getv(peer).peer_id
 	for x in room.map.image.get_width():
 		for y in room.map.image.get_height():
-			if room.map.map_last_painter[y * room.map.map_width + x] == peer:
-				print("UWAAAA")
+			if room.map.map_last_painter[y * room.map.map_width + x] == user:
 				room.map.image.set_pixel(x, y, room.map.map_last_color[y * room.map.map_width + x])
-				room.map.map_last_painter[y * room.map.map_width + x] = -1
+				room.map.map_last_painter[y * room.map.map_width + x] = -2
 	
 	send_binary_event(ISUtil.BinaryEvents.FORCE_RESYNC_MAP, room.map.serialize())
-
 
 func _closed(peer_id: int, _code: int, _reason: String) -> void:
 	_on_peer_close(peer_id)

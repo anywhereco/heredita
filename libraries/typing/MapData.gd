@@ -33,7 +33,7 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 		md.map_width = image_size.x
 		if is_server:
 			md.map_last_painter.resize(image_size.x * image_size.y)
-			md.map_last_painter.fill(-1)
+			md.map_last_painter.fill(-2)
 			md.map_last_color.resize(image_size.x * image_size.y)
 			md.map_last_color.fill(Color.TRANSPARENT)
 	return md
@@ -81,7 +81,6 @@ func set_pixels_at_targeted(
 		if img_color.is_equal_approx(target):
 			map_last_color[int(pos.y * map_width + pos.x)] = img_color
 			map_last_painter[int(pos.y * map_width + pos.x)] = peer
-			prints(peer, map_last_painter[int(pos.y * map_width + pos.x)])
 			image.set_pixelv(Vector2i(pos), color)
 
 func set_pixels_at(
