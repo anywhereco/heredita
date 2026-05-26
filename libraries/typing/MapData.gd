@@ -4,12 +4,13 @@ var image: Image
 var map_last_painter := PackedInt32Array()
 var map_last_color := PackedColorArray()
 var map_width := -1
+var markings: Array[Dictionary] = []
 
-const PACKAGE_VERSION = 0
+const PACKAGE_VERSION = 1
 
 
 func package() -> Dictionary[String, Variant]:
-	return {"image": image.get_data(), "image_size": image.get_size()}
+	return {"image": image.get_data(), "image_size": image.get_size(), "markings": markings}
 
 
 func serialize() -> PackedByteArray:
@@ -30,6 +31,11 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 		md.image = Image.create_from_data(
 			image_size.x, image_size.y, false, Image.FORMAT_RGBA8, map_data["image"]
 		)
+		if map_data.has("markings") and map_data["markings"] is Array:
+			for marking: Variant in map_data["markings"]:
+				@warning_ignore("unsafe_call_argument")
+				if marking is Dictionary and _valid_serialized_marking(marking):
+					md.markings.append(marking)
 		md.map_width = image_size.x
 		if is_server:
 			md.map_last_painter.resize(image_size.x * image_size.y)
@@ -59,6 +65,105 @@ func get_map_update(details: Dictionary, peer: int) -> void:
 			ISUtil.to_vec2(details["pos"]),
 			peer
 		)
+	elif type == "marking":
+		apply_marking_update(details)
+
+
+static func _valid_marking_type(marking_type: Variant) -> bool:
+	return marking_type is String and marking_type in ["city", "fort"]
+
+
+static func _valid_marking_id(id: Variant) -> bool:
+	return id is String and not id.is_empty() and id.length() <= 128
+
+
+static func _valid_marking_name(name: Variant) -> bool:
+	return name is String and name.length() <= 64
+
+
+static func _valid_number(number: Variant) -> bool:
+	@warning_ignore("unsafe_call_argument")
+	return Verify.is_numeric(number) and absf(float(number)) < INF
+
+
+static func _valid_color_array(color: Variant) -> bool:
+	return (
+		color is Array
+		and color.size() >= 3
+		and _valid_number(color[0])
+		and _valid_number(color[1])
+		and _valid_number(color[2])
+	)
+
+
+static func _valid_vec2_array(vec: Variant) -> bool:
+	return vec is Array and vec.size() >= 2 and _valid_number(vec[0]) and _valid_number(vec[1])
+
+
+static func _valid_serialized_marking(marking: Dictionary) -> bool:
+	return (
+		_valid_marking_id(marking.get("id"))
+		and _valid_marking_type(marking.get("marking_type"))
+		and _valid_vec2_array(marking.get("position"))
+		and _valid_number(marking.get("scale"))
+		and _valid_number(marking.get("rotation"))
+		and _valid_color_array(marking.get("color"))
+		and _valid_marking_name(marking.get("name", ""))
+	)
+
+
+func _marking_index(id: String) -> int:
+	for idx in markings.size():
+		if markings[idx].get("id") == id:
+			return idx
+	return -1
+
+
+func apply_marking_update(details: Dictionary) -> void:
+	var op: Variant = details.get("op")
+	var id: Variant = details.get("id")
+	if not _valid_marking_id(id):
+		return
+
+	if op == "create":
+		if not _valid_serialized_marking(details):
+			return
+		@warning_ignore("unsafe_call_argument")
+		var marking := {
+			"id": details["id"],
+			"marking_type": details["marking_type"],
+			"position": details["position"],
+			"scale": clampf(float(details["scale"]), 0.1, 5.0),
+			"rotation": float(details["rotation"]),
+			"color": details["color"],
+			"name": details.get("name", "")
+		}
+		@warning_ignore("unsafe_call_argument")
+		var existing_idx := _marking_index(id)
+		if existing_idx == -1:
+			markings.append(marking)
+		else:
+			markings[existing_idx] = marking
+	elif op == "delete":
+		@warning_ignore("unsafe_call_argument")
+		var idx := _marking_index(id)
+		if idx != -1:
+			markings.remove_at(idx)
+	elif op == "edit":
+		@warning_ignore("unsafe_call_argument")
+		var idx := _marking_index(id)
+		if idx == -1:
+			return
+		var marking := markings[idx].duplicate()
+		if details.has("color"):
+			if not _valid_color_array(details["color"]):
+				return
+			marking["color"] = details["color"]
+		if details.has("name"):
+			if not _valid_marking_name(details["name"]):
+				return
+			marking["name"] = details["name"]
+		markings[idx] = marking
 
 
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:

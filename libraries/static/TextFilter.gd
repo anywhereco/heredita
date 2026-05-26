@@ -13,6 +13,8 @@ static var filter_offensive := []
 static var filter_other := []
 
 static func _static_init() -> void:
+	while not HTTP:
+		await RenderingServer.frame_pre_draw
 	HTTP.ready.connect(load_filter_lists)
 
 static func load_filter_lists() -> void:

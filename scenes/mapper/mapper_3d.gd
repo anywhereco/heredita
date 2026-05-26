@@ -19,6 +19,7 @@ var tool := ReactiveInt.new(Tool.NONE)
 
 var brush: BrushTool = BrushTool.new()
 var dice: DiceTool = DiceTool.new()
+var marking: MarkingTool = MarkingTool.new()
 
 # May be empty
 var map_data_compressed: PackedByteArray
@@ -36,6 +37,8 @@ func _tool_changed(reactive: ReactiveInt) -> void:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.BRUSH)
 	elif reactive.value == Tool.DICE:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DICE)
+	elif reactive.value == Tool.MARKING:
+		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
 
 
 func _init() -> void:
@@ -48,6 +51,7 @@ func _ready() -> void:
 	tool.value_changed.connect(_tool_changed)
 	brush._map_ready()
 	dice._map_ready()
+	marking._map_ready()
 	if State.client:
 		State.client.message_received.connect(message_recieved)
 		State.client.binary_message_received.connect(binary_message_recieved)
@@ -68,6 +72,8 @@ func process_tool_use(event: InputEvent) -> void:
 			brush.brush_events(event)
 		Tool.DICE:
 			dice.dice_events(event)
+		Tool.MARKING:
+			marking.marking_events(event)
 		_:
 			push_error(
 				(

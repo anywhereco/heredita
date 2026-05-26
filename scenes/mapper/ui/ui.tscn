@@ -35,6 +35,7 @@
 [ext_resource type="Texture2D" uid="uid://0fs4gs4hvf7w" path="res://assets/icons/tools/markings.svg" id="25_v8jk4"]
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
 [ext_resource type="Script" uid="uid://df12i6ly675lm" path="res://scenes/mapper/ui/alerts.gd" id="34_v8jk4"]
+[ext_resource type="Script" path="res://scenes/mapper/ui/toolui/marking.gd" id="35_marking"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_c8yws"]
 
@@ -717,6 +718,7 @@ size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_5rjrm")
 current_tab = 0
 clip_tabs = false
+script = ExtResource("35_marking")
 
 [node name="Create" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=789611511]
 layout_mode = 2
