@@ -36,6 +36,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		_on_button_pressed("Brush")
 	elif event.is_action_pressed("tool_dice"):
 		_on_button_pressed("Dice")
+	elif event.is_action_pressed("tool_marking"):
+		_on_button_pressed("Marking")
 
 
 func try_resize() -> void:

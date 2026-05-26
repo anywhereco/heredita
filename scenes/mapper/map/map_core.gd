@@ -10,6 +10,7 @@ static var _instance: Map
 
 @onready var chunk_container_node: Node3D = $MapChunks
 @onready var preview_plane: Sprite3D = $PreviewPlane
+@onready var map_markings: MapMarkings = $MapMarkings
 
 var default_target_color: Color = Color(1, 1, 1)
 
@@ -37,6 +38,7 @@ var loaded := false
 var pending_resync := ReactiveBool.new(false)
 
 var queued_changes: Array[Dictionary] = []
+var pending_markings: Array[Dictionary] = []
 
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:
 	return (
@@ -179,11 +181,19 @@ func get_map_as_image() -> Image:
 func get_data() -> MapData:
 	var data := MapData.new()
 	data.image = get_map_as_image()
+	if is_node_ready():
+		data.markings = map_markings.serialize_markings()
+	else:
+		data.markings = pending_markings
 	return data
 
 
 func set_data(data: MapData) -> void:
 	original_map = data.image
+	if is_node_ready():
+		map_markings.set_markings(data.markings)
+	else:
+		pending_markings = data.markings
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	if not State.client.operator or loaded:
@@ -274,6 +284,9 @@ func add_chunks() -> void:
 
 func _ready() -> void:
 	Settings.get_reactive("map_brightness").value_changed.connect(brightness_change)
+	if not pending_markings.is_empty():
+		map_markings.set_markings(pending_markings)
+		pending_markings.clear()
 	if State.client.operator:
 		load_from_original()
 	preview_plane.pixel_size = pixel_size
@@ -349,6 +362,8 @@ func get_map_update(details: Dictionary) -> void:
 			details["targeted"],
 			ISUtil.to_vec2(details["pos"])
 		)
+	elif type == "marking":
+		map_markings.apply_update(details)
 
 
 func _process(_delta: float) -> void:

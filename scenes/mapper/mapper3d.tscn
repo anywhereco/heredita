@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://clxj0fu6d2g3r" path="res://scenes/mapper/map/map_core.gd" id="6_sm41v"]
 [ext_resource type="Script" uid="uid://bsiv8ukmfm4wg" path="res://scenes/mapper/map_markings.gd" id="9_l0uxc"]
 [ext_resource type="ArrayMesh" uid="uid://dtef8pb44sygw" path="res://assets/map/markings/city_mesh.tres" id="10_0kc0x"]
+[ext_resource type="ArrayMesh" uid="uid://tw8id7844a8w" path="res://assets/map/markings/fort_mesh.tres" id="11_fort"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wvm7y"]
 plane = Plane(0, 1, 0, -0.5)
@@ -18,6 +19,12 @@ transform_format = 1
 use_colors = true
 visible_instance_count = 0
 mesh = ExtResource("10_0kc0x")
+
+[sub_resource type="MultiMesh" id="MultiMesh_fort"]
+transform_format = 1
+use_colors = true
+visible_instance_count = 0
+mesh = ExtResource("11_fort")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l0uxc"]
 render_priority = -1
@@ -48,7 +55,6 @@ reflected_light_source = 2
 tonemap_white = 18.65
 tonemap_agx_white = 4.69
 tonemap_agx_contrast = 1.5
-ssao_enabled = true
 
 [node name="Mapper3D" type="Node3D" unique_id=1991960011]
 script = ExtResource("1_htv7j")
@@ -84,8 +90,10 @@ texture = SubResource("ImageTexture_wvm7y")
 script = ExtResource("9_l0uxc")
 
 [node name="Cities" type="MultiMeshInstance3D" parent="Map/MapMarkings" unique_id=1754519806]
-transform = Transform3D(0.063, 0, 0, 0, 0.063, 0, 0, 0, 0.063, 0, 0, 0)
 multimesh = SubResource("MultiMesh_kx3ff")
+
+[node name="Forts" type="MultiMeshInstance3D" parent="Map/MapMarkings" unique_id=1037838454]
+multimesh = SubResource("MultiMesh_fort")
 
 [node name="TextMeshes" type="Node3D" parent="Map/MapMarkings" unique_id=1661006275]
 

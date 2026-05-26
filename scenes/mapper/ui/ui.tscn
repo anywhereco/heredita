@@ -32,8 +32,10 @@
 [ext_resource type="Script" uid="uid://dhpdfhubeju8m" path="res://scenes/mapper/ui/change_name_button.gd" id="16_v8jk4"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
+[ext_resource type="Texture2D" uid="uid://0fs4gs4hvf7w" path="res://assets/icons/tools/markings.svg" id="25_v8jk4"]
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
 [ext_resource type="Script" uid="uid://df12i6ly675lm" path="res://scenes/mapper/ui/alerts.gd" id="34_v8jk4"]
+[ext_resource type="Script" uid="uid://cf0q0aplu0by6" path="res://scenes/mapper/ui/toolui/marking.gd" id="35_marking"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_c8yws"]
 
@@ -116,6 +118,17 @@ font_size = 18
 
 [sub_resource type="Theme" id="Theme_c8yws"]
 LineEdit/constants/minimum_character_width = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5rjrm"]
+bg_color = Color(1, 1, 1, 0.11372549)
+
+[sub_resource type="LabelSettings" id="LabelSettings_q22fc"]
+font = ExtResource("4_itatv")
+font_color = Color(1, 1, 1, 0.5764706)
+
+[sub_resource type="LabelSettings" id="LabelSettings_v8jk4"]
+font = ExtResource("4_itatv")
+font_size = 15
 
 [sub_resource type="LabelSettings" id="LabelSettings_5rjrm"]
 shadow_size = 2
@@ -469,6 +482,13 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_grkin")
 icon = ExtResource("25_5g5qp")
 
+[node name="Marking" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=1921768236]
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_grkin")
+icon = ExtResource("25_v8jk4")
+
 [node name="Pan" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=761931475]
 layout_mode = 2
 theme_type_variation = &"ToolButton"
@@ -502,14 +522,6 @@ button_group = SubResource("ButtonGroup_grkin")
 icon = ExtResource("8_tv71d")
 
 [node name="Inspect" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=1933696705]
-layout_mode = 2
-theme_type_variation = &"ToolButton"
-disabled = true
-toggle_mode = true
-button_group = SubResource("ButtonGroup_grkin")
-icon = ExtResource("8_tv71d")
-
-[node name="Marking" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=1921768236]
 layout_mode = 2
 theme_type_variation = &"ToolButton"
 disabled = true
@@ -698,6 +710,110 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme = SubResource("Theme_c8yws")
 value = 20.0
+
+[node name="marking" type="TabContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1268714854]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_5rjrm")
+current_tab = 0
+clip_tabs = false
+script = ExtResource("35_marking")
+
+[node name="Create" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=789611511]
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 0
+
+[node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create" unique_id=170988155]
+layout_mode = 2
+text = "create a..."
+label_settings = SubResource("LabelSettings_q22fc")
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create" unique_id=1846816001]
+layout_mode = 2
+alignment = 1
+
+[node name="City" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create/HBoxContainer" unique_id=518520028]
+layout_mode = 2
+text = "City"
+
+[node name="Fort" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create/HBoxContainer" unique_id=1212653521]
+layout_mode = 2
+text = "Fort"
+
+[node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create" unique_id=1448362885]
+layout_mode = 2
+text = "with color..."
+label_settings = SubResource("LabelSettings_q22fc")
+horizontal_alignment = 1
+
+[node name="ColorPicker" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create" unique_id=828340809 instance=ExtResource("11_mey8b")]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Delete" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=163959722]
+visible = false
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 1
+
+[node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Delete" unique_id=774962091]
+layout_mode = 2
+text = "delete nearby"
+label_settings = SubResource("LabelSettings_q22fc")
+horizontal_alignment = 1
+
+[node name="City" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Delete" unique_id=1578510529]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "cities"
+flat = true
+
+[node name="Fort" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Delete" unique_id=392591771]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "forts"
+flat = true
+
+[node name="Edit" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=689485550]
+visible = false
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 2
+
+[node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit" unique_id=1409725229]
+layout_mode = 2
+text = "Edit this [fort/city]"
+label_settings = SubResource("LabelSettings_q22fc")
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit" unique_id=866419835]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit/HBoxContainer" unique_id=1614069788]
+layout_mode = 2
+
+[node name="ColorPicker" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit/HBoxContainer/MarginContainer" unique_id=1825437560 instance=ExtResource("11_mey8b")]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit/HBoxContainer" unique_id=736709916]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit/HBoxContainer/VBoxContainer" unique_id=29082271]
+layout_mode = 2
+text = "City name"
+label_settings = SubResource("LabelSettings_v8jk4")
+
+[node name="LineEdit" type="LineEdit" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit/HBoxContainer/VBoxContainer" unique_id=1587211873]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "West Abcdefghi"
+placeholder_text = "City name..."
 
 [node name="AlertRow" type="HBoxContainer" parent="." unique_id=1707121888]
 anchors_preset = 12
