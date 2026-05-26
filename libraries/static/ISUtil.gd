@@ -18,6 +18,15 @@ enum BinaryEvents {
 	FORCE_RESYNC_MAP = 0x1
 }
 
+static func validate_rp_name(name: String) -> bool: #might be used for more things later idk
+	if not name.strip_edges(): #basic whitespace check; maybe use something stronger for weird unicode characters in the future
+		return false
+	if len(name) == 0:
+		return false
+	if len(name) > 64:
+		return false
+	#maybe also an offensive-filter check?
+	return true
 
 ## Returns "" if not a valid event.
 static func is_event(data: Variant) -> String:

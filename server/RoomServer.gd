@@ -193,6 +193,11 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] == "map_update":
 		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"], peer_id)
+	elif data["event"] == "change_rp_name":
+		if ISUtil.validate_rp_name(data["details"] as String) or data["details"] == "": #allow blanking to reset
+			var id := peer_player_id(peer_id)
+			room.players.getv(id).status["rp_name"] = data["details"]
+			update_player_status(id)
 	elif data["event"] == "map_resync":
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
