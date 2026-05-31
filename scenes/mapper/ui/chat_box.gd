@@ -9,21 +9,36 @@ var text_box_default_placeholder: String
 
 var muted_text := ""  #used to restore text if unmuted
 
+const TYPING_TIMER = 4 #seconds typing indicator should last
+var typing_timer: float = 0
 
 func _ready() -> void:
 	text_box_default_placeholder = text_box.placeholder_text
 	if State.room:
 		$PanelContainer/MarginContainer/ChatSP.hide()
 		text_box.editable = true
+		text_box.text_changed.connect(is_typing)
 		text_box.text_submitted.connect(send_typed_message.unbind(1))
 		send_button.disabled = false
 		send_button.pressed.connect(send_typed_message)
 		State.client.message_received.connect(receive_message)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	messages.custom_minimum_size.x = scroll.size.x - scroll.get_v_scroll_bar().size.x
+	if typing_timer > 0:
+		typing_timer = max(0, typing_timer-delta)
+		if typing_timer == 0:
+			State.client.send("typing_status", 0)
 
+func is_typing(text: String) -> void:
+	if text:
+		if typing_timer == 0:
+			State.client.send("typing_status", 1)
+		typing_timer = TYPING_TIMER
+	else:
+		typing_timer = 0
+		State.client.send("typing_status", 0)
 
 func send_typed_message() -> void:
 	if text_box.text:

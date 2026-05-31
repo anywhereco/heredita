@@ -76,12 +76,25 @@ rings = 18
 script = ExtResource("4_plyky")
 
 [node name="Name" type="Label3D" parent="." unique_id=1905953854]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3021612, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.314551, 0)
 visible = false
 billboard = 1
 double_sided = false
 render_priority = 32
 outline_render_priority = 31
+text = "Whirp"
+font = ExtResource("4_xt5g5")
+font_size = 40
+
+[node name="RealName" type="Label3D" parent="." unique_id=1177452307]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1555911, 0)
+visible = false
+pixel_size = 0.003
+billboard = 1
+double_sided = false
+render_priority = 32
+outline_render_priority = 31
+modulate = Color(0.50928617, 0.50928617, 0.50928617, 1)
 text = "Whirp"
 font = ExtResource("4_xt5g5")
 font_size = 40
