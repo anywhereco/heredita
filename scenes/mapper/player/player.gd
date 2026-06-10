@@ -38,14 +38,27 @@ func _ready() -> void:
 			State.client.message_received.connect(received_message)
 		_local_inst = self
 	else:
+		State.client.message_received.connect(received_message_local)
 		$CameraPivot.queue_free()
 		$Name.show()
 
 
-func received_message(event: String, _player_id: int, _details: Variant) -> void:
+func received_message(event: String, _player_id: int, details: Variant) -> void:
 	if event == "is2_player_join":
 		new_player = true
-
+		
+func received_message_local(event: String, _player_id: int, details: Variant) -> void:
+	if event == "is2_player_status_update":
+		if details.get("player_id") == int(name):
+			var real_name: String = State.room.players.getv(int(name)).username
+			var rp_name: String = State.room.players.getv(int(name)).status.get("rp_name", "")
+			if rp_name:
+				$RealName.show()
+				$RealName.text = real_name
+				$Name.text = rp_name
+			else:
+				$RealName.hide()
+				$Name.text = real_name
 
 func setup_velocity(direction: Vector3, delta: float) -> void:
 	var target_vel := (
@@ -200,4 +213,6 @@ func _process(_delta: float) -> void:
 		)
 		$Name.pixel_size = 0.0025 * sqrt(name_distance)
 		$Name.visible = name_distance < MAX_NAME_VIEW_DISTANCE
+		$RealName.pixel_size = 0.0015 * sqrt(name_distance)
+		$RealName.visible = name_distance < MAX_NAME_VIEW_DISTANCE
 	sort_bubbles()

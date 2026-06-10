@@ -2,7 +2,6 @@ class_name Player
 
 var peer_id: int
 var username: String
-var rp_name: String
 var logged_in: bool
 var profile := {}
 var rank: UserEnums.Rank
@@ -13,7 +12,6 @@ var operator: bool
 func _init(peer: int, dict: Dictionary) -> void:
 	peer_id = peer
 	username = dict["username"]
-	rp_name = dict.get("rp_name", "")
 	logged_in = dict["logged_in"]
 	operator = dict.get("operator", false)
 	rank = dict.get("rank", UserEnums.Rank.PLAYER)
