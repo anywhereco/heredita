@@ -30,7 +30,8 @@ var right: bool = false
 
 var camera_rotation: float = 0.0
 var was_on_floor_last_frame: bool = false
-
+var using_rp_name: bool = false
+var typing: bool = false
 
 func _ready() -> void:
 	if local:
@@ -43,22 +44,28 @@ func _ready() -> void:
 		$Name.show()
 
 
-func received_message(event: String, _player_id: int, details: Variant) -> void:
+func received_message(event: String, _player_id: int, _details: Variant) -> void:
 	if event == "is2_player_join":
 		new_player = true
 		
 func received_message_local(event: String, _player_id: int, details: Variant) -> void:
 	if event == "is2_player_status_update":
 		if details.get("player_id") == int(name):
-			var real_name: String = State.room.players.getv(int(name)).username
-			var rp_name: String = State.room.players.getv(int(name)).status.get("rp_name", "")
+			var player: Player = State.room.players.getv(int(name))
+			var real_name: String = player.username
+			var rp_name: String = player.status.get("rp_name", "")
 			if rp_name:
+				using_rp_name = true
 				$RealName.show()
 				$RealName.text = real_name
 				$Name.text = rp_name
 			else:
+				using_rp_name = false
 				$RealName.hide()
 				$Name.text = real_name
+			if bool(player.status.get("typing", 0)) != typing:
+				typing = !typing
+				$TypingIndicator.visible = typing
 
 func setup_velocity(direction: Vector3, delta: float) -> void:
 	var target_vel := (
@@ -163,12 +170,9 @@ func _physics_process(delta: float) -> void:
 
 func add_bubble(message: String) -> void:
 	var bubble := ChatBubble.create(TextFilter.filter_text(message))
-	bubble.root_position = $BubbleAnchor.position
-	if $Name.visible:
-		bubble.root_position.y += $Name.pixel_size * $Name.font_size
 	bubbles.insert(0, bubble)
-
 	for idx in bubbles.size():
+		bubbles[idx].root_position = $BubbleAnchor.position
 		bubbles[idx].bubble_position = idx
 		if idx >= MAX_BUBBLES:
 			bubbles[idx].queue_free()
@@ -181,6 +185,11 @@ func add_bubble(message: String) -> void:
 func sort_bubbles() -> void:
 	var total_offset := ChatBubble.BUBBLE_ASCENSION
 	for b in bubbles:
+		b.root_position = $BubbleAnchor.position
+		if $Name.visible:
+			b.root_position.y += $Name.pixel_size * $Name.font_size
+		if $TypingIndicator.visible:
+			b.root_position.y += $TypingIndicator.pixel_size * $TypingIndicator.texture.get_height()
 		b.position_offset = total_offset
 		if b.is_node_ready():
 			total_offset += b.get_height() + ChatBubble.BUBBLE_EXTRA_ASCENSION
@@ -214,5 +223,5 @@ func _process(_delta: float) -> void:
 		$Name.pixel_size = 0.0025 * sqrt(name_distance)
 		$Name.visible = name_distance < MAX_NAME_VIEW_DISTANCE
 		$RealName.pixel_size = 0.0015 * sqrt(name_distance)
-		$RealName.visible = name_distance < MAX_NAME_VIEW_DISTANCE
+		$RealName.visible = using_rp_name and name_distance < MAX_NAME_VIEW_DISTANCE
 	sort_bubbles()

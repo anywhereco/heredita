@@ -48,6 +48,8 @@ func send_typed_message() -> void:
 
 func send_message(message: String) -> void:
 	State.client.send("chat_message", message)
+	typing_timer = 0
+	State.client.send("typing_status", 0)
 	if Settings.getv("unfocus_on_chat_submission", true):
 		text_box.release_focus()
 	#TODO put things in chat for system events too (like banning/kicking)
@@ -60,12 +62,12 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 		var player: Player = State.room.players.getv(message["player_id"])
 		add_message("%s joined the room" % player.username)
 	elif event == "is2_player_status_update":
-		if State.player.status.get("muted", false):
+		if State.player.status.get("muted", false) and not muted_text:
 			text_box.editable = false
 			text_box.placeholder_text = "You are muted!"
 			muted_text = text_box.text
 			text_box.text = ""
-		else:
+		elif muted_text:
 			text_box.editable = true
 			text_box.placeholder_text = text_box_default_placeholder
 			text_box.text = muted_text

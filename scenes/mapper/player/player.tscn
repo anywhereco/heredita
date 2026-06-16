@@ -55,6 +55,16 @@ stencil_mode = 1
 stencil_flags = 2
 stencil_outline_thickness = 0.04
 
+[sub_resource type="Gradient" id="Gradient_xt5g5"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.2016129, 0.40725806, 0.62096775, 0.8064516, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ogm7l"]
+gradient = SubResource("Gradient_xt5g5")
+width = 60
+height = 10
+
 [node name="LocalPlayer" type="CharacterBody3D" unique_id=1173620926]
 collision_layer = 2
 axis_lock_angular_x = true
@@ -87,14 +97,14 @@ font = ExtResource("4_xt5g5")
 font_size = 40
 
 [node name="RealName" type="Label3D" parent="." unique_id=1177452307]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1555911, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1510853, 0)
 visible = false
 pixel_size = 0.003
 billboard = 1
 double_sided = false
 render_priority = 32
 outline_render_priority = 31
-modulate = Color(0.50928617, 0.50928617, 0.50928617, 1)
+modulate = Color(0.75, 0.75, 0.75, 1)
 text = "Whirp"
 font = ExtResource("4_xt5g5")
 font_size = 40
@@ -114,3 +124,8 @@ script = ExtResource("6_4te7a")
 
 [node name="BubbleAnchor" type="Node3D" parent="." unique_id=213980136]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="TypingIndicator" type="Sprite3D" parent="." unique_id=1600607025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4516144, 0)
+visible = false
+texture = SubResource("GradientTexture2D_ogm7l")
