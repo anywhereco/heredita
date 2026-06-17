@@ -261,6 +261,10 @@ func _poll_string(message: Dictionary) -> void:
 				#hosts = message.get("details").get("hosts")
 				return
 			"_is2_login":
+				if creating_room.has("password") and not (creating_room["password"] as String).is_empty():
+					loading_status_updated.emit({"message": "Confirming room password..."})
+					send("_is2_password_attempt", creating_room["password"])
+					return
 				loading_status_updated.emit({"message": "Room password required."})
 				_prompt_instance = load("res://libraries/ui/infernosocket/PasswordPrompt.tscn").instantiate()
 				(_prompt_instance.find_child("PasswordEdit") as LineEdit).text_submitted.connect(
@@ -269,7 +273,7 @@ func _poll_string(message: Dictionary) -> void:
 				var _prompt_res := Prompts.new_fullscreen_prompt()
 				if _prompt_res.is_err():
 					close(1006, "Could not create login prompt, aborting")
-				_prompt = _prompt.val()
+				_prompt = _prompt_res.val()
 				_prompt.add_child(_prompt_instance)
 				return
 			"_is2_login_valid_password":
@@ -278,7 +282,14 @@ func _poll_string(message: Dictionary) -> void:
 			"_is2_login_invalid_password":
 				_attempts -= 1
 				if _attempts == 0:
-					_prompt.close()
+					if is_instance_valid(_prompt):
+						_prompt.close()
+					socket.close()
+					return
+				if not is_instance_valid(_prompt_instance):
+					loading_status_updated.emit(
+						{"failed": true, "message": "The room password was rejected."}
+					)
 					socket.close()
 					return
 				var attempts_label: Label = _prompt_instance.find_child("AttemptsLabel")

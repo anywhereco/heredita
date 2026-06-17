@@ -127,7 +127,10 @@ func _connected(peer_id: int, created: bool = false) -> void:
 			if not ISUtil.valid_event_is(password_json, "_is2_password_attempt"):
 				ws_server.close(peer_id, 4096, "Protocol failurea")
 				return
-			if password_json["details"] == room.password:
+			if password_json.is_err():
+				ws_server.close(peer_id, 4096, "Protocol failure")
+				return
+			if password_json.val()["details"] == room.password:
 				ws_server.send_targeted_event(peer_id, "_is2_login_valid_password")
 				break
 			ws_server.send_targeted_event(peer_id, "_is2_login_invalid_password", 5 - attempts)

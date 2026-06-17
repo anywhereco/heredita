@@ -41,9 +41,9 @@ enum Status {
 
 @export_subgroup("Spin", "spin_")
 ## Percent filled by the border when the spinner is spinning
-@export_range(0.0, 1.0) var spin_fill_percent := 0.2
+@export_range(0.0, 1.0) var spin_fill_percent := 0.3
 ## Speed of the spinning border during Status.SPINNING
-@export_range(0, 2) var spin_revolution_per_second := 0.5
+@export_range(0, 2) var spin_revolution_per_second := 1.2
 ## Sets whether to animate border spin on Status.SPINNING or not
 @export var spin_preview_in_editor := true
 
