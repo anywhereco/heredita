@@ -1,7 +1,7 @@
 shader_type spatial;
 render_mode unshaded;
 
-uniform sampler2D spriteTexture: source_color, filter_nearest;
+uniform sampler2D spriteTexture: source_color, filter_linear;
 uniform sampler2D curve: source_color, filter_linear;
 uniform float dots = 3.0;
 uniform float anim_time = 1.5;
