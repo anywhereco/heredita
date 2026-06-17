@@ -6,6 +6,8 @@
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="4_xt5g5"]
 [ext_resource type="Script" uid="uid://b2ln5lyiu705a" path="res://scenes/mapper/player/camera_pivot.gd" id="5_vv4ox"]
 [ext_resource type="Script" uid="uid://bnnb4ayaos0ow" path="res://scenes/mapper/player/camera3d.gd" id="6_4te7a"]
+[ext_resource type="Shader" uid="uid://dj31ahrqcgryp" path="res://scenes/mapper/player/typing_indicator.gdshader" id="7_ogm7l"]
+[ext_resource type="Texture2D" uid="uid://bvwhjauija2h7" path="res://assets/misc/typing/indicator.png" id="8_43hv6"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_76f00"]
 
@@ -55,15 +57,27 @@ stencil_mode = 1
 stencil_flags = 2
 stencil_outline_thickness = 0.04
 
-[sub_resource type="Gradient" id="Gradient_xt5g5"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0, 0.2016129, 0.40725806, 0.62096775, 0.8064516, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1)
+[sub_resource type="Gradient" id="Gradient_ogm7l"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0.27058825, 0.27058825, 0.27058825, 1, 1, 1, 1, 1, 0.27, 0.27, 0.27, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_ogm7l"]
-gradient = SubResource("Gradient_xt5g5")
-width = 60
-height = 10
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_43hv6"]
+gradient = SubResource("Gradient_ogm7l")
+width = 256
+height = 256
+fill_to = Vector2(0.5, 0.5)
+repeat = 2
+metadata/_snap_enabled = true
+metadata/_snap_count = 4
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_43hv6"]
+render_priority = 0
+shader = ExtResource("7_ogm7l")
+shader_parameter/spriteTexture = ExtResource("8_43hv6")
+shader_parameter/curve = SubResource("GradientTexture2D_43hv6")
+shader_parameter/dots = 3.0
+shader_parameter/anim_time = 1.5
 
 [node name="LocalPlayer" type="CharacterBody3D" unique_id=1173620926]
 collision_layer = 2
@@ -127,6 +141,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="TypingIndicator" type="Sprite3D" parent="." unique_id=1600607025]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4516144, 0)
-visible = false
+material_override = SubResource("ShaderMaterial_43hv6")
+pixel_size = 0.0025
 billboard = 1
-texture = SubResource("GradientTexture2D_ogm7l")
+texture = ExtResource("8_43hv6")
