@@ -19,7 +19,7 @@ void fragment() {
 	float sampled_color = texture(curve, vec2(ceil(UV.x*dots)/dots, mod(TIME/anim_time, 2.0*anim_time))).r;
 	float growth = s_curve(1.0 - sampled_color);
 	growth = (growth + 0.25) / 2.0;
-	float border = growth + 0.15;
+	float border = growth + 0.3;
 	if (tex.a < growth) {
 		ALBEDO = vec3(0,0,0);
 		ALPHA = 0.0;
