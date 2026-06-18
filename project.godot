@@ -194,6 +194,10 @@ switch_targeting_status={
 ]
 }
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://assets/localization/heredita-game-en.po")
+
 [layer_names]
 
 3d_render/layer_20="Local player"

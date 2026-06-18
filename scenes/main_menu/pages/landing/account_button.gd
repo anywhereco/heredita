@@ -38,13 +38,13 @@ func logged_out_pressed() -> void:
 
 
 func logged_in() -> void:
-	text = "Log out  "
+	text = tr("mainmenu/account.logout")
 	modulate = Color.WHITE
 
 
 func logged_out(id: int) -> void:
-	text = "Log in  "
+	text = tr("mainmenu/account.login")
 	if id == HTTPClient.RESPONSE_IM_A_TEAPOT:
-		text = "Log back in  "
+		text = tr("mainmenu/account.logbackin")
 		modulate = Color(1, .6, .6)
 		

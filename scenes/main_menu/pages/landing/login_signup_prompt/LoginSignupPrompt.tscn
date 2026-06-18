@@ -55,22 +55,22 @@ script = ExtResource("1_10o6o")
 
 [node name="Label" type="Label" parent="LoginOptions/LoginPanel/Login" unique_id=1717186554]
 layout_mode = 2
-text = "Log in"
+text = "login/login.header"
 label_settings = SubResource("LabelSettings_7ilia")
 horizontal_alignment = 1
 
 [node name="Username" type="LineEdit" parent="LoginOptions/LoginPanel/Login" unique_id=1926914902]
 layout_mode = 2
-placeholder_text = "Username"
+placeholder_text = "login/shared.username"
 
 [node name="Password" type="LineEdit" parent="LoginOptions/LoginPanel/Login" unique_id=189479308]
 layout_mode = 2
-placeholder_text = "Password"
+placeholder_text = "login/shared.password"
 secret = true
 
 [node name="Button" type="Button" parent="LoginOptions/LoginPanel/Login" unique_id=1270786970]
 layout_mode = 2
-text = "Log in"
+text = "login/login.action"
 
 [node name="Seperator" type="VBoxContainer" parent="LoginOptions" unique_id=1823121370]
 layout_mode = 2
@@ -86,7 +86,7 @@ theme_override_styles/panel = SubResource("StyleBoxLine_10o6o")
 
 [node name="Label" type="Label" parent="LoginOptions/Seperator" unique_id=1764605139]
 layout_mode = 2
-text = "or"
+text = "login/shared.seperator"
 label_settings = SubResource("LabelSettings_owksc")
 
 [node name="Panel" type="Panel" parent="LoginOptions/Seperator" unique_id=482068249]
@@ -107,23 +107,23 @@ script = ExtResource("3_7ilia")
 
 [node name="Label" type="Label" parent="LoginOptions/SignupPanel/Signup" unique_id=1185207532]
 layout_mode = 2
-text = "Make an account"
+text = "login/signup.header"
 label_settings = SubResource("LabelSettings_7ilia")
 horizontal_alignment = 1
 
 [node name="Username" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=216656133]
 layout_mode = 2
-placeholder_text = "Username"
+placeholder_text = "login/shared.username"
 max_length = 20
 
 [node name="Password" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=160798003]
 layout_mode = 2
-placeholder_text = "Password"
+placeholder_text = "login/shared.password"
 secret = true
 
 [node name="PasswordConfirmation" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=562740600]
 layout_mode = 2
-placeholder_text = "Confirm password"
+placeholder_text = "login/signup.confirmpassword"
 secret = true
 
 [node name="Email" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=845787002]
@@ -134,7 +134,7 @@ secret = true
 
 [node name="Button" type="Button" parent="LoginOptions/SignupPanel/Signup" unique_id=54171063]
 layout_mode = 2
-text = "Sign up"
+text = "login/signup.action"
 
 [node name="ErrorLabel" type="Label" parent="." unique_id=1134792778]
 modulate = Color(1, 1, 1, 0)
