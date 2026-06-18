@@ -196,7 +196,7 @@ switch_targeting_status={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://assets/localization/heredita-game-en.po")
+locale/translations=PackedStringArray("res://assets/localization/heredita-game-en.po", "res://assets/localization/heredita-game-egy.po")
 
 [layer_names]
 
