@@ -15,4 +15,6 @@ dest_files=["res://.godot/imported/cursor-pan.svg-ca534bcd75a3f4544c1a4c30320f1e
 base_scale=1.0
 saturation=1.0
 color_map={}
+fix_alpha_border=false
+premult_alpha=false
 compress=true

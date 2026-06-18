@@ -5,4 +5,5 @@
 [resource]
 shader = ExtResource("1_ax8w7")
 shader_parameter/strength = 2.0
+shader_parameter/enable_blur = true
 shader_parameter/mix_percentage = 0.25

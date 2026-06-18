@@ -15,4 +15,6 @@ dest_files=["res://.godot/imported/floppy.svg-4ddefecbc4b0a1500dc60785d5e41c7b.d
 base_scale=1.0
 saturation=1.0
 color_map={}
+fix_alpha_border=false
+premult_alpha=false
 compress=true

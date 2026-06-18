@@ -26,8 +26,8 @@ layout_mode = 2
 alignment = 1
 
 [node name="Image" type="TextureRect" parent="Contents" unique_id=1813815119]
-clip_contents = true
 custom_minimum_size = Vector2(50, 50)
+clip_contents = true
 layout_mode = 2
 texture = ExtResource("1_wbeyb")
 expand_mode = 3

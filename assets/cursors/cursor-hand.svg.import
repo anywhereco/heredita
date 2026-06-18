@@ -15,4 +15,6 @@ dest_files=["res://.godot/imported/cursor-hand.svg-7e7c8122f2c2b2cf26300292ede2f
 base_scale=1.0
 saturation=1.0
 color_map={}
+fix_alpha_border=false
+premult_alpha=false
 compress=true
