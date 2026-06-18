@@ -1,10 +1,10 @@
 extends VBoxContainer
 
-@onready var player_welcome: Label = $MarginContainer/HBoxContainer/Label2
-@onready var player_name: Label = $MarginContainer/HBoxContainer/Name
+@onready var player_welcome: Label = $MarginContainer/HBoxContainer/Greeting
 @onready
 var user_list: VBoxContainer = $PanelContainer/MarginContainer/VBoxContainer/ScrollContainer/UserList
 @onready var search_bar: HBoxContainer = $PanelContainer/MarginContainer/VBoxContainer/HBoxContainer
+var pattern := tr("mainmenu/greeting")
 
 const FRIEND = preload("uid://cef5r0v705n3w")
 
@@ -26,7 +26,7 @@ func _update_user() -> void:
 	player_welcome.show()
 	search_bar.get_node("Button").disabled = true
 	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
-	player_name.text = State.user.username
+	player_welcome.text = pattern % State.user.username
 	for friend: UserPartial in State.user.friends:
 		var friend_node: FriendNode = FRIEND.instantiate()
 		friend_node.user = friend
@@ -35,7 +35,6 @@ func _update_user() -> void:
 
 func _update_userless(_id: int) -> void:
 	player_welcome.hide()
-	player_name.text = ""
 	search_bar.get_node("Button").disabled = true
 	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
 	for user: Node in user_list.get_children():

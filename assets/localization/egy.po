@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-18 04:10+0000\n"
+"PO-Revision-Date: 2026-06-18 18:58+0000\n"
 "Last-Translator: ACC Admin <webmaster@accorp.net>\n"
-"Language-Team: English <https://weblate.accorp.net/projects/heredita/game/en/>\n"
-"Language: en\n"
+"Language-Team: Developer debug language <https://weblate.accorp.net/projects/heredita/game/egy/>\n"
+"Language: egy\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,40 +11,43 @@ msgstr ""
 "X-Generator: Weblate 2026.6.1\n"
 
 msgid "mainmenu/play"
-msgstr "Play"
+msgstr "locd: Play"
 
 msgid "mainmenu/settings"
-msgstr "Settings"
+msgstr "locd: Settings"
 
 msgid "mainmenu/account.login"
-msgstr "Log in"
+msgstr "locd: Log in"
 
 msgid "mainmenu/account.logout"
-msgstr "Log out"
+msgstr "locd: Log out"
 
 msgid "mainmenu/account.logbackin"
-msgstr "Log back in"
+msgstr "locd: Log back in"
 
 msgid "login/login.header"
-msgstr "Log in"
+msgstr "locd: Log in"
 
 msgid "login/login.action"
-msgstr "Log in"
+msgstr "locd: Log in"
 
 msgid "login/shared.username"
-msgstr "Username"
+msgstr "locd: Username"
 
 msgid "login/shared.password"
-msgstr "Password"
+msgstr "locd: Password"
 
 msgid "login/signup.confirmpassword"
-msgstr "Confirm password"
+msgstr "locd: Confirm password"
 
 msgid "login/signup.header"
-msgstr "Make an account"
+msgstr "locd: Make an account"
 
 msgid "login/signup.action"
-msgstr "Sign up"
+msgstr "locd: Sign up"
 
 msgid "login/shared.seperator"
-msgstr "or"
+msgstr "locd: or"
+
+msgid "mainmenu/greeting"
+msgstr "locd: Hello, %s"
