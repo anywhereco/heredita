@@ -68,7 +68,7 @@ alignment = 2
 
 [node name="Back" type="Button" parent="Rooms/ButtonRow" unique_id=1731675505]
 layout_mode = 2
-text = "Back"
+text = "roomlist/back"
 script = ExtResource("3_vv0m7")
 
 [node name="Control" type="Control" parent="Rooms/ButtonRow" unique_id=495330691]
@@ -78,7 +78,7 @@ size_flags_horizontal = 3
 [node name="Username" type="LineEdit" parent="Rooms/ButtonRow" unique_id=1851472981]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-placeholder_text = "Guest username"
+placeholder_text = "roomlist/usernameplaceholder"
 alignment = 1
 max_length = 20
 expand_to_text_length = true
@@ -90,7 +90,7 @@ size_flags_horizontal = 3
 
 [node name="Reload" type="Button" parent="Rooms/ButtonRow" unique_id=1031342219]
 layout_mode = 2
-text = "Reload"
+text = "roomlist/reload"
 script = ExtResource("4_em73g")
 
 [node name="Padding2" type="Control" parent="Rooms" unique_id=562418509]
@@ -121,7 +121,7 @@ size_flags_stretch_ratio = 5.0
 
 [node name="Label" type="Label" parent="Rooms/PanelContainer/ScrollContainer/Rooms/LoadingPlaceholder" unique_id=1776583141]
 layout_mode = 2
-text = "Loading rooms..."
+text = "roomlist/loading"
 label_settings = SubResource("LabelSettings_d0eqv")
 
 [node name="Create" type="HBoxContainer" parent="Rooms/PanelContainer/ScrollContainer/Rooms" unique_id=1557600411]
@@ -132,7 +132,7 @@ size_flags_vertical = 10
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Create a room"
+text = "roomlist/create"
 script = ExtResource("7_myu5w")
 
 [node name="MenuButton" type="MenuButton" parent="Rooms/PanelContainer/ScrollContainer/Rooms/Create" unique_id=1510918680]

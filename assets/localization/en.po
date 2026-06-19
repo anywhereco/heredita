@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-18 18:58+0000\n"
+"PO-Revision-Date: 2026-06-19 02:07+0000\n"
 "Last-Translator: ACC Admin <webmaster@accorp.net>\n"
 "Language-Team: English <https://weblate.accorp.net/projects/heredita/game/en/>\n"
 "Language: en\n"
@@ -50,4 +50,46 @@ msgid "login/shared.seperator"
 msgstr "or"
 
 msgid "mainmenu/greeting"
-msgstr "Hello, %s"
+msgstr "Hello, %s!"
+
+msgid "login/error.confirmationmatch"
+msgstr "Password and the confirmation do not match"
+
+msgid "login/error.atleast8chars"
+msgstr "Password must be at least 8 characters long"
+
+msgid "login/error.atleast3chars"
+msgstr "Username must be at least 3 characters long"
+
+msgid "login/error.usernamealphanumeric"
+msgstr "Username can only contain letters, numbers, and underscores"
+
+msgid "login/error.fallback"
+msgstr "The server is taking a while to respond. Try logging in in a few minutes."
+
+msgid "login/error.alreadyinuse"
+msgstr "That username is already in use"
+
+msgid "login/error.servererror"
+msgstr "There was an error on the server. Try again later."
+
+msgid "roomlist/room.join"
+msgstr "Join"
+
+msgid "roomlist/reload"
+msgstr "Reload"
+
+msgid "roomlist/back"
+msgstr "Back"
+
+msgid "roomlist/create"
+msgstr "Create a room"
+
+msgid "roomlist/usernameplaceholder"
+msgstr "Guest username"
+
+msgid "roomlist/loading"
+msgstr "Loading rooms..."
+
+msgid "roomlist/loading.failed"
+msgstr "Could not reach server. Try again later."

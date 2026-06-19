@@ -79,7 +79,7 @@ text_overrun_behavior = 3
 [node name="Join" type="Button" parent="Elements" unique_id=1189000609]
 unique_name_in_owner = true
 layout_mode = 2
-text = " Join "
+text = "roomlist/room.join"
 
 [node name="Rightpad" type="Control" parent="Elements" unique_id=1833040670]
 layout_mode = 2

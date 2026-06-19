@@ -25,7 +25,7 @@ func _process(_delta: float) -> void:
 
 func _signup_btn() -> void:
 	if password.text != password_confirmation.text:
-		error_label.err("Password and the confirmation do not match")
+		error_label.err(tr("login/error.confirmationmatch"))
 		if tween:
 			tween.kill()
 		password.modulate = error_color
@@ -39,7 +39,7 @@ func _signup_btn() -> void:
 		tween.tween_property(button, "modulate", Color.WHITE, 2)
 		return
 	if len(password.text) < 8:
-		error_label.err("Password must be at least 8 characters long")
+		error_label.err(tr("login/error.atleast8chars"))
 		if tween:
 			tween.kill()
 		password.modulate = error_color
@@ -51,7 +51,7 @@ func _signup_btn() -> void:
 		tween.tween_property(button, "modulate", Color.WHITE, 2)
 		return
 	if len(username.text) < 3:
-		error_label.err("Username must be at least 3 characters long")
+		error_label.err(tr("login/error.atleast3chars"))
 		if tween:
 			tween.kill()
 		username.modulate = error_color
@@ -63,7 +63,7 @@ func _signup_btn() -> void:
 		tween.tween_property(button, "modulate", Color.WHITE, 2)
 		return
 	if RegEx.create_from_string("^[a-zA-Z0-9_]+$").search(username.text) == null:
-		error_label.err("Username can only contain letters, numbers, and underscores")
+		error_label.err(tr("login/error.usernamealphanumeric"))
 		if tween:
 			tween.kill()
 		username.modulate = error_color
@@ -79,7 +79,7 @@ func _signup_btn() -> void:
 	for i in 10:
 		tween.tween_property(button, "modulate", Color(.8, .8, .8), .5)
 		tween.tween_property(button, "modulate", Color.WHITE, .5)
-	tween.tween_callback(func() -> void: error_label.err("Server took too long to respond"))
+	tween.tween_callback(func() -> void: error_label.err(tr("login/error.fallback")))
 	tween.set_parallel(true)
 	tween.tween_callback(func() -> void: button.modulate = error_color)
 	tween.tween_property(button, "modulate", Color.WHITE, 2)
@@ -89,12 +89,12 @@ func _signup_btn() -> void:
 			tween.kill()
 			if response_code == 403:
 				button.modulate = error_color
-				error_label.err("That username is already in use")
+				error_label.err(tr("login/error.alreadyinuse"))
 				tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 				tween.tween_property(button, "modulate", Color.WHITE, 2)
 			else:
 				button.modulate = error_color
-				error_label.err("Server error (try again later)")
+				error_label.err(tr("login/error.servererror"))
 				tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 				tween.tween_property(button, "modulate", Color.WHITE, 2)
 	)

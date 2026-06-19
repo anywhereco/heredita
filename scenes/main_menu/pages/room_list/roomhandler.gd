@@ -48,7 +48,7 @@ func _load_rooms() -> void:
 	if rooms.is_err():
 		match rooms.err_code():
 			HTTP.HTTPResult.FAILED_REQUEST:
-				loading_placeholder_label.text = "Could not reach server. Try again later."
+				loading_placeholder_label.text = tr("roomlist/loading.failed")
 				return
 	for room_id: String in rooms.val():
 		var room: Dictionary = rooms.val()[room_id]
