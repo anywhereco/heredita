@@ -15,6 +15,7 @@ var _peers: Dictionary[int, WebSocketPeer] = {}
 var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
 ## Will be empty if TLS is disabled.
 var _peer_tls: Dictionary[int, StreamPeerTLS] = {}
+var _pending_tls: Dictionary[int, StreamPeerTLS] = {}
 var _peer_chunk_senders: Dictionary[int, ISUtil.ChunkSender] = {}
 var _peer_chunk_receivers: Dictionary[int, ISUtil.ChunkReceiver] = {}
 
@@ -132,36 +133,82 @@ func send_global_event(event: String, details: Dictionary, origin_id := -1) -> E
 
 
 func close(peer_id: int, code := 1000, reason := "") -> void:
-	var peer := _peers[peer_id]
-	peer.close(code, reason)
+	if peer_id in _peers:
+		_peers[peer_id].close(code, reason)
+	elif peer_id in _pending_tls:
+		_pending_tls.erase(peer_id)
+
+
+func _accept_connection() -> void:
+	last_peer_id += 1
+	print("peer %d connected" % last_peer_id)
+	if tlsoptions != null:
+		_pending_tls[last_peer_id] = StreamPeerTLS.new()
+		_pending_tls[last_peer_id].accept_stream(_tcp_server.take_connection(), tlsoptions)
+	else:
+		var ws := WebSocketPeer.new()
+		ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
+		ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
+		ws.accept_stream(_tcp_server.take_connection())
+		_setup_ws_peer(last_peer_id, ws)
+
+
+func _setup_ws_peer(peer_id: int, ws: WebSocketPeer) -> void:
+	_peers[peer_id] = ws
+	_peer_status[peer_id] = WebSocketPeer.STATE_CONNECTING
+	_peer_chunk_senders[peer_id] = ISUtil.ChunkSender.new(
+		func(data: PackedByteArray) -> void: ws.send(data)
+	)
+	_peer_chunk_receivers[peer_id] = ISUtil.ChunkReceiver.new()
+	_peer_chunk_receivers[peer_id].chunk_received.connect(
+		func(id: int) -> void: send_targeted_event(peer_id, "_is2_chunk_received", id)
+	)
+	_peer_chunk_receivers[peer_id].chunked_message.connect(
+		func(event: int, target: int, data: PackedByteArray) -> void:
+			binary_message.emit(peer_id, event, target, ISUtil.BinaryFlags.NONE, data)
+	)
+
+
+func _cleanup_peer(peer_id: int) -> void:
+	_peers.erase(peer_id)
+	_peer_status.erase(peer_id)
+	_peer_tls.erase(peer_id)
+	_peer_chunk_senders.erase(peer_id)
+	_peer_chunk_receivers.erase(peer_id)
+	_pending_tls.erase(peer_id)
+
+
+func _exit_tree() -> void:
+	_tcp_server.stop()
+	for peer_id: int in _peers.keys():
+		_cleanup_peer(peer_id)
+	for peer_id: int in _pending_tls.keys():
+		_cleanup_peer(peer_id)
+
+
+func _poll_pending_tls() -> void:
+	for peer_id: int in _pending_tls.keys():
+		var tls: StreamPeerTLS = _pending_tls[peer_id]
+		tls.poll()
+		var status := tls.get_status()
+		if status == StreamPeerTLS.STATUS_CONNECTED:
+			var ws := WebSocketPeer.new()
+			ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
+			ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
+			ws.accept_stream(tls)
+			_peer_tls[peer_id] = tls
+			_pending_tls.erase(peer_id)
+			_setup_ws_peer(peer_id, ws)
+		elif status == StreamPeerTLS.STATUS_ERROR:
+			print("TLS handshake failed for peer %d" % peer_id)
+			_pending_tls.erase(peer_id)
 
 
 func _process(_delta: float) -> void:
 	while _tcp_server.is_connection_available():
-		last_peer_id += 1
-		print("peer %d connected" % last_peer_id)
-		var ws := WebSocketPeer.new()
-		ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
-		ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
-		if tlsoptions != null:
-			_peer_tls[last_peer_id] = StreamPeerTLS.new()
-			_peer_tls[last_peer_id].accept_stream(_tcp_server.take_connection(), tlsoptions)
-			ws.accept_stream(_peer_tls[last_peer_id])
-		else:
-			ws.accept_stream(_tcp_server.take_connection())
-		_peers[last_peer_id] = ws
-		_peer_status[last_peer_id] = WebSocketPeer.STATE_CONNECTING
-		_peer_chunk_senders[last_peer_id] = ISUtil.ChunkSender.new(
-			func(data: PackedByteArray) -> void: ws.send(data)
-		)
-		_peer_chunk_receivers[last_peer_id] = ISUtil.ChunkReceiver.new()
-		_peer_chunk_receivers[last_peer_id].chunk_received.connect(
-			func(id: int) -> void: send_targeted_event(last_peer_id, "_is2_chunk_received", id)
-		)
-		_peer_chunk_receivers[last_peer_id].chunked_message.connect(
-			func(event: int, target: int, data: PackedByteArray) -> void:
-				binary_message.emit(last_peer_id, event, target, ISUtil.BinaryFlags.NONE, data)
-		)
+		_accept_connection()
+
+	_poll_pending_tls()
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop
 	for peer_id: int in _peers.keys():
@@ -195,10 +242,8 @@ func _process(_delta: float) -> void:
 					var data := ISUtil._parse_binary(packet)
 					binary_message.emit(peer_id, data.event, data.target, data.flags, data.details)
 		elif peer_state == WebSocketPeer.STATE_CLOSED:
-			# Remove the disconnected peer.
-			_peers.erase(peer_id)
-			_peer_status.erase(peer_id)
 			var code := peer.get_close_code()
 			var reason := peer.get_close_reason()
 			print("server close (%d): %s" % [code, reason])
 			closed.emit(peer_id, code, reason)
+			_cleanup_peer(peer_id)
