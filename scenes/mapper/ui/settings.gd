@@ -7,5 +7,5 @@ func _pressed() -> void:
 		var prompt: PromptInstance = prompt_res.val()
 		var settings := preload("res://scenes/_settings/settings.tscn").instantiate()
 		prompt.add_child(settings)
-		VirtualMouse._instance.enabled = false
-		prompt.prompt_closed.connect(VirtualMouse._instance.set.bind("enabled",true))
+		#VirtualMouse._instance.enabled = false
+		#prompt.prompt_closed.connect(VirtualMouse._instance.set.bind("enabled",true))

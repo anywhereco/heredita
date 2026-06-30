@@ -7,6 +7,7 @@
 layer = 9001
 
 [node name="Mouse" type="Sprite2D" parent="." unique_id=1093494842]
+visible = false
 texture = ExtResource("1_tghqs")
 offset = Vector2(7, 9)
 script = ExtResource("2_y5u7a")

@@ -33,12 +33,16 @@ func _brush_size_changed(_reactive: ReactiveInt) -> void:
 func _tool_changed(reactive: ReactiveInt) -> void:
 	if reactive.value == Tool.NONE:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
+		pass
 	elif reactive.value == Tool.BRUSH:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.BRUSH)
+		pass
 	elif reactive.value == Tool.DICE:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DICE)
+		pass
 	elif reactive.value == Tool.MARKING:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
+		pass
 
 
 func _init() -> void:

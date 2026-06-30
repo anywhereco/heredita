@@ -298,7 +298,7 @@ func brightness_change(brightness: ReactiveFloat) -> void:
 
 
 func update_map_pos() -> void:
-	var mouse_position := VirtualMouse._instance.position
+	var mouse_position := get_viewport().get_mouse_position() #VirtualMouse._instance.position
 	# The map is at zero on the Y axis
 	var intersect: Variant = Plane.PLANE_XZ.intersects_ray(
 		player_camera.project_ray_origin(mouse_position),

@@ -21,7 +21,7 @@ func _ready() -> void:
 	TopLevel.ui = self
 	if "--server" in OS.get_cmdline_user_args():
 		get_tree().change_scene_to_file.call_deferred("res://server/Server.tscn")
-	VirtualMouse._instance.enabled = false
+	#VirtualMouse._instance.enabled = false
 
 
 func swap_page(new_page: Page) -> void:

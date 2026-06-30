@@ -134,7 +134,7 @@ func _finish_mapper_load() -> void:
 		get_tree().current_scene.queue_free()
 	get_tree().root.add_child(mapper)
 	get_tree().current_scene = mapper
-	VirtualMouse._instance.enabled = true
+	#VirtualMouse._instance.enabled = true
 
 
 func _fail_game_load(message: String) -> void:

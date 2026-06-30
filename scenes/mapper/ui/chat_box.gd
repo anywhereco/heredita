@@ -6,11 +6,14 @@ extends VBoxContainer
 @onready var messages: RichTextLabel = find_child("ChatMessages")
 var players_listed := []
 var text_box_default_placeholder: String
+var messages_text_full := ""
 
 var muted_text := ""  #used to restore text if unmuted
 
 const TYPING_TIMER = 4 #seconds typing indicator should last
 var typing_timer: float = 0
+
+const MAX_LINES = 500
 
 func _ready() -> void:
 	text_box_default_placeholder = text_box.placeholder_text
@@ -82,10 +85,13 @@ func add_chat_message(sender_id: int, message: String) -> void:
 
 
 func add_message(message: String) -> void:
-	var newline := "\n" if messages.text else ""
+	var newline := "\n" if messages_text_full else ""
 	@warning_ignore("unsafe_call_argument")
+	messages_text_full += newline + message
 	messages.text += newline + message
-
+	if messages.text.get_slice_count("\n") > MAX_LINES:
+		messages.text = messages.text.substr(messages.text.find("\n")+1)
+	
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if text_box.has_focus():

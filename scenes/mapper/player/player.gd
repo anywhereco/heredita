@@ -196,7 +196,7 @@ func sort_bubbles() -> void:
 
 
 func mouse_pos_on_map() -> Vector2:
-	var mouse_position := VirtualMouse._instance.position
+	var mouse_position := get_viewport().get_mouse_position() #VirtualMouse._instance.position
 	var _camera: Camera3D = camera_pivot.get_node("CameraArm/PlayerCamera")
 	# The map is at zero on the Y axis
 	var intersect: Variant = Plane.PLANE_XZ.intersects_ray(
