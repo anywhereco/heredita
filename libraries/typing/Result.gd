@@ -1,7 +1,7 @@
 class_name Result
 
 var _return_value: Variant
-var _error: Variant
+var _error: int
 
 
 static func ok(return_value: Variant) -> Result:

@@ -8,6 +8,11 @@ var markings: Array[Dictionary] = []
 
 const PACKAGE_VERSION = 1
 
+const _MAGIC_FILE_HEADER = 0x01_02_03_4D_50_4D_61_70 # 1, 2, 3, MPMap!
+
+enum FileReadErrors {
+	NOT_HEREDITA_MAP
+}
 
 func package() -> Dictionary[String, Variant]:
 	return {"image": image.get_data(), "image_size": image.get_size(), "markings": markings}
@@ -18,6 +23,27 @@ func serialize() -> PackedByteArray:
 	serialized_map.insert(0, PACKAGE_VERSION)
 	return serialized_map
 
+## This will destroy the file already there!
+func serialize_as_file(path: String) -> bool:
+	var data := serialize()
+	var uncompressed_size := len(data)
+	var compressed_data := data.compress(FileAccess.COMPRESSION_ZSTD)
+	var content := PackedByteArray()
+	content.resize(16)
+	content.encode_u64(0, _MAGIC_FILE_HEADER) 
+	content.encode_u64(8, uncompressed_size)
+	content.append_array(compressed_data)
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	return file.store_buffer(content)
+
+static func read_from_file(path: String) -> Result:
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	var data := file.get_buffer(file.get_length())
+	if data.decode_u64(0) != _MAGIC_FILE_HEADER:
+		return Result.err(FileReadErrors.NOT_HEREDITA_MAP)
+	var decompressed := data.slice(16).decompress(data.decode_u64(8), FileAccess.COMPRESSION_ZSTD)
+	return Result.ok(deserialize(decompressed))
 
 static func deserialize(serialized: PackedByteArray, is_server: bool = false) -> MapData:
 	var md := MapData.new()
