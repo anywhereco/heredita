@@ -55,6 +55,7 @@ reflected_light_source = 2
 tonemap_white = 18.65
 tonemap_agx_white = 4.69
 tonemap_agx_contrast = 1.5
+ssao_enabled = true
 
 [node name="Mapper3D" type="Node3D" unique_id=1991960011]
 script = ExtResource("1_htv7j")

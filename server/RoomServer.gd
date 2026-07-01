@@ -176,6 +176,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 
 	if created:
 		player.operator = true
+		room.creator_ip = ws_server.peer_ip(peer_id)
 	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
 	room.players.setv(player_id, player)
 	ws_server.send_targeted_event(

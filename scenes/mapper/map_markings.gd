@@ -202,8 +202,8 @@ func _update_label(object: MapObject) -> void:
 		label.shaded = false
 		label.no_depth_test = false
 		label.fixed_size = false
-		label.pixel_size = 0.02
-		label.font_size = 18
+		label.pixel_size = 0.01
+		label.font_size = 36
 		label.outline_size = 5
 		label.render_priority = 2
 		label.outline_render_priority = 1

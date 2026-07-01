@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://b8edvgt68hm01" path="res://assets/icons/calendar/gear-full.svg" id="15_5g5qp"]
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
 [ext_resource type="Script" uid="uid://dhpdfhubeju8m" path="res://scenes/mapper/ui/change_name_button.gd" id="16_v8jk4"]
+[ext_resource type="Script" uid="uid://db4sp2bv2gtaq" path="res://scenes/mapper/ui/mod_tools_button.gd" id="16_xvqbn"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
 [ext_resource type="Texture2D" uid="uid://0fs4gs4hvf7w" path="res://assets/icons/tools/markings.svg" id="25_v8jk4"]
@@ -293,6 +294,18 @@ icon = ExtResource("15_5g5qp")
 [node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=713196267]
 layout_mode = 2
 alignment = 2
+
+[node name="ModTools" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=2093026585]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+theme_override_font_sizes/font_size = 14
+text = " Mod Tools "
+icon = ExtResource("5_5g7k5")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+script = ExtResource("16_xvqbn")
 
 [node name="ChangeName" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=43959448]
 custom_minimum_size = Vector2(50, 0)
@@ -713,6 +726,7 @@ value = 20.0
 
 [node name="marking" type="TabContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1268714854]
 visible = false
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_5rjrm")

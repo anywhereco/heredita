@@ -55,6 +55,7 @@ func set_selected(marking: MapMarkings.MapObject) -> void:
 		edit_title.text = "Select a marking"
 		edit_name.editable = false
 		edit_name.text = ""
+		edit_name.placeholder_text = ""
 		edit_name_label.text = "Name"
 		edit_color_picker.modulate = Color(1, 1, 1, 0.45)
 	else:
@@ -62,6 +63,7 @@ func set_selected(marking: MapMarkings.MapObject) -> void:
 		edit_title.text = "Edit this %s" % marking.marking_type
 		edit_name.editable = true
 		edit_name.text = marking.name
+		edit_name.placeholder_text = "%s name..." % marking.marking_type.capitalize()
 		edit_name_label.text = "%s name" % marking.marking_type.capitalize()
 		edit_color_picker.color.value = marking.color
 		edit_color_picker.modulate = Color.WHITE

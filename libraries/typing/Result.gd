@@ -8,7 +8,7 @@ static func ok(return_value: Variant) -> Result:
 	var result := Result.new()
 	result._return_value = return_value
 	return result
-
+	
 
 static func err(error: int) -> Result:
 	var result := Result.new()
@@ -17,7 +17,7 @@ static func err(error: int) -> Result:
 
 
 func is_err() -> bool:
-	return _error != null
+	return _error != 0
 
 
 func is_ok() -> bool:

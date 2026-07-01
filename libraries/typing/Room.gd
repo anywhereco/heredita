@@ -13,6 +13,7 @@ var player_ids_chronological: Array[int] = []
 var id_iterator := 0  #next id for use
 var close_on_empty := true
 
+var creator_ip: String
 var banned_ips := []
 
 

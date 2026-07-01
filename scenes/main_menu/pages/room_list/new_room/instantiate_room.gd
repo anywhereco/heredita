@@ -8,6 +8,8 @@ const NEW_ROOM_PROMPT = preload(
 func _pressed() -> void:
 	var prompt_res := Prompts.new_fullscreen_prompt()
 	if prompt_res.is_err():
+		print("!!!")
+		print(prompt_res.err_code())
 		return
 	var prompt: PromptInstance = prompt_res.val()
 	prompt.add_child(NEW_ROOM_PROMPT.instantiate())
