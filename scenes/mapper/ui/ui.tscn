@@ -31,6 +31,7 @@
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
 [ext_resource type="Script" uid="uid://dhpdfhubeju8m" path="res://scenes/mapper/ui/change_name_button.gd" id="16_v8jk4"]
 [ext_resource type="Script" uid="uid://db4sp2bv2gtaq" path="res://scenes/mapper/ui/mod_tools_button.gd" id="16_xvqbn"]
+[ext_resource type="Texture2D" uid="uid://chvgaply4i4bc" path="res://assets/icons/topbar/theaterfaces.svg" id="16_xvqbn"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
 [ext_resource type="Texture2D" uid="uid://0fs4gs4hvf7w" path="res://assets/icons/tools/markings.svg" id="25_v8jk4"]
@@ -313,7 +314,7 @@ layout_mode = 2
 theme_type_variation = &"ToolButton"
 theme_override_font_sizes/font_size = 14
 text = " Change Name "
-icon = ExtResource("5_5g7k5")
+icon = ExtResource("16_xvqbn")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
