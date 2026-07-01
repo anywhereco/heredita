@@ -192,24 +192,40 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
+func parse_player_id(data: Variant) -> int:
+	if not Verify.is_numeric(data):
+		return false
+	@warning_ignore("unsafe_call_argument")
+	return int(data)
 
 func parse_event(data: Dictionary, peer_id: int) -> bool:
-	if data["event"] == "map_update":
+	if data["event"] is not String:
+		return false
+	var event: String = data["event"]
+	if event.begins_with("mod:"):
+		if not room.players.getv(peer_player_id(peer_id)).rank >= UserEnums.Rank.MODERATOR:
+			return false
+	if event == "mod:roomblock_creator":
+		var id := parse_player_id(data["details"])
+		var player: Player = room.players.getv(id)
+		var ip: String = ws_server.peer_ip(player.peer_id)
+		#todo: actually do roomblocking
+	if event == "map_update":
 		@warning_ignore("unsafe_call_argument")
 		room.map.get_map_update(data["details"], peer_id)
-	elif data["event"] == "typing_status":
+	elif event == "typing_status":
 		var id := peer_player_id(peer_id)
 		room.players.getv(id).status["typing"] = data["details"]
 		update_player_status(id)
-	elif data["event"] == "change_rp_name":
+	elif event == "change_rp_name":
 		if ISUtil.validate_rp_name(data["details"] as String) or data["details"] == "": #allow blanking to reset
 			var id := peer_player_id(peer_id)
 			room.players.getv(id).status["rp_name"] = data["details"]
 			update_player_status(id)
-	elif data["event"] == "map_resync":
+	elif event == "map_resync":
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
-	elif data["event"] == "dice":
+	elif event == "dice":
 		if (
 			typeof(data["details"]["settings"]["min"]) != TYPE_FLOAT
 			or typeof(data["details"]["settings"]["max"]) != TYPE_FLOAT
@@ -225,7 +241,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			}
 		)
 		return false
-	elif data["event"] == "calendar_sync":
+	elif event == "calendar_sync":
 		if room.players.getv(peer_player_id(peer_id)).privileged():
 			@warning_ignore("unsafe_call_argument")
 			var tempcal := Calendar.from_json_safe(data["details"])
@@ -238,52 +254,37 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				calendar.year = 1_000_000_000
 			sync_calendar()
 			return false
-	elif data["event"] == "ban":
-		if not Verify.is_numeric(data["details"]):
-			return false
-		@warning_ignore("unsafe_call_argument")
-		var id := int(data["details"])
+	elif event == "ban":
+		var id := parse_player_id(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			var banned_peer: int = player.peer_id
 			room.banned_ips.append(ws_server.peer_ip(banned_peer))
 			ws_server.close(banned_peer, 5000, "Banned from this room")
-	elif data["event"] == "kick":
-		if not Verify.is_numeric(data["details"]):
-			return false
-		@warning_ignore("unsafe_call_argument")
-		var id := int(data["details"])
+	elif event == "kick":
+		var id := parse_player_id(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			var kicked_peer: int = player.peer_id
 			ws_server.close(kicked_peer, 5001, "Kicked from this room")
-	elif data["event"] == "mute":
-		if not Verify.is_numeric(data["details"]):
-			return false
-		@warning_ignore("unsafe_call_argument")
-		var id := int(data["details"])
+	elif event == "mute":
+		var id := parse_player_id(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			player.status["muted"] = true
 			update_player_status(id)
-	elif data["event"] == "unmute":
-		if not Verify.is_numeric(data["details"]):
-			return false
-		@warning_ignore("unsafe_call_argument")
-		var id := int(data["details"])
+	elif event == "unmute":
+		var id := parse_player_id(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			player.status["muted"] = false
 			update_player_status(id)
-	elif data["event"] == "purge_player":
-		if not Verify.is_numeric(data["details"]):
-			return false
-		@warning_ignore("unsafe_call_argument")
-		var id := int(data["details"])
+	elif event == "purge_player":
+		var id := parse_player_id(data["details"])
 		var player: Player = room.players.getv(id)
 		if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 			revert_peer_drawing(id)
-	elif data["event"] == "chat_message":
+	elif event == "chat_message":
 		var player: Player = room.players.getv(peer_player_id(peer_id))
 		return not player.status.get("muted", false)
 

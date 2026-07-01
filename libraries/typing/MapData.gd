@@ -23,8 +23,8 @@ func serialize() -> PackedByteArray:
 	serialized_map.insert(0, PACKAGE_VERSION)
 	return serialized_map
 
-## This will destroy the file already there!
-func serialize_as_file(path: String) -> bool:
+## Used for writing to files
+func serialize_with_header() -> PackedByteArray:
 	var data := serialize()
 	var uncompressed_size := len(data)
 	var compressed_data := data.compress(FileAccess.COMPRESSION_ZSTD)
@@ -33,11 +33,9 @@ func serialize_as_file(path: String) -> bool:
 	content.encode_u64(0, _MAGIC_FILE_HEADER) 
 	content.encode_u64(8, uncompressed_size)
 	content.append_array(compressed_data)
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	return file.store_buffer(content)
+	return content
 
 static func read_from_file(path: String) -> Result:
-
 	var file := FileAccess.open(path, FileAccess.READ)
 	var data := file.get_buffer(file.get_length())
 	if data.decode_u64(0) != _MAGIC_FILE_HEADER:

@@ -1,5 +1,9 @@
 extends Button
 
+func _ready() -> void:
+	if not State.player.rank >= UserEnums.Rank.MODERATOR:
+		hide()
+
 func _pressed() -> void:
 	if State.client:
 		var prompt_res := Prompts.new_fullscreen_prompt()

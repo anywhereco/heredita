@@ -70,7 +70,7 @@ func _http_request_completed_full(
 	if response_code != 200:
 		return
 	image = Image.create_empty(4096, 2048, false, Image.FORMAT_RGBA8)
-	image.load_png_from_buffer(body)  # TODO: support .her soonish [when its actually a thing]
+	image.load_png_from_buffer(body)  # TODO: support .map soonish [when its actually a thing]      haha i updated your todo -Digi
 	(
 		_picker
 		. get_parent()

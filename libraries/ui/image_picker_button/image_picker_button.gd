@@ -16,12 +16,12 @@ var SVG_NO_MAP_FILTER := PackedStringArray(
 )
 var NO_SVG_MAP_FILTER := PackedStringArray(
 	[
-		"*.png,*.jpg,*.jpeg,*.webp,*.bmp,*.her;Image and Map Files;image/png,image/jpeg,image/webp,image/bmp,application/heredita-map"
+		"*.png,*.jpg,*.jpeg,*.webp,*.bmp,*.map;Image and Map Files;image/png,image/jpeg,image/webp,image/bmp,application/heredita-map"
 	]
 )
 var SVG_MAP_FILTER := PackedStringArray(
 	[
-		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp,*.her;Image and Map Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp,application/heredita-map"
+		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp,*.map;Image and Map Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp,application/heredita-map"
 	]
 )
 
@@ -37,7 +37,7 @@ var extra_data: Variant = null
 
 ## If SVGs should be allowed or not.
 @export var allow_svgs := false
-## If maps [.her] should be allowed or not.
+## If maps [.map] should be allowed or not.
 @export var allow_maps := false
 ## If a preview image should be shown. Does nothing if a custom image rect is set.
 @export var show_preview := true
@@ -202,7 +202,7 @@ func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 				return Result.err(PickedImageError.SVG_NOT_ACCEPTED)
 		"webp":
 			_image.load_webp_from_buffer(buf)
-		"her":
+		"map":
 			if allow_maps:
 				# TODO actually implement the file format [maybe elsewhere]
 				push_error("Map attempted to load, but not implemented yet!! D:")
