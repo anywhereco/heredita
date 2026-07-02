@@ -50,6 +50,9 @@ func _load_rooms() -> void:
 			HTTP.HTTPResult.FAILED_REQUEST:
 				loading_placeholder_label.text = tr("roomlist/loading.failed")
 				return
+	elif rooms.val().is_empty():
+		loading_placeholder_label.text = tr("roomlist/loading.empty")
+		return
 	for room_id: String in rooms.val():
 		var room: Dictionary = rooms.val()[room_id]
 		add_child(

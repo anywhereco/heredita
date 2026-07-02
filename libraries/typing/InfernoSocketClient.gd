@@ -344,6 +344,13 @@ func _poll_string(message: Dictionary) -> void:
 				player.status = message.get("details").get("status")
 				message_received.emit("is2_player_status_update", -1, message.get("details"))
 				return
+			"_is2_player_operator_status_update":
+				var player: Player = room.players.getv(
+					message.get("details").get("player_id") as int
+				)
+				player.operator = message.get("details").get("operator")
+				message_received.emit("is2_player_operator_status_update", -1, message.get("details"))
+				return
 			"_is2_pong":
 				return
 			_:

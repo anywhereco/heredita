@@ -123,6 +123,7 @@ size_flags_stretch_ratio = 5.0
 layout_mode = 2
 text = "roomlist/loading"
 label_settings = SubResource("LabelSettings_d0eqv")
+horizontal_alignment = 1
 
 [node name="Create" type="HBoxContainer" parent="Rooms/PanelContainer/ScrollContainer/Rooms" unique_id=1557600411]
 layout_mode = 2

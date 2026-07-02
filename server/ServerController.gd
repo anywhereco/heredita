@@ -9,6 +9,9 @@ var ws_server := WSServer.new()
 
 var bridge: Server2ServerBridge
 
+var roomblocked_ips_file: FileAccess
+var roomblocked_ips: Array
+const ROOMBLOCKED_IPS_PATH: String = "roomblocked_ips.txt"
 
 func _ready() -> void:
 	bridge = Server2ServerBridge.new(self)
@@ -18,14 +21,21 @@ func _ready() -> void:
 	ws_server.binary_message.connect(_binary_message)
 	ws_server.connected.connect(_connected)
 	ws_server.closed.connect(_closed)
+	
+func load_roomblocked_ips() -> void:
+	roomblocked_ips_file = FileAccess.open(ROOMBLOCKED_IPS_PATH, FileAccess.READ_WRITE)
+	roomblocked_ips = roomblocked_ips_file.get_as_text().split("\n", false)
+	roomblocked_ips_file.seek_end()
 
+func roomblock(ip: String) -> void:
+	roomblocked_ips.append(ip)
+	roomblocked_ips_file.store_line(ip)
 
 func new_room_id() -> int:
 	var id := randi()
 	while id in rooms:
 		id = randi()
 	return id
-
 
 func create_room(data: Dictionary = {}, map_data: PackedByteArray = PackedByteArray()) -> int:
 	var id := new_room_id()
@@ -114,6 +124,8 @@ func _connected(peer_id: int) -> void:
 		r._connected(peer_id)
 		return
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
+		if ws_server.peer_ip(peer_id) in roomblocked_ips:
+			ws_server.close(peer_id, 4096, "Unable to create room")
 		var msg := await get_binary_data(peer_id)
 		if msg["event"] != ISUtil.BinaryEvents.SYNC_MAP:
 			ws_server.close(peer_id, 4096, "Expected a map")

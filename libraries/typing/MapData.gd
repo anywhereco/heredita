@@ -8,7 +8,7 @@ var markings: Array[Dictionary] = []
 
 const PACKAGE_VERSION = 1
 
-const _MAGIC_FILE_HEADER = 0x01_02_03_4D_50_4D_61_70 # 1, 2, 3, MPMap!
+const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
 enum FileReadErrors {
 	NOT_HEREDITA_MAP
@@ -35,13 +35,16 @@ func serialize_with_header() -> PackedByteArray:
 	content.append_array(compressed_data)
 	return content
 
-static func read_from_file(path: String) -> Result:
-	var file := FileAccess.open(path, FileAccess.READ)
-	var data := file.get_buffer(file.get_length())
+static func read_from_buffer(data: PackedByteArray) -> Result:
 	if data.decode_u64(0) != _MAGIC_FILE_HEADER:
 		return Result.err(FileReadErrors.NOT_HEREDITA_MAP)
 	var decompressed := data.slice(16).decompress(data.decode_u64(8), FileAccess.COMPRESSION_ZSTD)
 	return Result.ok(deserialize(decompressed))
+	
+static func read_from_file(path: String) -> Result:
+	var file := FileAccess.open(path, FileAccess.READ)
+	var data := file.get_buffer(file.get_length())
+	return read_from_buffer(data)
 
 static func deserialize(serialized: PackedByteArray, is_server: bool = false) -> MapData:
 	var md := MapData.new()

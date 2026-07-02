@@ -27,7 +27,14 @@ func _ready() -> void:
 	if not State.player.privileged():
 		pause.hide()
 		configure.hide()
+	State.client.message_received.connect(message_received)
 
+func message_received(event: String, _player_id: int, details: Variant) -> void:
+	if event == "is2_player_operator_status_update":
+		var player_id: int = details.get("player_id")
+		if player_id == State.client.player_id:
+			pause.visible = details.get("operator")
+			configure.visible = details.get("operator")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

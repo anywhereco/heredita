@@ -42,6 +42,10 @@ func align_bottom(node: CanvasItem) -> void:
 	global_position = node.global_position
 	(func() -> void: global_position.y -= item_list.get_rect().size.y).call_deferred()
 
+#Make sure the context menu is fully on-screen
+func bump() -> void:
+	global_position.x = clamp(global_position.x, 0, get_viewport().get_visible_rect().size.x - size.x)
+	global_position.y = clamp(global_position.y, 0, get_viewport().get_visible_rect().size.y - size.y)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
