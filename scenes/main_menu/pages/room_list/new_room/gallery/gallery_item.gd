@@ -60,6 +60,16 @@ func _http_request_completed(
 	map.texture = tex
 	map.show()
 
+func convert_to_map(item: Variant) -> MapData:
+	if item is MapData:
+		return item
+	elif item is Image:
+		var _map := MapData.new()
+		_map.image = item
+		return _map
+	else:
+		push_error("Invalid map in gallery")
+		return MapData.new()
 
 @warning_ignore("unused_parameter")
 func _http_request_completed_full(
@@ -76,10 +86,10 @@ func _http_request_completed_full(
 		. get_parent()
 		. get_parent()
 		. get_parent()
-		. find_child("ImagePickerButton")
-		. image
+		. find_child("MapPickerButton")
+		. map
 		. _set_value
-		. call_deferred(image)
+		. call_deferred(convert_to_map(image))
 	)
 	_picker.loading_mutex.unlock.call_deferred()  # TODO: probably need to be smarter about running this
 	Prompts.get_prompt_in(self).closing_paused.value = false
@@ -91,7 +101,7 @@ func _picked() -> void:
 	_picker.current_picked = id
 	prepare_load_full_image()
 	Prompts.get_prompt_in(self).closing_paused.value = true
-	_picker.get_parent().get_parent().get_parent().find_child("ImagePickerButton").image.value = thumbnail
+	_picker.get_parent().get_parent().get_parent().find_child("MapPickerButton").image.value = thumbnail
 	_picker.get_parent().get_parent().get_parent().get_parent().find_child("MapName").text = (
 		"Selected map: %s by %s" % [map_name, attribution]
 	)

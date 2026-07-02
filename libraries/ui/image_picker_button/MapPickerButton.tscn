@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bmktr0txwrgxo"]
+
+[ext_resource type="Script" uid="uid://j5d5mbyadwj8" path="res://libraries/ui/image_picker_button/image_picker_button.gd" id="1_cq3ql"]
+
+[node name="ImagePickerButton" type="Button" unique_id=202283196]
+custom_minimum_size = Vector2(170, 100)
+offset_right = 9.0
+offset_bottom = 9.0
+script = ExtResource("1_cq3ql")

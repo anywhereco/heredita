@@ -5,13 +5,13 @@ const GALLERY := preload("res://scenes/main_menu/pages/room_list/new_room/galler
 var map := ReactiveMapData.new(MapData.read_from_file("assets/map/maps/map.map").val() as MapData)  #eventually this will be an actual Map object
 
 
-func change_map_texture(_map: Image) -> void:
-	$CenterContainer/Map.texture = ImageTexture.create_from_image(_map)
+func change_map_texture(_map: ReactiveMapData) -> void:
+	$CenterContainer/Map.texture = ImageTexture.create_from_image(_map.value.image)
 
 
 func _ready() -> void:
 	map.value_changed.connect(change_map_texture)
-	change_map_texture(map.value.image)
+	change_map_texture(map)
 	$ChangeMap.pressed.connect(change_map)
 	$Buttons/Create.pressed.connect(create_room)
 
