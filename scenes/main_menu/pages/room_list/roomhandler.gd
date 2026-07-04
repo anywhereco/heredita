@@ -20,6 +20,12 @@ var _loading_prompt: PromptInstance
 var _loading_prompt_spinner: Spinner
 var _loading_prompt_label: Label
 
+var _game_load_time: float = 0.0
+var _buffered_map_data: PackedByteArray = PackedByteArray()
+var _mapper_ready := false
+
+const LOAD_TIMEOUT: float = 30.0
+
 
 func _ready() -> void:
 	_instance = self
@@ -73,18 +79,25 @@ func enter_mapper(map: MapData = null) -> void:
 	if _mapper_load_started:
 		return
 	_pending_map = map
+	_buffered_map_data.clear()
 	_mapper_load_started = true
 	_game_load_finishing = false
+	_game_load_time = 0.0
 	_game_load_progress.clear()
 	_set_game_load_detail("Preparing mapper...")
 
-	var err := ResourceLoader.load_threaded_request(MAPPER_3D_PATH, "PackedScene", true)
-	if err != OK and err != ERR_BUSY:
+	var err := ResourceLoader.load_threaded_request(MAPPER_3D_PATH, "PackedScene", false)
+	if err != OK:
 		_fail_game_load("Could not start loading the mapper.")
 
 
-func _update_game_loading(_delta: float) -> void:
+func _update_game_loading(delta: float) -> void:
 	if not _mapper_load_started:
+		return
+
+	_game_load_time += delta
+	if _game_load_time > LOAD_TIMEOUT:
+		_fail_game_load("Loading timed out.")
 		return
 
 	if not _game_load_finishing:
@@ -131,13 +144,16 @@ func _finish_mapper_load() -> void:
 		_fail_game_load("Could not create the mapper.")
 		return
 	_close_game_loading_prompt()
-	if _pending_map != null:
+	if not _buffered_map_data.is_empty():
+		Map._instance.set_data(MapData.deserialize(_buffered_map_data))
+		Map._instance.finish_resync()
+	elif _pending_map != null:
 		Map._instance.set_data(_pending_map)
 	if get_tree().current_scene != null:
 		get_tree().current_scene.queue_free()
 	get_tree().root.add_child(mapper)
 	get_tree().current_scene = mapper
-	#VirtualMouse._instance.enabled = true
+	_mapper_ready = true
 
 
 func _fail_game_load(message: String) -> void:
@@ -252,7 +268,14 @@ func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> v
 	State.client.loading_status_updated.connect(_client_loading_status_updated)
 	State.client.connection_closed.connect(premature_close)
 	State.client.handshake_complete.connect(enter_mapper.bind(map))
+	State.client.binary_message_received.connect(_buffer_binary_data)
 	get_tree().root.add_child(State.client)
+
+
+func _buffer_binary_data(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
+	if event != ISUtil.BinaryEvents.SYNC_MAP or _mapper_ready:
+		return
+	_buffered_map_data = details
 
 
 func premature_close() -> void:
