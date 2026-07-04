@@ -76,7 +76,7 @@ func get_chunk_relative_coords(pos: Vector2) -> Vector2:
 		fposmod(pos.x, Statics.CHUNK_SIZE_FLOAT), fposmod(pos.y, Statics.CHUNK_SIZE_FLOAT)
 	)
 
-cs
+
 ## If a position is invalid, returns Color(-1, -1, -1, -1).
 func get_pixel_at(pos: Vector2) -> Color:
 	pos = pos.floor()
