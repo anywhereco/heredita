@@ -40,30 +40,26 @@ func _map_ready() -> void:
 
 
 func get_image_for_brush() -> Image:
-	var image := shape.get_as_image(size).duplicate(true)
-	var width: int = image.get_width()
-	var height: int = image.get_height()
+	var cached := shape.get_as_image(size)
+	var image := Image.create(cached.get_width(), cached.get_height(), false, cached.get_format())
+	image.fill(Color.TRANSPARENT)
 	var float_base_pos: Vector2 = Map._instance.map_pos.value - shape.image_pixel_offset
 	var base_pos := Vector2i(float_base_pos.floor()) 
 	if float_base_pos.x < -(shape.BRUSH_SIZE_MAX - 1):
 		base_pos.x += 1
 	if float_base_pos.y < -(shape.BRUSH_SIZE_MAX - 1):
 		base_pos.y += 1
-	for y in range(height):
-		for x in range(width):
-			var pos := base_pos + Vector2i(x, y)
-			var color := Map._instance.get_pixel_at(pos)
-			if not is_targeted.value:
-				if color.a > 0 and image.get_pixel(x, y) == Color.WHITE:
-					image.set_pixel(x, y, Color.WHITE)
-				else:
-					image.set_pixel(x, y, Color.TRANSPARENT)
-				
-			else:
-				if color.is_equal_approx(target_color.value) and image.get_pixel(x, y) == Color.WHITE:
-					image.set_pixel(x, y, Color.WHITE)
-				else:
-					image.set_pixel(x, y, Color.TRANSPARENT)
+	var targeted := is_targeted.value
+	var target := target_color.value
+	for vec in shape.get_vec2s(size):
+		var image_coords := Vector2i(vec + shape.image_pixel_offset)
+		var color := Map._instance.get_pixel_at(base_pos + image_coords)
+		if not targeted:
+			if color.a > 0:
+				image.set_pixelv(image_coords, Color.WHITE)
+		else:
+			if color.is_equal_approx(target):
+				image.set_pixelv(image_coords, Color.WHITE)
 	return image
 
 

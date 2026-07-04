@@ -33,6 +33,8 @@ var map_pos: ReactiveVector2 = ReactiveVector2.new(Vector2.INF)
 
 var brush_shape_map: BrushShapeMap = BrushShapeMap.new()
 
+var _chunks_dirty := false
+
 var loaded := false
 
 var pending_resync := ReactiveBool.new(false)
@@ -101,6 +103,7 @@ func set_pixel_at(pos: Vector2, color: Color) -> bool:
 	var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
 	chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
 	chunks_edited[chunk_coords.x][chunk_coords.y] = true
+	_chunks_dirty = true
 	return true
 
 
@@ -114,6 +117,7 @@ func set_pixels_at(positions: PackedVector2Array, color: Color, offset: Vector2 
 		var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
 		chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
 		chunks_edited[chunk_coords.x][chunk_coords.y] = true
+		_chunks_dirty = true
 
 
 func set_pixels_at_targeted(
@@ -129,6 +133,7 @@ func set_pixels_at_targeted(
 		if chunk.get_pixelv(relative_coords).is_equal_approx(target):
 			chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
 			chunks_edited[chunk_coords.x][chunk_coords.y] = true
+			_chunks_dirty = true
 
 
 func set_pixels_at_land(
@@ -144,6 +149,7 @@ func set_pixels_at_land(
 		if chunk.get_pixelv(relative_coords).a > 0:
 			chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
 			chunks_edited[chunk_coords.x][chunk_coords.y] = true
+			_chunks_dirty = true
 
 
 func set_pixels_at_maybe_targeted(
@@ -216,6 +222,7 @@ func load_from_original() -> void:
 
 
 func reset_chunks() -> void:
+	_chunks_dirty = false
 	chunk_creation_mutexes.clear()
 	chunks_edited.clear()
 	chunks.clear()
@@ -372,12 +379,17 @@ func _process(_delta: float) -> void:
 		preview_plane.visible = true
 	else:
 		preview_plane.visible = false
-	for x in range(0, chunks_edited.size()):
-		for y in range(0, chunks_edited[0].size()):
-			if chunks_edited[x][y] == false:
-				continue
-			chunks[x][y].texture.update(chunk_images[x][y])
-			chunks_edited[x][y] = false
+	if _chunks_dirty:
+		var x_max := chunks_edited.size()
+		for x in x_max:
+			var column := chunks_edited[x] as Array
+			var y_max := column.size()
+			for y in y_max:
+				if not column[y]:
+					continue
+				chunks[x][y].texture.update(chunk_images[x][y])
+				column[y] = false
+		_chunks_dirty = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
