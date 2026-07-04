@@ -41,6 +41,7 @@ var pending_resync := ReactiveBool.new(false)
 
 var queued_changes: Array[Dictionary] = []
 var pending_markings: Array[Dictionary] = []
+var _data_pending_init := false
 
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:
 	return (
@@ -75,7 +76,7 @@ func get_chunk_relative_coords(pos: Vector2) -> Vector2:
 		fposmod(pos.x, Statics.CHUNK_SIZE_FLOAT), fposmod(pos.y, Statics.CHUNK_SIZE_FLOAT)
 	)
 
-
+cs
 ## If a position is invalid, returns Color(-1, -1, -1, -1).
 func get_pixel_at(pos: Vector2) -> Color:
 	pos = pos.floor()
@@ -99,24 +100,33 @@ func set_pixel_at(pos: Vector2, color: Color) -> bool:
 	pos = pos.floor()
 	if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 		return false
-	var chunk_coords := get_chunk_grid_coords(pos)
-	var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
-	chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
-	chunks_edited[chunk_coords.x][chunk_coords.y] = true
+	var px := int(pos.x)
+	var py := int(pos.y)
+	@warning_ignore("integer_division")
+	var cx := px / Statics.CHUNK_SIZE
+	@warning_ignore("integer_division")
+	var cy := py / Statics.CHUNK_SIZE
+	chunk_images[cx][cy].set_pixel(px % Statics.CHUNK_SIZE, py % Statics.CHUNK_SIZE, color)
+	chunks_edited[cx][cy] = true
 	_chunks_dirty = true
 	return true
 
 
 func set_pixels_at(positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO) -> void:
 	offset = offset.floor()
+	var cs := Statics.CHUNK_SIZE
 	for pos in positions:
 		pos += offset
 		if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 			continue
-		var chunk_coords := get_chunk_grid_coords(pos)
-		var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
-		chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
-		chunks_edited[chunk_coords.x][chunk_coords.y] = true
+		var px := int(pos.x)
+		var py := int(pos.y)
+		@warning_ignore("integer_division")
+		var cx := px / Statics.CHUNK_SIZE
+		@warning_ignore("integer_division")
+		var cy := py / Statics.CHUNK_SIZE
+		chunk_images[cx][cy].set_pixel(px % cs, py % cs, color)
+		chunks_edited[cx][cy] = true
 		_chunks_dirty = true
 
 
@@ -127,12 +137,18 @@ func set_pixels_at_targeted(
 		pos += offset
 		if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 			continue
-		var chunk_coords := get_chunk_grid_coords(pos)
-		var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
-		var relative_coords := get_chunk_relative_coords(pos)
-		if chunk.get_pixelv(relative_coords).is_equal_approx(target):
-			chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
-			chunks_edited[chunk_coords.x][chunk_coords.y] = true
+		var px := int(pos.x)
+		var py := int(pos.y)
+		@warning_ignore("integer_division")
+		var cx := px / Statics.CHUNK_SIZE
+		@warning_ignore("integer_division")
+		var cy := py / Statics.CHUNK_SIZE
+		var chunk: Image = chunk_images[cx][cy]
+		var lx := px % Statics.CHUNK_SIZE
+		var ly := py % Statics.CHUNK_SIZE
+		if chunk.get_pixel(lx, ly).is_equal_approx(target):
+			chunk.set_pixel(lx, ly, color)
+			chunks_edited[cx][cy] = true
 			_chunks_dirty = true
 
 
@@ -143,12 +159,18 @@ func set_pixels_at_land(
 		pos += offset
 		if not is_in_bounding_box(pos, Vector2.ZERO, original_map_size_exclusive):
 			continue
-		var chunk_coords := get_chunk_grid_coords(pos)
-		var chunk: Image = chunk_images[chunk_coords.x][chunk_coords.y]
-		var relative_coords := get_chunk_relative_coords(pos)
-		if chunk.get_pixelv(relative_coords).a > 0:
-			chunk.set_pixelv(Vector2i(get_chunk_relative_coords(pos)), color)
-			chunks_edited[chunk_coords.x][chunk_coords.y] = true
+		var px := int(pos.x)
+		var py := int(pos.y)
+		@warning_ignore("integer_division")
+		var cx := px / Statics.CHUNK_SIZE
+		@warning_ignore("integer_division")
+		var cy := py / Statics.CHUNK_SIZE
+		var chunk: Image = chunk_images[cx][cy]
+		var lx := px % Statics.CHUNK_SIZE
+		var ly := py % Statics.CHUNK_SIZE
+		if chunk.get_pixel(lx, ly).a > 0:
+			chunk.set_pixel(lx, ly, color)
+			chunks_edited[cx][cy] = true
 			_chunks_dirty = true
 
 
@@ -200,9 +222,10 @@ func set_data(data: MapData) -> void:
 		map_markings.set_markings(data.markings)
 	else:
 		pending_markings = data.markings
+		_data_pending_init = true
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
-	if not State.client.operator or loaded:
+	if is_node_ready() and (not State.client.operator or loaded):
 		load_from_original()
 	if pending_resync.value:
 		return
@@ -296,6 +319,9 @@ func _ready() -> void:
 		pending_markings.clear()
 	if State.client.operator:
 		load_from_original()
+	elif _data_pending_init:
+		load_from_original()
+		_data_pending_init = false
 	preview_plane.pixel_size = pixel_size
 
 
