@@ -123,10 +123,9 @@ func send_targeted_binary(
 
 
 func send_global_event(event: String, details: Dictionary, origin_id := -1) -> Error:
+	var payload := JSON.stringify({"event": event, "player_id": origin_id, "details": details})
 	for peer_id: int in _peers:
-		var error := send_text(
-			peer_id, JSON.stringify({"event": event, "player_id": origin_id, "details": details})
-		)
+		var error := send_text(peer_id, payload)
 		if error:
 			return error
 	return OK

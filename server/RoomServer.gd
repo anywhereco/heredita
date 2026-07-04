@@ -64,11 +64,10 @@ func peer_close(peer_id: int, code := 1000, reason := "") -> void:
 
 
 func send_event(event: String, details: Variant, origin_id := -1) -> Error:
+	var payload := JSON.stringify({"event": event, "player_id": origin_id, "details": details})
 	for player_id: int in room.players.keys():
 		var peer_id: int = room.players.getv(player_id).peer_id
-		var error := ws_server.send_text(
-			peer_id, JSON.stringify({"event": event, "player_id": origin_id, "details": details})
-		)
+		var error := ws_server.send_text(peer_id, payload)
 		if error:
 			return error
 	return OK
