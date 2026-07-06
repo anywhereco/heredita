@@ -259,9 +259,9 @@ func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> v
 	_begin_game_loading("Connecting to game server...")
 	if creation:
 		assert(map != null, "Attempted to create room with no map")
-		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, creation, map.serialize())
+		State.client = InfernoSocketClientTemp.new(Statics.SERVER_URL, 0, creation, map.serialize())
 	else:
-		State.client = InfernoSocketClient.new(Statics.SERVER_URL, int(_id))
+		State.client = InfernoSocketClientTemp.new(Statics.SERVER_URL, int(_id))
 	State.client.connected_to_server.connect(
 		_set_game_load_detail.bind("Connected. Waiting for handshake...")
 	)

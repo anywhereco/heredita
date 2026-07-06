@@ -10,7 +10,7 @@ var refocus_debounce := 0.0
 
 @onready var brush_shape_map := BrushShapeMap.new()
 
-var client: InfernoSocketClient = null
+var client: InfernoSocketClientTemp = null
 var room: Room = null
 
 ## Should not be null. Make sure to check if the user is logged in via State.user.initialized.

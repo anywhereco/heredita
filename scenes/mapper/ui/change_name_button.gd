@@ -13,7 +13,7 @@ func _pressed() -> void:
 			_prompt.add_child(info)
 			
 func prompt_finish(line_edit: LineEdit) -> void:
-	if ISUtil.validate_rp_name(line_edit.text) or line_edit.text == "":
+	if Verify.validate_rp_name(line_edit.text) or line_edit.text == "":
 		State.client.send("change_rp_name", line_edit.text)
 		Prompts.close_top_prompt()
 	else:

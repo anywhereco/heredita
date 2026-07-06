@@ -1,10 +1,10 @@
 ## Handles InfernoSocket connections.
-class_name InfernoSocketClient
+class_name InfernoSocketClientTemp
 extends Node
 
 var return_handshake := {
 	"infernosocket_version": [3, 0],
-	"software_version": ProjectSettings.get_setting_with_override("application/config/version")
+	"software_version": ProjectSettings.get_setting_with_override(&"application/config/version")
 }
 
 var handshake_headers: PackedStringArray
@@ -14,7 +14,7 @@ var websocket_url: String
 
 var room_id: int
 
-var ping_timer: float = 0
+var ping_timer: float = 0.0
 
 const PING_INTERVAL: float = 5
 

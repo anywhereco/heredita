@@ -14,8 +14,8 @@ func enter_mapper() -> void:
 
 func _pressed() -> void:
 	if create:
-		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, {"name": "Testers' Room"})
+		State.client = InfernoSocketClientTemp.new(Statics.SERVER_URL, 0, {"name": "Testers' Room"})
 	else:
-		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0)
+		State.client = InfernoSocketClientTemp.new(Statics.SERVER_URL, 0)
 	get_tree().root.add_child(State.client)
 	State.client.handshake_complete.connect(enter_mapper)

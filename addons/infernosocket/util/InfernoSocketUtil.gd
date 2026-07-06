@@ -1,4 +1,5 @@
-class_name ISUtil
+class_name InfernoSocketUtil
+extends Object
 
 const BUFFER_SIZE_KB: int = 2048
 const LARGE_PACKET_BUDGET: int = (BUFFER_SIZE_KB * 1024) - 65536
@@ -11,6 +12,10 @@ enum BinaryFlags {
 	CHUNK_START_HEADER = 1 << 1,
 	CHUNK_PART = 1 << 2,
 	CHUNK_PART_LAST = 1 << 3,
+	RESERVED = 1 << 4,
+	RESERVED2 = 1 << 5,
+	APP_DEFINED_1 = 1 << 6,
+	APP_DEFINED_2 = 1 << 7
 }
 
 enum BinaryEvents { 
@@ -26,20 +31,16 @@ static func is_event(data: Variant) -> String:
 	return data.get("event", "")
 
 
-static func json_event(dict: Dictionary) -> Variant:
+static func valid_Event(dict: Dictionary) -> Variant:
 	return dict.get("event")
 
 
-static func json_event_from_result(result: Result) -> String:
-	return ISUtil.json_event(result.val() as Dictionary)
-
-
-static func valid_event(result: Result) -> bool:
-	return result.is_ok() and ISUtil.json_event(result.val() as Dictionary)
+static func valid_event(event: Result) -> bool:
+	return bool(json_event(result.val() as Dictionary))
 
 
 static func valid_event_is(result: Result, event: String) -> bool:
-	return result.is_ok() and ISUtil.json_event(result.val() as Dictionary) == event
+	return result.is_ok() and json_event(result.val() as Dictionary) == event
 
 
 static func from_color(color: Color) -> Array:

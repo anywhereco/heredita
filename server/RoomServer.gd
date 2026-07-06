@@ -222,7 +222,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			room.players.getv(id).status["typing"] = data["details"]
 			update_player_status(id)
 		"change_rp_name":
-			if ISUtil.validate_rp_name(data["details"] as String) or data["details"] == "": #allow blanking to reset
+			if Verify.validate_rp_name(data["details"] as String) or data["details"] == "": #allow blanking to reset
 				var id := peer_player_id(peer_id)
 				room.players.getv(id).status["rp_name"] = data["details"]
 				update_player_status(id)
