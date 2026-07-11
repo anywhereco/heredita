@@ -8,6 +8,7 @@ var players_listed := []
 var text_box_default_placeholder: String
 var messages_text_full := ""
 
+var muted := false
 var muted_text := ""  #used to restore text if unmuted
 
 const TYPING_TIMER = 4 #seconds typing indicator should last
@@ -69,12 +70,14 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 			text_box.editable = false
 			text_box.placeholder_text = "You are muted!"
 			muted_text = text_box.text
+			muted = true
 			text_box.text = ""
-		elif muted_text:
+		elif muted:
 			text_box.editable = true
 			text_box.placeholder_text = text_box_default_placeholder
 			text_box.text = muted_text
 			muted_text = ""
+			muted = false
 
 
 func add_chat_message(sender_id: int, message: String) -> void:
