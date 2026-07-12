@@ -163,4 +163,4 @@ func message_received(event: String, _player_id: int, details: Variant) -> void:
 			if player.rank < UserEnums.Rank.MODERATOR:
 				player_node.add_badge(BADGE_OPERATOR, "Room operator")
 		else:
-			player_node.find_child("Room operator", false, false).queue_free()
+			player_node.elements.find_child("Room operator", false, false).queue_free()
