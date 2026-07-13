@@ -69,7 +69,7 @@ near = 0.15
 [node name="The Sun" type="DirectionalLight3D" parent="." unique_id=1116034466]
 transform = Transform3D(-3.7855173e-08, 0.1736482, -0.9848077, -2.18557e-08, 0.9848077, 0.17364821, 1, 2.8097144e-08, -3.3484863e-08, -29.082283, 6.882904, 0)
 light_color = Color(0.9999998, 0.9075061, 0.7100272, 1)
-directional_shadow_max_distance = 256.0
+directional_shadow_max_distance = 20.0
 
 [node name="Earth" type="Node3D" parent="." unique_id=1809125386]
 transform = Transform3D(0.13917327, -0.3789592, -0.9148884, 0, 0.9238795, -0.38268346, 0.99026805, 0.05325931, 0.12857933, 0, 0, 0)

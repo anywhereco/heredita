@@ -31,6 +31,12 @@ func _brush_size_changed(_reactive: ReactiveInt) -> void:
 	Map._instance.preview_plane.texture.update(brush.get_image_for_brush())
 
 
+func _ssao_toggled(reactive: ReactiveBool) -> void:
+	var env: WorldEnvironment = $Environment
+	if env and env.environment:
+		env.environment.ssao_enabled = reactive.value
+
+
 func _tool_changed(reactive: ReactiveInt) -> void:
 	if reactive.value == Tool.NONE:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
@@ -57,6 +63,8 @@ func _ready() -> void:
 	brush._map_ready()
 	dice._map_ready()
 	marking._map_ready()
+	Settings.get_reactive("ssao_enabled").value_changed.connect(_ssao_toggled)
+	_ssao_toggled(Settings.get_reactive("ssao_enabled"))
 	if State.client:
 		State.client.message_received.connect(message_recieved)
 		State.client.binary_message_received.connect(binary_message_recieved)

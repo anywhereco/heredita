@@ -109,7 +109,7 @@ mesh = SubResource("PlaneMesh_l0uxc")
 transform = Transform3D(-4.371139e-08, 0.6427876, -0.76604444, 0, 0.76604444, 0.6427876, 1, 2.8097137e-08, -3.3484866e-08, 0, 6.882904, 0)
 light_color = Color(1, 0.9666667, 0.9, 1)
 directional_shadow_mode = 0
-directional_shadow_max_distance = 8192.0
+directional_shadow_max_distance = 70.0
 
 [node name="Environment" type="WorldEnvironment" parent="." unique_id=2070133541]
 environment = SubResource("Environment_1goaf")
