@@ -45,7 +45,9 @@ func _ready() -> void:
 		elif OS.has_feature("debug"):
 			push_warning("Running without a certificate! This might not be what you want.")
 		else:
-			push_error("Running without a certificate, exiting! You can get around this by using a debug build.")
+			push_error(
+				"Running without a certificate, exiting! You can get around this by using a debug build."
+			)
 			get_tree().quit()
 	elif x509_cert != null and private_key != null:
 		print("We signed up in here :DDDD")
@@ -53,7 +55,7 @@ func _ready() -> void:
 	else:
 		push_error("Only a private key or certificate was set, you need both. Exiting!")
 		get_tree().quit()
-		
+
 	print(PORT)
 	var err := _tcp_server.listen(PORT)
 	if err == OK:
@@ -64,7 +66,7 @@ func _ready() -> void:
 		set_process(false)
 
 
-signal text_data(peer_id: int, data: String)
+signal text_data(peer_id: int, data: Dictionary)
 
 signal binary_message(
 	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
@@ -117,9 +119,9 @@ func send_targeted_chunk_data(peer_id: int, event: int, message: PackedByteArray
 
 
 func send_targeted_binary(
-	peer_id: int, event: int, message: PackedByteArray, compress: bool = true
+	peer_id: int, event: int, message: PackedByteArray, compress: bool = true, player_id: int = 0
 ) -> Error:
-	return send_raw_binary(peer_id, ISUtil._create_binary(event, 0, message, compress))
+	return send_raw_binary(peer_id, ISUtil._create_binary(event, player_id, message, compress))
 
 
 func send_global_event(event: String, details: Dictionary, origin_id := -1) -> Error:
@@ -230,16 +232,16 @@ func _process(_delta: float) -> void:
 					var event: Variant = JSON.parse_string(packet_text)
 					if ISUtil.is_event(event) == "_is2_chunk_received":
 						_peer_chunk_senders[peer_id].chunk_recieved.emit(event.details)
-						return
+						continue
 					if ISUtil.is_event(event) == "_is2_ping":
 						send_targeted_event(peer_id, "_is2_pong")
-						return
-					text_data.emit(peer_id, packet_text)
+						continue
+					text_data.emit(peer_id, event)
 				else:
 					if _peer_chunk_receivers[peer_id].handle_potential_chunked_message(packet):
-						return
+						continue
 					var data := ISUtil._parse_binary(packet)
-					binary_message.emit(peer_id, data.event, data.target, data.flags, data.details)
+					binary_message.emit(peer_id, data.event, data.uid, data.flags, data.data)
 		elif peer_state == WebSocketPeer.STATE_CLOSED:
 			var code := peer.get_close_code()
 			var reason := peer.get_close_reason()

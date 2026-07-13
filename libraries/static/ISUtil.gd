@@ -13,13 +13,11 @@ enum BinaryFlags {
 	CHUNK_PART_LAST = 1 << 3,
 }
 
-enum BinaryEvents { 
-	SYNC_MAP = 0x0,
-	FORCE_RESYNC_MAP = 0x1
-}
+enum BinaryEvents {SYNC_MAP = 0x0, FORCE_RESYNC_MAP = 0x1, BRUSH_UPDATE = 0x2, AVATAR_UPDATE = 0x3}
 
-static func validate_rp_name(name: String) -> bool: #might be used for more things later idk
-	if not name.strip_edges(): #basic whitespace check; maybe use something stronger for weird unicode characters in the future
+
+static func validate_rp_name(name: String) -> bool:  #might be used for more things later idk
+	if not name.strip_edges():  #basic whitespace check; maybe use something stronger for weird unicode characters in the future
 		return false
 	if len(name) == 0:
 		return false
@@ -27,6 +25,7 @@ static func validate_rp_name(name: String) -> bool: #might be used for more thin
 		return false
 	#maybe also an offensive-filter check?
 	return true
+
 
 ## Returns "" if not a valid event.
 static func is_event(data: Variant) -> String:
@@ -88,6 +87,75 @@ static func to_vec3(vec: Array) -> Vector3:
 	else:
 		assert(false, "Vec2 is too small")
 		return Vector3.ZERO
+
+
+## layout: pos_x(f32) + pos_y(f32) + size(u8) + paint_rgb(3*u8) + target_rgb(3*u8) + targeted(u8)
+static func encode_brush_update(
+	pos: Vector2, size: int, paint_color: Color, target_color: Color, targeted: bool
+) -> PackedByteArray:
+	var bytes := PackedByteArray()
+	bytes.resize(16)
+	bytes.encode_float(0, pos.x)
+	bytes.encode_float(4, pos.y)
+	bytes.encode_u8(8, size)
+	bytes.encode_u8(9, int(paint_color.r * 255))
+	bytes.encode_u8(10, int(paint_color.g * 255))
+	bytes.encode_u8(11, int(paint_color.b * 255))
+	bytes.encode_u8(12, int(target_color.r * 255))
+	bytes.encode_u8(13, int(target_color.g * 255))
+	bytes.encode_u8(14, int(target_color.b * 255))
+	bytes.encode_u8(15, 1 if targeted else 0)
+	return bytes
+
+
+## Returns a dictionary matching the json map_update format
+static func decode_brush_update(data: PackedByteArray) -> Dictionary:
+	if data.size() < 16:
+		return {}
+	return {
+		"type": "brush",
+		"pos": [data.decode_float(0), data.decode_float(4)],
+		"size": float(data.decode_u8(8)),
+		"paint_color":
+		[data.decode_u8(9) / 255.0, data.decode_u8(10) / 255.0, data.decode_u8(11) / 255.0],
+		"target_color":
+		[data.decode_u8(12) / 255.0, data.decode_u8(13) / 255.0, data.decode_u8(14) / 255.0],
+		"targeted": data.decode_u8(15) != 0
+	}
+
+
+## layout: pos(3*f32) + rot(3*f32) + vel(3*f32) + cam_rot(f32) + jump(u8)
+static func encode_avatar_update(
+	pos: Vector3, rot: Vector3, vel: Vector3, cam_rot: float, jump: bool
+) -> PackedByteArray:
+	var bytes := PackedByteArray()
+	bytes.resize(41)
+	bytes.encode_float(0, pos.x)
+	bytes.encode_float(4, pos.y)
+	bytes.encode_float(8, pos.z)
+	bytes.encode_float(12, rot.x)
+	bytes.encode_float(16, rot.y)
+	bytes.encode_float(20, rot.z)
+	bytes.encode_float(24, vel.x)
+	bytes.encode_float(28, vel.y)
+	bytes.encode_float(32, vel.z)
+	bytes.encode_float(36, cam_rot)
+	bytes.encode_u8(40, 1 if jump else 0)
+	return bytes
+
+
+## Decode an avatar update from a binary message.
+static func decode_avatar_update(data: PackedByteArray) -> Dictionary:
+	if data.size() < 41:
+		return {}
+	return {
+		"position": [data.decode_float(0), data.decode_float(4), data.decode_float(8)],
+		"rotation": [data.decode_float(12), data.decode_float(16), data.decode_float(20)],
+		"velocity": [data.decode_float(24), data.decode_float(28), data.decode_float(32)],
+		"camera_rotation": data.decode_float(36),
+		"jump": data.decode_u8(40) != 0
+	}
+
 
 static func debug_print_array(arr: PackedByteArray, pre: Variant = "") -> void:
 	if arr.size() < 12:

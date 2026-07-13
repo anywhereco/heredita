@@ -25,6 +25,7 @@ var marking: MarkingTool = MarkingTool.new()
 var map_data_compressed: PackedByteArray
 var map_data_uncompr_size: int
 
+
 func _brush_size_changed(_reactive: ReactiveInt) -> void:
 	brush.size = UIRoot._instance.brush_ui.size_controller.brush_size.value
 	Map._instance.preview_plane.texture.update(brush.get_image_for_brush())
@@ -95,7 +96,9 @@ func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 		TimekeepingUI._inst.calendar_sync(details as Dictionary)
 
 
-func binary_message_recieved(event: int, _player_id: int, _flags: int, details: PackedByteArray) -> void:
+func binary_message_recieved(
+	event: int, player_id: int, _flags: int, details: PackedByteArray
+) -> void:
 	if event == ISUtil.BinaryEvents.SYNC_MAP:
 		Map._instance.set_data(MapData.deserialize(details))
 		Map._instance.finish_resync()
@@ -103,6 +106,16 @@ func binary_message_recieved(event: int, _player_id: int, _flags: int, details: 
 		Map._instance.pending_resync.value = true
 		Map._instance.set_data(MapData.deserialize(details))
 		Map._instance.finish_resync()
+	elif event == ISUtil.BinaryEvents.BRUSH_UPDATE:
+		var brush_data := ISUtil.decode_brush_update(details)
+		if not brush_data.is_empty():
+			Map._instance.get_map_update(brush_data)
+	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
+		var avatar_data := ISUtil.decode_avatar_update(details)
+		if not avatar_data.is_empty():
+			var node := PlayerBalls._instance.get_node(str(player_id))
+			if node:
+				node.frame_data = avatar_data
 
 
 func closed() -> void:
