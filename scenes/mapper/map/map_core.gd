@@ -343,11 +343,12 @@ func update_map_pos() -> void:
 	@warning_ignore("unsafe_call_argument")
 	var intersect_pos: Vector2 = Vector2(intersect.x, intersect.z)
 	var prev_pos := map_pos.value
-	map_pos.value = world_space_to_map_space(intersect_pos)
+	var new_pos := world_space_to_map_space(intersect_pos)
 	if not is_in_bounding_box(
-		map_pos.value, Vector2(-30, -30), original_map_size + Vector2(30, 30)
+		new_pos, Vector2(-30, -30), original_map_size + Vector2(30, 30)
 	):
 		return
+	map_pos.value = new_pos
 	if (
 		Vector2i(prev_pos.floor()) != Vector2i(map_pos.value.floor())
 		and MapperRoot._instance.tool.value == MapperRoot.Tool.BRUSH
