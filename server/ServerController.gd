@@ -49,11 +49,11 @@ func create_room(data: Dictionary = {}, map_data: PackedByteArray = PackedByteAr
 	for key: String in data:
 		if key == "name":
 			room.name = data[key]
-		if key == "description":
+		elif key == "description":
 			room.description = data[key]
-		if key == "password":
+		elif key == "password":
 			room.password = data[key]
-		if key == "player_cap":
+		elif key == "player_cap":
 			room.player_limit = data[key]
 	var room_server := RoomServer.new()
 	room_server.room = room

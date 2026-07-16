@@ -42,6 +42,10 @@ func poll(delta: float) -> void:
 
 func _poll_loop() -> void:
 	var message := get_msg()
+	if message is not Dictionary:
+		return
+	if not message.has("event"):
+		return
 	match message["event"]:
 		"roomlist":
 			var rooms_json: Dictionary = {}

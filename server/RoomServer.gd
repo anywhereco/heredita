@@ -1,6 +1,8 @@
 extends Node
 class_name RoomServer
 
+const NOT_VALID_PLAYER_ID = -3
+
 var room: Room = null
 var calendar: Calendar = Calendar.new(12, 1984)  # heh
 @onready var server_controller: ServerController = get_parent()
@@ -115,8 +117,8 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	if ws_server.peer_ip(peer_id) in room.banned_ips:
 		ws_server.close(peer_id, 6145, "You are banned from this room.")
 		return
-	var player_id := room.id_iterator
 	room.id_iterator += 1
+	var player_id := room.id_iterator
 	while room.id_iterator in room.players.keys():
 		room.id_iterator += 1
 
@@ -186,13 +188,16 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	if created:
 		player.operator = true
 		room.creator_ip = ws_server.peer_ip(peer_id)
-	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
+
 	room.players.setv(player_id, player)
+
 	ws_server.send_targeted_event(
 		peer_id,
 		"_is2_handshake_complete",
 		{"name": room.name, "description": room.description, "players": room.player_info()}
 	)
+	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
+
 	if not created:
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
@@ -204,7 +209,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 
 func parse_player_id(data: Variant) -> int:
 	if not Verify.is_numeric(data):
-		return false # FIXME: this returns 0 I think. which can be a valid user. but returning an invalid user can cause issues!
+		return NOT_VALID_PLAYER_ID
 	@warning_ignore("unsafe_call_argument")
 	return int(data)
 
@@ -266,6 +271,8 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				return false
 		"ban":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				var banned_peer: int = player.peer_id
@@ -273,36 +280,48 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				ws_server.close(banned_peer, 5000, "Banned from this room")
 		"kick":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				var kicked_peer: int = player.peer_id
 				ws_server.close(kicked_peer, 5001, "Kicked from this room")
 		"mute":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				player.status["muted"] = true
 				update_player_status(id)
 		"unmute":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				player.status["muted"] = false
 				update_player_status(id)
 		"make_operator":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged():
 				player.operator = true
 				update_player_operator_status(id)
 		"remove_operator":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				player.operator = false
 				update_player_operator_status(id)
 		"purge_player":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				revert_peer_drawing(id)
