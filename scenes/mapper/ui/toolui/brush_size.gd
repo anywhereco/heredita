@@ -38,9 +38,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _size_modify_check(delta: float) -> void:
-	if Input.is_action_just_pressed("brush_increase") or Input.is_action_just_pressed("brush_decrease"):
+	if Input.is_action_just_pressed("brush_increase") or Input.is_action_just_pressed("brush_decrease") and size_modify_debounce == -1:
 		size_modify_debounce = DEBOUNCE_START
-	if Input.is_action_just_released("brush_increase") or Input.is_action_just_released("brush_decrease"):
+	if (Input.is_action_just_released("brush_increase") or Input.is_action_just_released("brush_decrease"))\
+	   and not (Input.is_action_pressed("brush_increase") or Input.is_action_pressed("brush_decrease")):
 		size_modify_debounce = -1
 		held_size_change_count = 0
 	if Input.is_action_pressed("brush_increase") or Input.is_action_pressed("brush_decrease"):
