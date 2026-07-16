@@ -1,4 +1,4 @@
-extends CSGSphere3D
+extends MeshInstance3D
 
 const TURN_SPEED := 12.0
 

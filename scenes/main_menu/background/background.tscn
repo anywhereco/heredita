@@ -34,17 +34,6 @@ glow_enabled = true
 glow_bloom = 0.15
 glow_hdr_threshold = 1.4
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j2l3r"]
-diffuse_mode = 3
-albedo_color = Color(0.03529412, 0.03529412, 0.21176471, 1)
-metallic = 0.53
-metallic_specular = 0.25
-roughness = 0.7
-rim = 0.4
-rim_tint = 0.3
-stencil_mode = 3
-stencil_flags = 2
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ucpg8"]
 transparency = 2
 alpha_scissor_threshold = 0.5
@@ -58,6 +47,27 @@ normal_texture = ExtResource("4_xys62")
 stencil_flags = 2
 stencil_color = Color(0.7418741, 1.9757422, 5.368884, 1)
 stencil_outline_thickness = 0.05
+
+[sub_resource type="SphereMesh" id="SphereMesh_i1kel"]
+material = SubResource("StandardMaterial3D_ucpg8")
+radius = 5.01
+height = 10.02
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j2l3r"]
+diffuse_mode = 3
+albedo_color = Color(0.03529412, 0.03529412, 0.21176471, 1)
+metallic = 0.53
+metallic_specular = 0.25
+roughness = 0.7
+rim = 0.4
+rim_tint = 0.3
+stencil_mode = 3
+stencil_flags = 2
+
+[sub_resource type="SphereMesh" id="SphereMesh_h7lsc"]
+material = SubResource("StandardMaterial3D_j2l3r")
+radius = 5.0
+height = 10.0
 
 [node name="Background" type="Node3D" unique_id=1274816172]
 
@@ -75,29 +85,23 @@ directional_shadow_max_distance = 20.0
 transform = Transform3D(0.13917327, -0.3789592, -0.9148884, 0, 0.9238795, -0.38268346, 0.99026805, 0.05325931, 0.12857933, 0, 0, 0)
 script = ExtResource("2_3v255")
 
-[node name="Water" type="CSGSphere3D" parent="Earth" unique_id=1701101242]
-radius = 5.0
-radial_segments = 48
-rings = 30
-material = SubResource("StandardMaterial3D_j2l3r")
-
-[node name="Terrain" type="CSGSphere3D" parent="Earth" unique_id=148408148]
-radius = 5.005
-radial_segments = 48
-rings = 30
-material = SubResource("StandardMaterial3D_ucpg8")
-
 [node name="PlanetAtmosphere" type="Node3D" parent="Earth" unique_id=1731290241]
 transform = Transform3D(0.13917327, 0, 0.99026805, -0.3789592, 0.92387956, 0.05325931, -0.9148884, -0.3826835, 0.12857933, 0, 0, 0)
 script = ExtResource("2_h7lsc")
 planet_radius = 5.0
-atmosphere_height = 0.555
+atmosphere_height = 0.31
 sun_path = NodePath("../../The Sun")
 custom_shader = ExtResource("6_h7lsc")
 shader_params/u_density = 1.175
 shader_params/u_scattering_strength = 1.195
 shader_params/u_scattering_wavelengths = Vector3(700, 530, 440)
-shader_params/u_atmosphere_modulate = Color(0.9137255, 0.9137255, 0.9137255, 1)
+shader_params/u_atmosphere_modulate = Color(1, 1, 1, 1)
 shader_params/u_atmosphere_ambient_color = Color(0, 0, 0, 1)
-shader_params/u_sphere_depth_factor = 0.8
+shader_params/u_sphere_depth_factor = 0.7
 metadata/_custom_type_script = "uid://b3jln2dywhwsi"
+
+[node name="Terrain" type="MeshInstance3D" parent="Earth" unique_id=1816821479]
+mesh = SubResource("SphereMesh_i1kel")
+
+[node name="Water2" type="MeshInstance3D" parent="Earth" unique_id=858085262]
+mesh = SubResource("SphereMesh_h7lsc")
