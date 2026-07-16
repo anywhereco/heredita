@@ -204,7 +204,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 
 func parse_player_id(data: Variant) -> int:
 	if not Verify.is_numeric(data):
-		return false
+		return false # FIXME: this returns 0 I think. which can be a valid user. but returning an invalid user can cause issues!
 	@warning_ignore("unsafe_call_argument")
 	return int(data)
 
@@ -214,7 +214,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		return false
 	var event: String = data["event"]
 	if event.begins_with("mod:"):
-		if not room.players.getv(peer_player_id(peer_id)).rank >= UserEnums.Rank.MODERATOR:
+		if not (room.players.getv(peer_player_id(peer_id)).rank >= UserEnums.Rank.MODERATOR):
 			return false
 	match event:
 		"mod:roomblock_creator":

@@ -133,9 +133,11 @@ func _connected(peer_id: int) -> void:
 	elif ISUtil.valid_event_is(json, "_is2_create_room"):
 		if ws_server.peer_ip(peer_id) in roomblocked_ips:
 			ws_server.close(peer_id, 4096, "Unable to create room")
+			return
 		var msg := await get_binary_data(peer_id)
 		if msg["event"] != ISUtil.BinaryEvents.SYNC_MAP:
 			ws_server.close(peer_id, 4096, "Expected a map")
+			return
 		@warning_ignore("unsafe_call_argument")
 		var rid := create_room(json.val()["details"], msg["data"])
 		peer_rooms[peer_id] = rid
