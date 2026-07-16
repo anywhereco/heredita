@@ -81,11 +81,11 @@ static func from_vec3(vec: Vector3) -> Array:
 
 
 static func to_vec3(vec: Array) -> Vector3:
-	if vec.size() >= 2:
+	if vec.size() >= 3:
 		@warning_ignore("unsafe_call_argument")
 		return Vector3(vec[0], vec[1], vec[2])
 	else:
-		assert(false, "Vec2 is too small")
+		assert(false, "Vec3 is too small")
 		return Vector3.ZERO
 
 
