@@ -8,8 +8,8 @@ var private_key: CryptoKey = null
 var tlsoptions: TLSOptions = null
 
 const BUFFER_SIZE_KB := 2048
-	const MAX_TIMEOUT := 30.0
-	const MAX_ACCEPTS_PER_FRAME := 10
+const MAX_TIMEOUT := 30.0
+const MAX_ACCEPTS_PER_FRAME := 10
 
 var _tcp_server: TCPServer = TCPServer.new()
 
