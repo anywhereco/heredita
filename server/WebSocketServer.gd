@@ -8,6 +8,8 @@ var private_key: CryptoKey = null
 var tlsoptions: TLSOptions = null
 
 const BUFFER_SIZE_KB := 2048
+	const MAX_TIMEOUT := 30.0
+	const MAX_ACCEPTS_PER_FRAME := 10
 
 var _tcp_server: TCPServer = TCPServer.new()
 
@@ -16,6 +18,8 @@ var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
 ## Will be empty if TLS is disabled.
 var _peer_tls: Dictionary[int, StreamPeerTLS] = {}
 var _pending_tls: Dictionary[int, StreamPeerTLS] = {}
+var _pending_tls_timeouts: Dictionary[int, float] = {}
+var _pending_tls_error_counts: Dictionary[int, int] = {}
 var _peer_chunk_senders: Dictionary[int, ISUtil.ChunkSender] = {}
 var _peer_chunk_receivers: Dictionary[int, ISUtil.ChunkReceiver] = {}
 
@@ -146,6 +150,7 @@ func _accept_connection() -> void:
 	if tlsoptions != null:
 		_pending_tls[last_peer_id] = StreamPeerTLS.new()
 		_pending_tls[last_peer_id].accept_stream(_tcp_server.take_connection(), tlsoptions)
+		_pending_tls_timeouts[last_peer_id] = MAX_TIMEOUT
 	else:
 		var ws := WebSocketPeer.new()
 		ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
@@ -171,12 +176,14 @@ func _setup_ws_peer(peer_id: int, ws: WebSocketPeer) -> void:
 
 
 func _cleanup_peer(peer_id: int) -> void:
+	if _peer_tls.get(peer_id) != null:
+		_peer_tls[peer_id].disconnect_from_stream()
 	_peers.erase(peer_id)
 	_peer_status.erase(peer_id)
 	_peer_tls.erase(peer_id)
 	_peer_chunk_senders.erase(peer_id)
 	_peer_chunk_receivers.erase(peer_id)
-	_pending_tls.erase(peer_id)
+	_cleanup_pending_tls(peer_id)
 
 
 func _exit_tree() -> void:
@@ -187,29 +194,47 @@ func _exit_tree() -> void:
 		_cleanup_peer(peer_id)
 
 
-func _poll_pending_tls() -> void:
+func _cleanup_pending_tls(peer_id: int, should_disconnect: bool = true) -> void:
+	if _pending_tls.get(peer_id) != null and should_disconnect:
+		_pending_tls[peer_id].disconnect_from_stream()
+	_pending_tls.erase(peer_id)
+	_pending_tls_timeouts.erase(peer_id)
+
+
+func _poll_pending_tls(delta: float) -> void:
 	for peer_id: int in _pending_tls.keys():
 		var tls: StreamPeerTLS = _pending_tls[peer_id]
 		tls.poll()
 		var status := tls.get_status()
-		if status == StreamPeerTLS.STATUS_CONNECTED:
-			var ws := WebSocketPeer.new()
-			ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
-			ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
-			ws.accept_stream(tls)
-			_peer_tls[peer_id] = tls
-			_pending_tls.erase(peer_id)
-			_setup_ws_peer(peer_id, ws)
-		elif status == StreamPeerTLS.STATUS_ERROR:
-			print("TLS handshake failed for peer %d" % peer_id)
-			_pending_tls.erase(peer_id)
+		match status:
+			StreamPeerTLS.STATUS_CONNECTED:
+				var ws := WebSocketPeer.new()
+				ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
+				ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
+				ws.accept_stream(tls)
+				_peer_tls[peer_id] = tls
+				_cleanup_pending_tls(peer_id, false)
+				_setup_ws_peer(peer_id, ws)
+			StreamPeerTLS.STATUS_ERROR, StreamPeerTLS.STATUS_ERROR_HOSTNAME_MISMATCH:
+				print("TLS handshake failed for peer %d" % peer_id)
+				_cleanup_pending_tls(peer_id)
+			StreamPeerTLS.STATUS_DISCONNECTED:
+				_cleanup_pending_tls(peer_id)
+			StreamPeerTLS.STATUS_HANDSHAKING:
+				_pending_tls_timeouts[peer_id] -= delta
+				if _pending_tls_timeouts[peer_id] <= 0:
+					print("TLS handshake timed out for peer %d" % peer_id)
+					_cleanup_pending_tls(peer_id)
+					
 
 
-func _process(_delta: float) -> void:
-	while _tcp_server.is_connection_available():
+func _process(delta: float) -> void:
+	var accepts_this_frame := 0
+	while _tcp_server.is_connection_available() and accepts_this_frame < MAX_ACCEPTS_PER_FRAME:
 		_accept_connection()
+		accepts_this_frame += 1
 
-	_poll_pending_tls()
+	_poll_pending_tls(delta)
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop
 	for peer_id: int in _peers.keys():
