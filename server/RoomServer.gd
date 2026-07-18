@@ -108,6 +108,7 @@ func close_room() -> void:
 	for player_id: int in room.players.keys():
 		@warning_ignore("unsafe_call_argument")
 		ws_server.close(room.players.getv(player_id).peer_id)
+	queue_free()
 
 
 func _connected(peer_id: int, created: bool = false) -> void:
