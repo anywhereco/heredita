@@ -21,14 +21,14 @@ func _initial_request_completed(
 	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
 ) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
-		placeholder.text = "Failed to load gallery items."
+		placeholder.text = tr("roomcreate/gallery.fail")
 		return
 	if response_code != 200:
-		placeholder.text = "Failed to load gallery items: HTTP %d" % response_code
+		placeholder.text = tr("roomcreate/gallery.fail")
 		return
 	var json: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if json == null:
-		placeholder.text = "Failed to load gallery items."
+		placeholder.text = tr("roomcreate/gallery.fail")
 		return
 	placeholder.hide()
 	var items: Array = json
