@@ -170,7 +170,7 @@ func _on_file_selected(path: String) -> void:
 		_err(PickedImageError.SVG_NOT_ACCEPTED)
 		return
 	var img: Image = Image.load_from_file(path)
-	print(img)
+	img.convert(Image.FORMAT_RGBA8)
 	if img == null:
 		_err(PickedImageError.NOT_VALID_FILE_FORMAT)
 		return
@@ -178,6 +178,7 @@ func _on_file_selected(path: String) -> void:
 	_new_image(path.get_file())
 
 
+## also converts to rgba8
 func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 	var fmt := file.name.rsplit(".", false, 1)[1]
 	var buf := await file.as_buffer()
@@ -207,6 +208,7 @@ func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 				return Result.err(PickedImageError.MAP_NOT_ACCEPTED)
 	if _image.is_empty():
 		return Result.err(PickedImageError.NOT_VALID_FILE_FORMAT)
+	_image.convert(Image.FORMAT_RGBA8)
 	return Result.ok(_image)
 
 

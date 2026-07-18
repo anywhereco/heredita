@@ -24,6 +24,7 @@ func _on_file_selected(path: String) -> void:
 		if img == null:
 			_err(PickedImageError.NOT_VALID_FILE_FORMAT)
 			return
+		img.convert(Image.FORMAT_RGBA8)
 		_map = MapData.new()
 		_map.image = img
 	map.value = _map
