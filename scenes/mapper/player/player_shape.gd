@@ -12,18 +12,18 @@ var vertical_stretch := 1.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass  # Replace with function body.
+	mesh = mesh.duplicate_deep() # Make our own copy so transparency works as expected
 
 
 func ghost(enable: bool) -> void:
 	var tween := create_tween()
 	if enable:
-		material_override.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		(mesh as PrimitiveMesh).material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	else:
-		material_override.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
-	tween.tween_property(material_override, "albedo_color:a", 0.2 if enable else 1.0, 0.5)
+		(mesh as PrimitiveMesh).material.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+	tween.tween_property((mesh as PrimitiveMesh).material, "albedo_color:a", 0.2 if enable else 1.0, 0.5)
 	tween.parallel().tween_property(
-		material_override.next_pass, "albedo_color:a", 0.2 if enable else 1.0, 0.5
+		(mesh as PrimitiveMesh).material.next_pass, "albedo_color:a", 0.2 if enable else 1.0, 0.5
 	)
 
 
