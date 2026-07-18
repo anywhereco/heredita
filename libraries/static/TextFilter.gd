@@ -15,7 +15,10 @@ static var filter_other := []
 static func _static_init() -> void:
 	while not HTTP:
 		await RenderingServer.frame_pre_draw
-	HTTP.ready.connect(load_filter_lists)
+	if HTTP.is_node_ready():
+		load_filter_lists()
+	else:
+		HTTP.ready.connect(load_filter_lists)
 
 static func load_filter_lists() -> void:
 	var filters := await HTTP.request(Statics.HEREDITA_URL, "filter")

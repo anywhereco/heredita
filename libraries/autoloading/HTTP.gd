@@ -2,6 +2,8 @@ extends Node
 
 enum HTTPResult { SUCCESSFUL, INVALID, FAILED_REQUEST, BAD_RESPONSE }
 
+func _ready() -> void:
+	pass
 
 func _create_url(
 	domain: String, endpoint: String, parameters: Dictionary[String, Variant]
