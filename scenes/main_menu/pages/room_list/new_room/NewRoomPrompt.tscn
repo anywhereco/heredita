@@ -39,7 +39,7 @@ script = ExtResource("1_pf8od")
 
 [node name="Title" type="Label" parent="." unique_id=2053284206]
 layout_mode = 2
-text = "Create a Room"
+text = "roomcreate/header"
 label_settings = SubResource("LabelSettings_fgy55")
 horizontal_alignment = 1
 
@@ -48,13 +48,13 @@ layout_mode = 2
 
 [node name="Name" type="LineEdit" parent="." unique_id=165496074]
 layout_mode = 2
-text = "Unnamed Room"
-placeholder_text = "Name"
+text = "This should be replaced at runtime"
+placeholder_text = "roomcreate/name.placeholder"
 
 [node name="Description" type="TextEdit" parent="." unique_id=1203058588]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 59)
 layout_mode = 2
-placeholder_text = "Description"
+placeholder_text = "roomcreate/description.placeholder"
 wrap_mode = 1
 scroll_smooth = true
 scroll_v_scroll_speed = 10.0
@@ -62,7 +62,7 @@ scroll_v_scroll_speed = 10.0
 [node name="Password" type="LineEdit" parent="." unique_id=683002425]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-placeholder_text = "Password (leave blank for none)"
+placeholder_text = "roomcreate/password.placeholder"
 
 [node name="PlayerCapBox" type="HBoxContainer" parent="." unique_id=12239804]
 layout_mode = 2
@@ -71,7 +71,7 @@ alignment = 1
 
 [node name="Label2" type="Label" parent="PlayerCapBox" unique_id=806400194]
 layout_mode = 2
-text = "Player Cap"
+text = "roomcreate/playercap"
 horizontal_alignment = 1
 
 [node name="PlayerCap" type="SpinBox" parent="PlayerCapBox" unique_id=1248767228]
@@ -84,7 +84,7 @@ value = 20.0
 [node name="ChangeMap" type="Button" parent="." unique_id=1911909449]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Choose map..."
+text = "roomcreate/choosemap"
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1285368030]
 layout_mode = 2
@@ -112,9 +112,9 @@ alignment = 1
 
 [node name="Back" type="Button" parent="Buttons" unique_id=463256579]
 layout_mode = 2
-text = "  Back  "
+text = "roomcreate/back"
 script = ExtResource("3_7vv4v")
 
 [node name="Create" type="Button" parent="Buttons" unique_id=1346182965]
 layout_mode = 2
-text = "Create Room"
+text = "roomcreate/finish"

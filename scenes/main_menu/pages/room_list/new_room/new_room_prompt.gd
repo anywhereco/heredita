@@ -3,6 +3,7 @@ extends VBoxContainer
 const GALLERY := preload("res://scenes/main_menu/pages/room_list/new_room/gallery/Gallery.tscn")
 
 var map := ReactiveMapData.new(MapData.read_from_file("assets/map/maps/map.map").val() as MapData)  #eventually this will be an actual Map object
+@onready var roomname: LineEdit = $Name
 
 
 func change_map_texture(_map: ReactiveMapData) -> void:
@@ -10,6 +11,7 @@ func change_map_texture(_map: ReactiveMapData) -> void:
 
 
 func _ready() -> void:
+	roomname.text = tr("roomcreate/name")
 	map.value_changed.connect(change_map_texture)
 	change_map_texture(map)
 	$ChangeMap.pressed.connect(change_map)

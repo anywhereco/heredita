@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-01 19:33+0000\n"
+"PO-Revision-Date: 2026-07-18 21:12+0000\n"
 "Last-Translator: ACC Admin <webmaster@accorp.net>\n"
 "Language-Team: English <https://weblate.accorp.net/projects/heredita/game/en/>\n"
 "Language: en\n"
@@ -98,3 +98,57 @@ msgid "roomlist/loading.empty"
 msgstr ""
 "No rooms are available at the moment.\n"
 "Create a new one with the button at the bottom!"
+
+msgid "roomcreate/header"
+msgstr "Create a room"
+
+msgid "roomcreate/name"
+msgstr "Unnamed Room"
+
+msgid "roomcreate/name.placeholder"
+msgstr "Name"
+
+msgid "roomcreate/description.placeholder"
+msgstr "Description"
+
+msgid "roomcreate/password.placeholder"
+msgstr "Password (leave blank for none)"
+
+msgid "roomcreate/playercap"
+msgstr "Player Cap"
+
+msgid "roomcreate/choosemap"
+msgstr "Choose map..."
+
+msgid "roomcreate/back"
+msgstr "Back"
+
+msgid "roomcreate/finish"
+msgstr "Create Room"
+
+msgid "roomcreate/gallery.loading"
+msgstr "Loading gallery..."
+
+msgid "roomcreate/gallery.header"
+msgstr "Selected map: %s"
+
+msgid "roomcreate/gallery.seperator"
+msgstr "or"
+
+msgid "roomcreate/gallery.local"
+msgstr "Pick a local map"
+
+msgid "roomcreate/gallery.back"
+msgstr "Back"
+
+msgid "roomcreate/gallery.itemloading"
+msgstr "Loading image..."
+
+msgid "roomcreate/gallery.attribution"
+msgstr "by %s"
+
+msgid "roomcreate/gallery.fail"
+msgstr "Failed to load gallery items."
+
+msgid "roomcreate/gallery.headerwithattribution"
+msgstr "Selected map: {map} by {author}"

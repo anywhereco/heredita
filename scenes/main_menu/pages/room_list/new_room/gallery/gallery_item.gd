@@ -18,7 +18,7 @@ var _picker: ImagePickingCoordinator
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	name_lbl.text = map_name
-	attribution_lbl.text = "by %s" % attribution
+	attribution_lbl.text = tr("roomcreate/gallery.attribution") % attribution
 
 	var http_request := HTTPRequest.new()
 	add_child(http_request)
@@ -38,7 +38,7 @@ func prepare_load_full_image() -> void:
 
 func setup(_mappicker: Node, _map_name: String, _attribution: Variant, _id: String) -> void:
 	self.map_name = _map_name
-	self.attribution = _attribution if _attribution != null else "us!"
+	self.attribution = _attribution if _attribution != null else "the Heredita Team"
 	self.id = _id
 	self._picker = _mappicker
 
@@ -48,10 +48,10 @@ func _http_request_completed(
 	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
 ) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
-		loading_placeholder.text = "Map not found."
+		hide()
 		return
 	if response_code != 200:
-		loading_placeholder.text = "Map not found."
+		hide()
 		return
 	loading_placeholder.hide()
 	thumbnail = Image.create_empty(256, 128, false, Image.FORMAT_RGBA8)
@@ -103,5 +103,7 @@ func _picked() -> void:
 	Prompts.get_prompt_in(self).closing_paused.value = true
 	_picker.get_parent().get_parent().get_parent().find_child("MapPickerButton").image.value = thumbnail
 	_picker.get_parent().get_parent().get_parent().get_parent().find_child("MapName").text = (
-		"Selected map: %s by %s" % [map_name, attribution]
+		tr("roomcreate/gallery.headerwithattribution").format(
+			{"map": map_name, "author": attribution}
+		)
 	)

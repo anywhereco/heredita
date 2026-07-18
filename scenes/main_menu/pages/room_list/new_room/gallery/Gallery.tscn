@@ -49,7 +49,7 @@ alignment = 1
 
 [node name="MapName" type="Label" parent="." unique_id=1517699988]
 layout_mode = 2
-text = "Selected map"
+text = "roomcreate/gallery.header"
 label_settings = SubResource("LabelSettings_jd1et")
 horizontal_alignment = 1
 
@@ -98,7 +98,7 @@ theme_override_constants/separation = 10
 [node name="LoadingPlaceholder" type="Label" parent="MarginContainer/MapPicker/PanelContainer/Coordinator" unique_id=41777245]
 custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
-text = "Loading gallery..."
+text = "roomcreate/gallery.loading"
 label_settings = SubResource("LabelSettings_7t0hk")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -116,7 +116,7 @@ theme_override_styles/panel = SubResource("StyleBoxLine_o0axu")
 
 [node name="Label" type="Label" parent="MarginContainer/MapPicker/VBoxContainer" unique_id=464921006]
 layout_mode = 2
-text = "or"
+text = "roomcreate/gallery.seperator"
 label_settings = SubResource("LabelSettings_huwrv")
 
 [node name="Panel" type="Panel" parent="MarginContainer/MapPicker/VBoxContainer" unique_id=1983416081]
@@ -129,7 +129,7 @@ theme_override_styles/panel = SubResource("StyleBoxLine_o0axu")
 [node name="MapPickerButton" type="Button" parent="MarginContainer/MapPicker" unique_id=1085374437 node_paths=PackedStringArray("image_rect", "name_label")]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "  Pick a local map  "
+text = "roomcreate/gallery.local"
 script = ExtResource("5_dyrnf")
 allow_maps = true
 image_rect = NodePath("../../../TextureRect")
@@ -149,5 +149,5 @@ alignment = 1
 
 [node name="Back" type="Button" parent="HBoxContainer" unique_id=1937915619]
 layout_mode = 2
-text = "  Back  "
+text = "roomcreate/gallery.back"
 script = ExtResource("6_7t0hk")
