@@ -1,5 +1,6 @@
 class_name MapData
 
+## This should always be in RGBA8 format, since deserialize expects this to be the case
 var image: Image
 var map_last_painter := PackedInt32Array()
 var map_last_color := PackedColorArray()
@@ -15,6 +16,9 @@ enum FileReadErrors {
 }
 
 func package() -> Dictionary[String, Variant]:
+	if image.get_format() != Image.FORMAT_RGBA8:
+		push_warning("MapData has an image which is not an RGBA8! This is required for serialization!")
+		image.convert(Image.FORMAT_RGBA8) # Make sure the user can at least save!
 	return {"image": image.get_data(), "image_size": image.get_size(), "markings": markings}
 
 
