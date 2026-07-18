@@ -62,7 +62,7 @@ func send_message(message: String) -> void:
 func receive_message(event: String, user_id: int, message: Variant) -> void:
 	if event == "chat_message" and message is String:
 		add_chat_message(user_id, message as String)
-	elif event == "is2_player_joined":
+	elif event == "is2_player_join":
 		var player: Player = State.room.players.getv(message["player_id"])
 		add_message("%s joined the room" % player.username)
 	elif event == "is2_player_status_update":

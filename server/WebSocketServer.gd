@@ -8,6 +8,8 @@ var private_key: CryptoKey = null
 var tlsoptions: TLSOptions = null
 
 const BUFFER_SIZE_KB := 2048
+const MAX_TIMEOUT := 30.0
+const MAX_ACCEPTS_PER_FRAME := 10
 
 var _tcp_server: TCPServer = TCPServer.new()
 
@@ -16,6 +18,8 @@ var _peer_status: Dictionary[int, WebSocketPeer.State] = {}
 ## Will be empty if TLS is disabled.
 var _peer_tls: Dictionary[int, StreamPeerTLS] = {}
 var _pending_tls: Dictionary[int, StreamPeerTLS] = {}
+var _pending_tls_timeouts: Dictionary[int, float] = {}
+var _pending_tls_error_counts: Dictionary[int, int] = {}
 var _peer_chunk_senders: Dictionary[int, ISUtil.ChunkSender] = {}
 var _peer_chunk_receivers: Dictionary[int, ISUtil.ChunkReceiver] = {}
 
@@ -45,7 +49,9 @@ func _ready() -> void:
 		elif OS.has_feature("debug"):
 			push_warning("Running without a certificate! This might not be what you want.")
 		else:
-			push_error("Running without a certificate, exiting! You can get around this by using a debug build.")
+			push_error(
+				"Running without a certificate, exiting! You can get around this by using a debug build."
+			)
 			get_tree().quit()
 	elif x509_cert != null and private_key != null:
 		print("We signed up in here :DDDD")
@@ -53,7 +59,7 @@ func _ready() -> void:
 	else:
 		push_error("Only a private key or certificate was set, you need both. Exiting!")
 		get_tree().quit()
-		
+
 	print(PORT)
 	var err := _tcp_server.listen(PORT)
 	if err == OK:
@@ -64,7 +70,7 @@ func _ready() -> void:
 		set_process(false)
 
 
-signal text_data(peer_id: int, data: String)
+signal text_data(peer_id: int, data: Dictionary)
 
 signal binary_message(
 	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
@@ -117,9 +123,9 @@ func send_targeted_chunk_data(peer_id: int, event: int, message: PackedByteArray
 
 
 func send_targeted_binary(
-	peer_id: int, event: int, message: PackedByteArray, compress: bool = true
+	peer_id: int, event: int, message: PackedByteArray, compress: bool = true, player_id: int = 0
 ) -> Error:
-	return send_raw_binary(peer_id, ISUtil._create_binary(event, 0, message, compress))
+	return send_raw_binary(peer_id, ISUtil._create_binary(event, player_id, message, compress))
 
 
 func send_global_event(event: String, details: Dictionary, origin_id := -1) -> Error:
@@ -144,6 +150,7 @@ func _accept_connection() -> void:
 	if tlsoptions != null:
 		_pending_tls[last_peer_id] = StreamPeerTLS.new()
 		_pending_tls[last_peer_id].accept_stream(_tcp_server.take_connection(), tlsoptions)
+		_pending_tls_timeouts[last_peer_id] = MAX_TIMEOUT
 	else:
 		var ws := WebSocketPeer.new()
 		ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
@@ -169,12 +176,14 @@ func _setup_ws_peer(peer_id: int, ws: WebSocketPeer) -> void:
 
 
 func _cleanup_peer(peer_id: int) -> void:
+	if _peer_tls.get(peer_id) != null:
+		_peer_tls[peer_id].disconnect_from_stream()
 	_peers.erase(peer_id)
 	_peer_status.erase(peer_id)
 	_peer_tls.erase(peer_id)
 	_peer_chunk_senders.erase(peer_id)
 	_peer_chunk_receivers.erase(peer_id)
-	_pending_tls.erase(peer_id)
+	_cleanup_pending_tls(peer_id)
 
 
 func _exit_tree() -> void:
@@ -185,29 +194,47 @@ func _exit_tree() -> void:
 		_cleanup_peer(peer_id)
 
 
-func _poll_pending_tls() -> void:
+func _cleanup_pending_tls(peer_id: int, should_disconnect: bool = true) -> void:
+	if _pending_tls.get(peer_id) != null and should_disconnect:
+		_pending_tls[peer_id].disconnect_from_stream()
+	_pending_tls.erase(peer_id)
+	_pending_tls_timeouts.erase(peer_id)
+
+
+func _poll_pending_tls(delta: float) -> void:
 	for peer_id: int in _pending_tls.keys():
 		var tls: StreamPeerTLS = _pending_tls[peer_id]
 		tls.poll()
 		var status := tls.get_status()
-		if status == StreamPeerTLS.STATUS_CONNECTED:
-			var ws := WebSocketPeer.new()
-			ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
-			ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
-			ws.accept_stream(tls)
-			_peer_tls[peer_id] = tls
-			_pending_tls.erase(peer_id)
-			_setup_ws_peer(peer_id, ws)
-		elif status == StreamPeerTLS.STATUS_ERROR:
-			print("TLS handshake failed for peer %d" % peer_id)
-			_pending_tls.erase(peer_id)
+		match status:
+			StreamPeerTLS.STATUS_CONNECTED:
+				var ws := WebSocketPeer.new()
+				ws.outbound_buffer_size = BUFFER_SIZE_KB * 1024
+				ws.inbound_buffer_size = BUFFER_SIZE_KB * 1024
+				ws.accept_stream(tls)
+				_peer_tls[peer_id] = tls
+				_cleanup_pending_tls(peer_id, false)
+				_setup_ws_peer(peer_id, ws)
+			StreamPeerTLS.STATUS_ERROR, StreamPeerTLS.STATUS_ERROR_HOSTNAME_MISMATCH:
+				print("TLS handshake failed for peer %d" % peer_id)
+				_cleanup_pending_tls(peer_id)
+			StreamPeerTLS.STATUS_DISCONNECTED:
+				_cleanup_pending_tls(peer_id)
+			StreamPeerTLS.STATUS_HANDSHAKING:
+				_pending_tls_timeouts[peer_id] -= delta
+				if _pending_tls_timeouts[peer_id] <= 0:
+					print("TLS handshake timed out for peer %d" % peer_id)
+					_cleanup_pending_tls(peer_id)
+					
 
 
-func _process(_delta: float) -> void:
-	while _tcp_server.is_connection_available():
+func _process(delta: float) -> void:
+	var accepts_this_frame := 0
+	while _tcp_server.is_connection_available() and accepts_this_frame < MAX_ACCEPTS_PER_FRAME:
 		_accept_connection()
+		accepts_this_frame += 1
 
-	_poll_pending_tls()
+	_poll_pending_tls(delta)
 
 	# Iterate over all connected peers using "keys()" so we can erase in the loop
 	for peer_id: int in _peers.keys():
@@ -230,16 +257,16 @@ func _process(_delta: float) -> void:
 					var event: Variant = JSON.parse_string(packet_text)
 					if ISUtil.is_event(event) == "_is2_chunk_received":
 						_peer_chunk_senders[peer_id].chunk_recieved.emit(event.details)
-						return
+						continue
 					if ISUtil.is_event(event) == "_is2_ping":
 						send_targeted_event(peer_id, "_is2_pong")
-						return
-					text_data.emit(peer_id, packet_text)
+						continue
+					text_data.emit(peer_id, event)
 				else:
 					if _peer_chunk_receivers[peer_id].handle_potential_chunked_message(packet):
-						return
+						continue
 					var data := ISUtil._parse_binary(packet)
-					binary_message.emit(peer_id, data.event, data.target, data.flags, data.details)
+					binary_message.emit(peer_id, data.event, data.uid, data.flags, data.data)
 		elif peer_state == WebSocketPeer.STATE_CLOSED:
 			var code := peer.get_close_code()
 			var reason := peer.get_close_reason()

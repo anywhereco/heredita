@@ -42,8 +42,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			@warning_ignore("unsafe_call_argument")
 			camera_pan(Vector2(-event.relative.x, event.relative.y))
 			VirtualMouse._instance.set_action(VirtualMouse.Action.PANNING)
-		else:
-			pass
+		elif VirtualMouse._instance.action == VirtualMouse.Action.PANNING:
 			VirtualMouse._instance.set_action(VirtualMouse._instance.tool_action)
 
 	if (
@@ -51,7 +50,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		and not event.pressed
 		and event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]
 	):
-		pass
 		VirtualMouse._instance.set_action(VirtualMouse._instance.tool_action)
 
 	if event.is_action_pressed("zoom_out"):

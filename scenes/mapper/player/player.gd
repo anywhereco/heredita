@@ -33,6 +33,7 @@ var was_on_floor_last_frame: bool = false
 var using_rp_name: bool = false
 var typing: bool = false
 
+
 func _ready() -> void:
 	if local:
 		if State.client:
@@ -47,7 +48,8 @@ func _ready() -> void:
 func received_message(event: String, _player_id: int, _details: Variant) -> void:
 	if event == "is2_player_join":
 		new_player = true
-		
+
+
 func received_message_local(event: String, _player_id: int, details: Variant) -> void:
 	if event == "is2_player_status_update":
 		if details.get("player_id") == int(name):
@@ -66,6 +68,7 @@ func received_message_local(event: String, _player_id: int, details: Variant) ->
 			if bool(player.status.get("typing", 0)) != typing:
 				typing = !typing
 				$TypingIndicator.visible = typing
+
 
 func setup_velocity(direction: Vector3, delta: float) -> void:
 	var target_vel := (
@@ -164,7 +167,13 @@ func _physics_process(delta: float) -> void:
 			}
 			if State.client:
 				if old_frame_data != frame_data or new_player:
-					State.client.send("avatar_update", frame_data)
+					State.client.send_binary(
+						ISUtil.BinaryEvents.AVATAR_UPDATE,
+						0,
+						ISUtil.encode_avatar_update(
+							position, rotation, velocity, camera_rotation, jump
+						)
+					)
 					new_player = false
 
 
@@ -196,7 +205,7 @@ func sort_bubbles() -> void:
 
 
 func mouse_pos_on_map() -> Vector2:
-	var mouse_position := get_viewport().get_mouse_position() #VirtualMouse._instance.position
+	var mouse_position := get_viewport().get_mouse_position()  #VirtualMouse._instance.position
 	var _camera: Camera3D = camera_pivot.get_node("CameraArm/PlayerCamera")
 	# The map is at zero on the Y axis
 	var intersect: Variant = Plane.PLANE_XZ.intersects_ray(

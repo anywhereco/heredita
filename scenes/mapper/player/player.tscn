@@ -57,6 +57,11 @@ stencil_mode = 1
 stencil_flags = 2
 stencil_outline_thickness = 0.04
 
+[sub_resource type="SphereMesh" id="SphereMesh_esljd"]
+material = SubResource("StandardMaterial3D_mxy8m")
+radial_segments = 36
+rings = 18
+
 [sub_resource type="Gradient" id="Gradient_ogm7l"]
 interpolation_mode = 2
 offsets = PackedFloat32Array(0, 0.5, 1)
@@ -91,12 +96,9 @@ script = ExtResource("1_xt5g5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("SphereShape3D_76f00")
 
-[node name="PlayerShape" type="CSGSphere3D" parent="." unique_id=1398443778]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001214683, 0.50000006, -0.0048350096)
-layers = 524288
-material_override = SubResource("StandardMaterial3D_mxy8m")
-radial_segments = 36
-rings = 18
+[node name="PlayerShape" type="MeshInstance3D" parent="." unique_id=1415231836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("SphereMesh_esljd")
 script = ExtResource("4_plyky")
 
 [node name="Name" type="Label3D" parent="." unique_id=1905953854]

@@ -26,17 +26,14 @@ func _init(_http: HTTPRequest = null, _token: String = "<no token>") -> void:
 
 func signup(_username: String, password: String, _email: String) -> void:
 	http.request_completed.connect(_signup_complete.bind(_username, password))
-	if _email != null and _email != "":
-		_email = "&email=" + _email
-	else:
-		_email = ""
+	var body := "username=%s&password=%s" % [_username.uri_encode(), password.uri_encode()]
+	if _email:
+		body += "&email=%s" % _email.uri_encode()
 	http.request(
-		(
-			Statics.HEREDITA_URL
-			+ "/auth/users/new?username=%s&password=%s%s" % [_username, password, _email]
-		),
-		[],
-		HTTPClient.METHOD_POST
+		Statics.HEREDITA_URL + "/auth/users/new",
+		["Content-Type: application/x-www-form-urlencoded"],
+		HTTPClient.METHOD_POST,
+		body
 	)
 
 
@@ -61,9 +58,9 @@ func login(_username: String, _password: String) -> void:
 	http.request_completed.connect(_set_token)
 	http.request(
 		Statics.HEREDITA_URL + "/auth/token",
-		["Authorization: Basic", "Content-Type: application/x-www-form-urlencoded"],
+		["Content-Type: application/x-www-form-urlencoded"],
 		HTTPClient.METHOD_POST,
-		"grant_type=password&username=%s&password=%s" % [_username, _password]
+		"grant_type=password&username=%s&password=%s" % [_username.uri_encode(), _password.uri_encode()]
 	)
 
 

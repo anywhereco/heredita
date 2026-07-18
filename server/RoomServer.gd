@@ -1,6 +1,8 @@
 extends Node
 class_name RoomServer
 
+const NOT_VALID_PLAYER_ID = -3
+
 var room: Room = null
 var calendar: Calendar = Calendar.new(12, 1984)  # heh
 @onready var server_controller: ServerController = get_parent()
@@ -10,7 +12,7 @@ var connected_peers := []  #peers that have finished making a connection
 var tasks: Array[Task] = []
 
 
-func get_text_data(peer_id: int) -> String:
+func get_text_data(peer_id: int) -> Dictionary:
 	var peer := 0x7fffffffffffffff
 	var ret: Array
 	while peer != peer_id:
@@ -29,7 +31,9 @@ func parse_json(text: String) -> Result:
 
 func get_json_data(peer_id: int) -> Result:
 	var data := await get_text_data(peer_id)
-	return parse_json(data)
+	if data.is_empty():
+		return Result.err(FAILED)
+	return Result.ok(data)
 
 
 func _get_verification(target_eid: int) -> Result:
@@ -72,6 +76,7 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 			return error
 	return OK
 
+
 func send_binary_event(event: int, details: PackedByteArray) -> Error:
 	for player_id: int in room.players.keys():
 		var peer_id: int = room.players.getv(player_id).peer_id
@@ -86,7 +91,8 @@ func update_player_status(player_id: int) -> void:
 		"_is2_player_status_update",
 		{"player_id": player_id, "status": room.players.getv(player_id).status}
 	)
-	
+
+
 func update_player_operator_status(player_id: int) -> void:
 	send_event(
 		"_is2_player_operator_status_update",
@@ -111,8 +117,8 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	if ws_server.peer_ip(peer_id) in room.banned_ips:
 		ws_server.close(peer_id, 6145, "You are banned from this room.")
 		return
-	var player_id := room.id_iterator
 	room.id_iterator += 1
+	var player_id := room.id_iterator
 	while room.id_iterator in room.players.keys():
 		room.id_iterator += 1
 
@@ -182,13 +188,16 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	if created:
 		player.operator = true
 		room.creator_ip = ws_server.peer_ip(peer_id)
-	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
+
 	room.players.setv(player_id, player)
+
 	ws_server.send_targeted_event(
 		peer_id,
 		"_is2_handshake_complete",
 		{"name": room.name, "description": room.description, "players": room.player_info()}
 	)
+	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
+
 	if not created:
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
@@ -197,18 +206,20 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
+
 func parse_player_id(data: Variant) -> int:
 	if not Verify.is_numeric(data):
-		return false
+		return NOT_VALID_PLAYER_ID
 	@warning_ignore("unsafe_call_argument")
 	return int(data)
+
 
 func parse_event(data: Dictionary, peer_id: int) -> bool:
 	if data["event"] is not String:
 		return false
 	var event: String = data["event"]
 	if event.begins_with("mod:"):
-		if not room.players.getv(peer_player_id(peer_id)).rank >= UserEnums.Rank.MODERATOR:
+		if not (room.players.getv(peer_player_id(peer_id)).rank >= UserEnums.Rank.MODERATOR):
 			return false
 	match event:
 		"mod:roomblock_creator":
@@ -222,7 +233,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			room.players.getv(id).status["typing"] = data["details"]
 			update_player_status(id)
 		"change_rp_name":
-			if ISUtil.validate_rp_name(data["details"] as String) or data["details"] == "": #allow blanking to reset
+			if ISUtil.validate_rp_name(data["details"] as String) or data["details"] == "":  #allow blanking to reset
 				var id := peer_player_id(peer_id)
 				room.players.getv(id).status["rp_name"] = data["details"]
 				update_player_status(id)
@@ -260,6 +271,8 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				return false
 		"ban":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				var banned_peer: int = player.peer_id
@@ -267,36 +280,48 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				ws_server.close(banned_peer, 5000, "Banned from this room")
 		"kick":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				var kicked_peer: int = player.peer_id
 				ws_server.close(kicked_peer, 5001, "Kicked from this room")
 		"mute":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				player.status["muted"] = true
 				update_player_status(id)
 		"unmute":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				player.status["muted"] = false
 				update_player_status(id)
 		"make_operator":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged():
 				player.operator = true
 				update_player_operator_status(id)
 		"remove_operator":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				player.operator = false
 				update_player_operator_status(id)
 		"purge_player":
 			var id := parse_player_id(data["details"])
+			if id == NOT_VALID_PLAYER_ID:
+				return false
 			var player: Player = room.players.getv(id)
 			if room.players.getv(peer_player_id(peer_id)).privileged_over(player):
 				revert_peer_drawing(id)
@@ -315,16 +340,17 @@ func revert_peer_drawing(peer: int) -> void:
 			if room.map.map_last_painter[y * room.map.map_width + x] == user:
 				room.map.image.set_pixel(x, y, room.map.map_last_color[y * room.map.map_width + x])
 				room.map.map_last_painter[y * room.map.map_width + x] = -2
-	
+
 	send_binary_event(ISUtil.BinaryEvents.FORCE_RESYNC_MAP, room.map.serialize())
+
 
 func _closed(peer_id: int, _code: int, _reason: String) -> void:
 	_on_peer_close(peer_id)
 
 
-func _text_data(peer_id: int, data: String) -> void:
+func _text_data(peer_id: int, data: Dictionary) -> void:
 	if peer_id in connected_peers:
-		var data_json := parse_json(data)
+		var data_json := Result.ok(data)
 		if ISUtil.valid_event(data_json):
 			@warning_ignore("unsafe_call_argument")
 			if parse_event(data_json.val(), peer_id):
@@ -338,7 +364,23 @@ func _text_data(peer_id: int, data: String) -> void:
 func _binary_message(
 	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
 ) -> void:
-	pass
+	if event == ISUtil.BinaryEvents.BRUSH_UPDATE:
+		var brush_data := ISUtil.decode_brush_update(details)
+		if brush_data.is_empty():
+			return
+		room.map.get_map_update(brush_data, peer_id)
+		_broadcast_binary_to_others(peer_id, event, details)
+	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
+		_broadcast_binary_to_others(peer_id, event, details)
+
+
+## overwrites the uid with the real sender's player_id so receivers can't be spoofed
+func _broadcast_binary_to_others(sender_peer_id: int, event: int, details: PackedByteArray) -> void:
+	var sender_player_id := peer_player_id(sender_peer_id)
+	for player_id: int in room.players.keys():
+		var peer_id: int = room.players.getv(player_id).peer_id
+		if peer_id != sender_peer_id:
+			ws_server.send_targeted_binary(peer_id, event, details, true, sender_player_id)
 
 
 func _ready() -> void:
@@ -348,9 +390,7 @@ func _ready() -> void:
 	var trect := TextureRect.new()
 	trect.texture = ImageTexture.create_from_image(room.map.image)
 	trect.scale = Vector2.ONE / 8
-	tasks.append(Task.new(func() -> void:
-		trect.texture.update(room.map.image)
-	, 1))
+	tasks.append(Task.new(func() -> void: trect.texture.update(room.map.image), 1))
 	add_child(trect)
 
 

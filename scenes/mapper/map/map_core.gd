@@ -15,8 +15,6 @@ static var _instance: Map
 var default_target_color: Color = Color(1, 1, 1)
 
 var chunk_creation_mutexes: Array[Mutex] = []
-## Array[Array[bool]], x,y/z order
-var chunks_edited: Array[Array] = []
 ## Array[Array[Sprite3D]], x,y/z order
 var chunks: Array[Array] = []
 ## Array[Array[Image]], x,y/z order
@@ -33,7 +31,10 @@ var map_pos: ReactiveVector2 = ReactiveVector2.new(Vector2.INF)
 
 var brush_shape_map: BrushShapeMap = BrushShapeMap.new()
 
-var _chunks_dirty := false
+var _dirty_chunks: Dictionary = {}
+var _last_mouse_pos := Vector2(-1, -1)
+var _last_camera_pos := Vector3(-INF, -INF, -INF)
+var _last_camera_rot := Vector2(-INF, -INF)
 
 var loaded := false
 
@@ -42,6 +43,7 @@ var pending_resync := ReactiveBool.new(false)
 var queued_changes: Array[Dictionary] = []
 var pending_markings: Array[Dictionary] = []
 var _data_pending_init := false
+
 
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:
 	return (
@@ -107,12 +109,13 @@ func set_pixel_at(pos: Vector2, color: Color) -> bool:
 	@warning_ignore("integer_division")
 	var cy := py / Statics.CHUNK_SIZE
 	chunk_images[cx][cy].set_pixel(px % Statics.CHUNK_SIZE, py % Statics.CHUNK_SIZE, color)
-	chunks_edited[cx][cy] = true
-	_chunks_dirty = true
+	_dirty_chunks[Vector2i(cx, cy)] = true
 	return true
 
 
-func set_pixels_at(positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO) -> void:
+func set_pixels_at(
+	positions: PackedVector2Array, color: Color, offset: Vector2 = Vector2.ZERO
+) -> void:
 	offset = offset.floor()
 	var cs := Statics.CHUNK_SIZE
 	for pos in positions:
@@ -126,8 +129,7 @@ func set_pixels_at(positions: PackedVector2Array, color: Color, offset: Vector2 
 		@warning_ignore("integer_division")
 		var cy := py / Statics.CHUNK_SIZE
 		chunk_images[cx][cy].set_pixel(px % cs, py % cs, color)
-		chunks_edited[cx][cy] = true
-		_chunks_dirty = true
+		_dirty_chunks[Vector2i(cx, cy)] = true
 
 
 func set_pixels_at_targeted(
@@ -148,8 +150,7 @@ func set_pixels_at_targeted(
 		var ly := py % Statics.CHUNK_SIZE
 		if chunk.get_pixel(lx, ly).is_equal_approx(target):
 			chunk.set_pixel(lx, ly, color)
-			chunks_edited[cx][cy] = true
-			_chunks_dirty = true
+			_dirty_chunks[Vector2i(cx, cy)] = true
 
 
 func set_pixels_at_land(
@@ -170,23 +171,28 @@ func set_pixels_at_land(
 		var ly := py % Statics.CHUNK_SIZE
 		if chunk.get_pixel(lx, ly).a > 0:
 			chunk.set_pixel(lx, ly, color)
-			chunks_edited[cx][cy] = true
-			_chunks_dirty = true
+			_dirty_chunks[Vector2i(cx, cy)] = true
 
 
 func set_pixels_at_maybe_targeted(
-	positions: PackedVector2Array, color: Color, target: Color, targeted: bool, offset: Vector2 = Vector2.ZERO
+	positions: PackedVector2Array,
+	color: Color,
+	target: Color,
+	targeted: bool,
+	offset: Vector2 = Vector2.ZERO
 ) -> void:
 	if targeted:
 		set_pixels_at_targeted(positions, color, target, offset)
 	else:
 		set_pixels_at_land(positions, color, offset)
-		
+
 
 func set_pixels_at_map_pos_targeted(
 	positions: PackedVector2Array, color: Color, target: Color, targeted: bool = true
 ) -> void:
-	set_pixels_at_maybe_targeted(positions, color, target, targeted, Vector2(Vector2i(map_pos.value)))
+	set_pixels_at_maybe_targeted(
+		positions, color, target, targeted, Vector2(Vector2i(map_pos.value))
+	)
 
 
 func get_map_as_image() -> Image:
@@ -245,9 +251,8 @@ func load_from_original() -> void:
 
 
 func reset_chunks() -> void:
-	_chunks_dirty = false
+	_dirty_chunks.clear()
 	chunk_creation_mutexes.clear()
-	chunks_edited.clear()
 	chunks.clear()
 	chunk_images.clear()
 	if chunk_container_node.get_children().size() > 0:
@@ -255,27 +260,24 @@ func reset_chunks() -> void:
 			child.queue_free()
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
-	var row_size := ceili(original_map_size.x/Statics.CHUNK_SIZE)
-	var column_size := ceili(original_map_size.y/Statics.CHUNK_SIZE)
+	var row_size := ceili(original_map_size.x / Statics.CHUNK_SIZE)
+	var column_size := ceili(original_map_size.y / Statics.CHUNK_SIZE)
 	for chunk_row in row_size:
 		var chunk_array := []
-		var chunk_edited_array := []
 		var chunk_image_array := []
 		chunk_array.resize(column_size)
-		chunk_edited_array.resize(column_size)
 		chunk_image_array.resize(column_size)
 		chunks.append(chunk_array)
-		chunks_edited.append(chunk_edited_array)
 		chunk_images.append(chunk_image_array)
 		chunk_creation_mutexes.append(Mutex.new())
-	var chunk_count := row_size * ceili(original_map_size.y/Statics.CHUNK_SIZE)
+	var chunk_count := row_size * ceili(original_map_size.y / Statics.CHUNK_SIZE)
 	var id := WorkerThreadPool.add_group_task(initialize_chunk.bind(row_size), chunk_count)
 	WorkerThreadPool.wait_for_group_task_completion(id)
 	add_chunks()
 	@warning_ignore("unsafe_call_argument")
 	brightness_change(Settings.get_reactive("map_brightness"))
 	loaded = true
-	
+
 
 func initialize_chunk(index: int, row_size: int) -> void:
 	var x_idx := index % row_size
@@ -301,7 +303,6 @@ func initialize_chunk(index: int, row_size: int) -> void:
 	chunk.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	chunk_creation_mutexes[x_idx].lock()
 	chunks[x_idx][y_idx] = chunk
-	chunks_edited[x_idx][y_idx] = false
 	chunk_images[x_idx][y_idx] = img
 	chunk_creation_mutexes[x_idx].unlock()
 
@@ -331,7 +332,7 @@ func brightness_change(brightness: ReactiveFloat) -> void:
 
 
 func update_map_pos() -> void:
-	var mouse_position := get_viewport().get_mouse_position() #VirtualMouse._instance.position
+	var mouse_position := get_viewport().get_mouse_position()  #VirtualMouse._instance.position
 	# The map is at zero on the Y axis
 	var intersect: Variant = Plane.PLANE_XZ.intersects_ray(
 		player_camera.project_ray_origin(mouse_position),
@@ -342,11 +343,12 @@ func update_map_pos() -> void:
 	@warning_ignore("unsafe_call_argument")
 	var intersect_pos: Vector2 = Vector2(intersect.x, intersect.z)
 	var prev_pos := map_pos.value
-	map_pos.value = world_space_to_map_space(intersect_pos)
+	var new_pos := world_space_to_map_space(intersect_pos)
 	if not is_in_bounding_box(
-		map_pos.value, Vector2(-30, -30), original_map_size + Vector2(30, 30)
+		new_pos, Vector2(-30, -30), original_map_size + Vector2(30, 30)
 	):
 		return
+	map_pos.value = new_pos
 	if (
 		Vector2i(prev_pos.floor()) != Vector2i(map_pos.value.floor())
 		and MapperRoot._instance.tool.value == MapperRoot.Tool.BRUSH
@@ -365,10 +367,12 @@ func resync() -> void:
 	pending_resync.value = true
 	State.client.send("map_resync")
 
+
 func finish_resync() -> void:
 	pending_resync.value = false
 	for event in queued_changes:
 		get_map_update(event)
+
 
 func get_map_update(details: Dictionary) -> void:
 	var type: String = details["type"]
@@ -376,16 +380,18 @@ func get_map_update(details: Dictionary) -> void:
 		queued_changes.append(details)
 		return
 	if type == "brush":
-		if not details.has("size")\
-		or not details.has("paint_color")\
-		or not details.has("target_color")\
-		or not details.has("pos")\
-		or not details.has("targeted")\
-		or not Verify.is_numeric(details["size"])\
-		or not Verify.array_is_type(details["paint_color"], TYPE_FLOAT)\
-		or not Verify.array_is_type(details["target_color"], TYPE_FLOAT)\
-		or not Verify.array_is_type(details["pos"], TYPE_FLOAT)\
-		or not typeof(details["targeted"]) == TYPE_BOOL:
+		if (
+			not details.has("size")
+			or not details.has("paint_color")
+			or not details.has("target_color")
+			or not details.has("pos")
+			or not details.has("targeted")
+			or not Verify.is_numeric(details["size"])
+			or not Verify.array_is_type(details["paint_color"], TYPE_FLOAT)
+			or not Verify.array_is_type(details["target_color"], TYPE_FLOAT)
+			or not Verify.array_is_type(details["pos"], TYPE_FLOAT)
+			or not typeof(details["targeted"]) == TYPE_BOOL
+		):
 			return
 		@warning_ignore("unsafe_call_argument")
 		Map._instance.set_pixels_at_maybe_targeted(
@@ -400,22 +406,25 @@ func get_map_update(details: Dictionary) -> void:
 
 
 func _process(_delta: float) -> void:
-	update_map_pos()
+	var mouse_pos := get_viewport().get_mouse_position()
+	var cam := player_camera
+	var cam_changed := (
+		cam.global_position != _last_camera_pos
+		or Vector2(cam.rotation.y, cam.rotation.x) != _last_camera_rot
+	)
+	if mouse_pos != _last_mouse_pos or cam_changed:
+		_last_mouse_pos = mouse_pos
+		_last_camera_pos = cam.global_position
+		_last_camera_rot = Vector2(cam.rotation.y, cam.rotation.x)
+		update_map_pos()
 	if MapperRoot._instance.tool.value == MapperRoot.Tool.BRUSH:
 		preview_plane.visible = true
 	else:
 		preview_plane.visible = false
-	if _chunks_dirty:
-		var x_max := chunks_edited.size()
-		for x in x_max:
-			var column := chunks_edited[x] as Array
-			var y_max := column.size()
-			for y in y_max:
-				if not column[y]:
-					continue
-				chunks[x][y].texture.update(chunk_images[x][y])
-				column[y] = false
-		_chunks_dirty = false
+	if not _dirty_chunks.is_empty():
+		for coord: Vector2i in _dirty_chunks:
+			chunks[coord.x][coord.y].texture.update(chunk_images[coord.x][coord.y])
+		_dirty_chunks.clear()
 
 
 func _unhandled_input(event: InputEvent) -> void:

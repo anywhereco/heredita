@@ -84,20 +84,7 @@ func _signup_btn() -> void:
 	tween.tween_callback(func() -> void: button.modulate = error_color)
 	tween.tween_property(button, "modulate", Color.WHITE, 2)
 
-	State.user.failed.connect(
-		func(response_code: int) -> void:
-			tween.kill()
-			if response_code == 403:
-				button.modulate = error_color
-				error_label.err(tr("login/error.alreadyinuse"))
-				tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
-				tween.tween_property(button, "modulate", Color.WHITE, 2)
-			else:
-				button.modulate = error_color
-				error_label.err(tr("login/error.servererror"))
-				tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
-				tween.tween_property(button, "modulate", Color.WHITE, 2)
-	)
+	State.user.failed.connect(callback)
 	State.user.user_initialized.connect(close)
 
 	State.user.signup(username.text, password.text, email.text)
@@ -105,4 +92,18 @@ func _signup_btn() -> void:
 
 func close() -> void:
 	State.user.user_initialized.disconnect(close)
+	State.user.failed.disconnect(callback)
 	find_parent("LoginSignupPrompt").get_parent().close()
+
+func callback(response_code: int) -> void:
+	tween.kill()
+	if response_code == 403:
+		button.modulate = error_color
+		error_label.err(tr("login/error.alreadyinuse"))
+		tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
+		tween.tween_property(button, "modulate", Color.WHITE, 2)
+	else:
+		button.modulate = error_color
+		error_label.err(tr("login/error.servererror"))
+		tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
+		tween.tween_property(button, "modulate", Color.WHITE, 2)
