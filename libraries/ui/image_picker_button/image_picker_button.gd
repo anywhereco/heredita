@@ -135,18 +135,18 @@ func _pressed() -> void:
 				file_dialog.filters = NO_SVG_NO_MAP_FILTER
 		file_dialog.popup_centered(file_dialog.min_size)
 
-
+## Return the maximum pixel size in the form of a prettier string.
 func _get_friendly_pixel_size() -> String:
 	if max_pixel_count == -1:
 		return "unlimited"
 	var logv := log(max_pixel_count) / log(2)
 	var logv_int := roundi(logv)
 	var powerness := absf(fmod(logv, 1.0) - 0.5) # 0.5 = very near to power of 2, 0 = very far from power of 2
-	if powerness > 0.499:
+	if powerness > 0.499: # If it's basically a power of 2, treat it as one
 		@warning_ignore("integer_division")
 		var width := int(pow(2, logv_int / 2))
 		var height := width
-		if logv_int % 2 == 1:
+		if logv_int % 2 == 1: # If the power of 2 is odd [e.g. 2^17 ], we prioritize width [so e.g. "2x1" and not "1x2"]
 			width *= 2
 		return "an %dx%d image" % [width, height]
 	return "%d pixels" % max_pixel_count
@@ -164,7 +164,7 @@ func _err(code: PickedImageError) -> void:
 		PickedImageError.NOT_VALID_FILE_FORMAT:
 			msg = "Invalid file format."
 		PickedImageError.IMAGE_TOO_LARGE:
-			msg = "This image is too large! The maximum size is %s." % _get_friendly_pixel_size()
+			msg = "This image is too large!\nThe maximum size is %s." % _get_friendly_pixel_size()
 	error.text = msg
 	if error_tween:
 		error_tween.kill()
@@ -173,7 +173,7 @@ func _err(code: PickedImageError) -> void:
 	)
 	error.show()
 	error.modulate = Color(1, 1, 1, 1)
-	error_tween.tween_property(error, "modulate", Color(1, 1, 1, 0), 1)
+	error_tween.tween_property(error, "modulate", Color(1, 1, 1, 0), 3)
 	error_tween.tween_callback(error.hide)
 
 
@@ -185,23 +185,22 @@ func _on_file_selected_html5(file: HTML5FileHandle) -> void:
 	image.value = res.val()
 	_new_image(file.name)
 
+
 func _on_file_selected(path: String) -> void:
-	if path.rsplit(".", false, 1)[1] == "svg":
-		_err(PickedImageError.SVG_NOT_ACCEPTED)
+	var res := _bytes_to_image(path.rsplit(".", false, 1)[1], FileAccess.get_file_as_bytes(path))
+	if res.is_err():
+		_err(res.err_code() as int)
 		return
-	var img: Image = Image.load_from_file(path)
-	img.convert(Image.FORMAT_RGBA8)
-	if img == null:
-		_err(PickedImageError.NOT_VALID_FILE_FORMAT)
-		return
-	image.value = img
+	image.value = res.val()
 	_new_image(path.get_file())
 
 
-## also converts to rgba8
 func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 	var fmt := file.name.rsplit(".", false, 1)[1]
 	var buf := await file.as_buffer()
+	return _bytes_to_image(fmt, buf)
+
+func _bytes_to_image(fmt: String, buf: PackedByteArray) -> Result:
 	var buf_stream := StreamPeerBuffer.new()
 	buf_stream.data_array = buf
 	var res := Vector2i.ZERO

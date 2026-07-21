@@ -20,13 +20,12 @@ func _on_file_selected(path: String) -> void:
 		if result.is_ok():
 			_map = result.val()
 	else:
-		var img: Image = Image.load_from_file(path)
-		if img == null:
-			_err(PickedImageError.NOT_VALID_FILE_FORMAT)
+		var res := _bytes_to_image(path.rsplit(".", false, 1)[1], FileAccess.get_file_as_bytes(path))
+		if res.is_err():
+			_err(res.err_code() as int)
 			return
-		img.convert(Image.FORMAT_RGBA8)
 		_map = MapData.new()
-		_map.image = img
+		_map.image = res.val()
 	map.value = _map
 	_new_image(path.get_file())
 	
