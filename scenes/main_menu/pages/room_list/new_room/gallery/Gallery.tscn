@@ -135,7 +135,8 @@ allow_maps = true
 image_rect = NodePath("../../../TextureRect")
 freeze_label = false
 name_label = NodePath("../../../MapName")
-name_format = "Selected map: %s"
+name_format = "roomcreate/gallery.header"
+max_pixel_count = 8388608
 metadata/_custom_type_script = "uid://br0wne0txwkae"
 
 [node name="Panel2" type="Panel" parent="." unique_id=2026032373]

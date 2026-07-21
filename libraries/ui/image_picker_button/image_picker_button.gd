@@ -51,18 +51,20 @@ var extra_data: Variant = null
 @export var name_label: Label
 ## The format of the label. %s is the filename.
 @export var name_format: String = "%s"
+## The amount of pixels to cap an image to, or -1 to not cap it.
+@export var max_pixel_count: int = -1
 
 var is_web := OS.has_feature("web")
 
 var prev_content_size: Vector2
 
-enum PickedImageError { OK, UNKNOWN, SVG_NOT_ACCEPTED, MAP_NOT_ACCEPTED, NOT_VALID_FILE_FORMAT }
+enum PickedImageError { OK, UNKNOWN, SVG_NOT_ACCEPTED, MAP_NOT_ACCEPTED, NOT_VALID_FILE_FORMAT, IMAGE_TOO_LARGE }
 
 
 #region Private methods
 func _map_set(map: ReactiveImage) -> void:
 	if not freeze_label and override_label:
-		name_label.text = name_format % map.value.resource_name
+		name_label.text = tr(name_format) % map.value.resource_name
 	image_rect.texture = ImageTexture.create_from_image(map.value)
 
 
@@ -71,7 +73,7 @@ func _new_image(fname: String) -> void:
 		content.show()
 	image_rect.texture = ImageTexture.create_from_image(image.value)
 	if not freeze_label:
-		name_label.text = name_format % fname
+		name_label.text = tr(name_format) % fname
 
 
 func _ready() -> void:
@@ -133,6 +135,22 @@ func _pressed() -> void:
 				file_dialog.filters = NO_SVG_NO_MAP_FILTER
 		file_dialog.popup_centered(file_dialog.min_size)
 
+## Return the maximum pixel size in the form of a prettier string.
+func _get_friendly_pixel_size() -> String:
+	if max_pixel_count == -1:
+		return "unlimited"
+	var logv := log(max_pixel_count) / log(2)
+	var logv_int := roundi(logv)
+	var powerness := absf(fmod(logv, 1.0) - 0.5) # 0.5 = very near to power of 2, 0 = very far from power of 2
+	if powerness > 0.499: # If it's basically a power of 2, treat it as one
+		@warning_ignore("integer_division")
+		var width := int(pow(2, logv_int / 2))
+		var height := width
+		if logv_int % 2 == 1: # If the power of 2 is odd [e.g. 2^17 ], we prioritize width [so e.g. "2x1" and not "1x2"]
+			width *= 2
+		return "an %dx%d image" % [width, height]
+	return "%d pixels" % max_pixel_count
+
 
 func _err(code: PickedImageError) -> void:
 	if code == 0:
@@ -145,6 +163,8 @@ func _err(code: PickedImageError) -> void:
 			msg = "Maps aren't allowed here."
 		PickedImageError.NOT_VALID_FILE_FORMAT:
 			msg = "Invalid file format."
+		PickedImageError.IMAGE_TOO_LARGE:
+			msg = "This image is too large!\nThe maximum size is %s." % _get_friendly_pixel_size()
 	error.text = msg
 	if error_tween:
 		error_tween.kill()
@@ -153,7 +173,7 @@ func _err(code: PickedImageError) -> void:
 	)
 	error.show()
 	error.modulate = Color(1, 1, 1, 1)
-	error_tween.tween_property(error, "modulate", Color(1, 1, 1, 0), 1)
+	error_tween.tween_property(error, "modulate", Color(1, 1, 1, 0), 3)
 	error_tween.tween_callback(error.hide)
 
 
@@ -165,24 +185,32 @@ func _on_file_selected_html5(file: HTML5FileHandle) -> void:
 	image.value = res.val()
 	_new_image(file.name)
 
+
 func _on_file_selected(path: String) -> void:
-	if path.rsplit(".", false, 1)[1] == "svg":
-		_err(PickedImageError.SVG_NOT_ACCEPTED)
+	var res := _bytes_to_image(path.rsplit(".", false, 1)[1], FileAccess.get_file_as_bytes(path))
+	if res.is_err():
+		_err(res.err_code() as int)
 		return
-	var img: Image = Image.load_from_file(path)
-	img.convert(Image.FORMAT_RGBA8)
-	if img == null:
-		_err(PickedImageError.NOT_VALID_FILE_FORMAT)
-		return
-	image.value = img
+	image.value = res.val()
 	_new_image(path.get_file())
 
 
-## also converts to rgba8
 func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 	var fmt := file.name.rsplit(".", false, 1)[1]
 	var buf := await file.as_buffer()
+	return _bytes_to_image(fmt, buf)
+
+func _bytes_to_image(fmt: String, buf: PackedByteArray) -> Result:
+	var buf_stream := StreamPeerBuffer.new()
+	buf_stream.data_array = buf
+	var res := Vector2i.ZERO
 	var _image := Image.new()
+	
+	if fmt in ["png", "bmp", "jpg", "jpeg", "webp"]:
+		res = ImageHeaderReader.get_reader(fmt).read_resolution(buf_stream)
+		if res.x * res.y > max_pixel_count and max_pixel_count != -1:
+			return Result.err(PickedImageError.IMAGE_TOO_LARGE)
+	
 	match fmt:
 		"png":
 			_image.load_png_from_buffer(buf)
@@ -190,15 +218,13 @@ func _file_handle_to_image(file: HTML5FileHandle) -> Result:
 			_image.load_bmp_from_buffer(buf)
 		"jpg", "jpeg":
 			_image.load_jpg_from_buffer(buf)
-		"tga":
-			_image.load_tga_from_buffer(buf)
+		"webp":
+			_image.load_webp_from_buffer(buf)
 		"svg":
 			if allow_svgs:
 				_image.load_svg_from_buffer(buf)
 			else:
 				return Result.err(PickedImageError.SVG_NOT_ACCEPTED)
-		"webp":
-			_image.load_webp_from_buffer(buf)
 		"map":
 			if allow_maps: #only get the image from the map here
 				var result := MapData.read_from_buffer(buf)
