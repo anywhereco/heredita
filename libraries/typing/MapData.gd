@@ -3,7 +3,7 @@ class_name MapData
 
 static var DEFAULT_CALENDAR := Calendar.new(12, 1984): # heh
 	set(v): 
-		assert(false, "no")
+		assert(false, "This is a constant!")
 
 ## This should always be in RGBA8 format, since deserialize expects this to be the case
 var image: Image
