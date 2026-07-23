@@ -1,5 +1,10 @@
 class_name MapData
 
+
+static var DEFAULT_CALENDAR := Calendar.new(12, 1984): # heh
+	set(v): 
+		assert(false, "no")
+
 ## This should always be in RGBA8 format, since deserialize expects this to be the case
 var image: Image
 var map_last_painter := PackedInt32Array()
@@ -7,7 +12,9 @@ var map_last_color := PackedColorArray()
 var map_width := -1
 var markings: Array[Dictionary] = []
 
-const PACKAGE_VERSION = 1
+var calendar: Calendar = DEFAULT_CALENDAR
+
+const PACKAGE_VERSION = 2
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -19,7 +26,12 @@ func package() -> Dictionary[String, Variant]:
 	if image.get_format() != Image.FORMAT_RGBA8:
 		push_warning("MapData has an image which is not an RGBA8! This is required for serialization!")
 		image.convert(Image.FORMAT_RGBA8) # Make sure the user can at least save!
-	return {"image": image.get_data(), "image_size": image.get_size(), "markings": markings}
+	return {
+		"image": image.get_data(),
+		"image_size": image.get_size(),
+		"markings": markings,
+		"calendar": calendar.to_json()
+	}
 
 
 func serialize() -> PackedByteArray:
@@ -55,8 +67,8 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 	var package_version := serialized[0]
 	var s_data := serialized.duplicate()
 	s_data.remove_at(0)
+	var map_data: Dictionary[String, Variant] = bytes_to_var(s_data)
 	if package_version >= 0:
-		var map_data: Dictionary[String, Variant] = bytes_to_var(s_data)
 		var image_size: Vector2i = map_data["image_size"]
 		@warning_ignore("unsafe_call_argument")
 		md.image = Image.create_from_data(
@@ -73,6 +85,12 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.map_last_painter.fill(-2)
 			md.map_last_color.resize(image_size.x * image_size.y)
 			md.map_last_color.fill(Color.TRANSPARENT)
+	if package_version >= 2: # Calendar
+		if map_data.has("calendar") and map_data["calendar"] is Dictionary:
+			@warning_ignore("unsafe_call_argument")
+			md.calendar = Calendar.from_json_safe(map_data.get("calendar"))
+		if md.calendar == null:
+			md.calendar = DEFAULT_CALENDAR
 	return md
 
 

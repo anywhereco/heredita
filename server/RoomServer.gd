@@ -4,7 +4,6 @@ class_name RoomServer
 const NOT_VALID_PLAYER_ID = -3
 
 var room: Room = null
-var calendar: Calendar = Calendar.new(12, 1984)  # heh
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
 var connected_peers := []  #peers that have finished making a connection
@@ -101,7 +100,9 @@ func update_player_operator_status(player_id: int) -> void:
 
 
 func sync_calendar() -> void:
-	send_event("calendar_sync", calendar.to_json())
+	room.map.calendar.update_from_lpt = true
+	send_event("calendar_sync", room.map.calendar.to_json())
+	room.map.calendar.update_from_lpt = false
 
 
 func close_room() -> void:
@@ -203,7 +204,11 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
 
-	ws_server.send_targeted_event(peer_id, "calendar_sync", calendar.to_json())
+	
+	room.map.calendar.update_from_lpt = true
+	ws_server.send_targeted_event(peer_id, "calendar_sync", room.map.calendar.to_json())
+	room.map.calendar.update_from_lpt = false
+
 	room.player_ids_chronological.append(player_id)
 	connected_peers.append(peer_id)
 
@@ -263,11 +268,11 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				var tempcal := Calendar.from_json_safe(data["details"])
 				if tempcal == null:
 					return false
-				calendar = tempcal
-				if calendar.year < -1_000_000_000:
-					calendar.year = -1_000_000_000
-				if calendar.year > 1_000_000_000:
-					calendar.year = 1_000_000_000
+				room.map.calendar = tempcal
+				if room.map.calendar.year < -1_000_000_000:
+					room.map.calendar.year = -1_000_000_000
+				if room.map.calendar.year > 1_000_000_000:
+					room.map.calendar.year = 1_000_000_000
 				sync_calendar()
 				return false
 		"ban":
@@ -396,6 +401,6 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	calendar.process(delta)
+	room.map.calendar.process(delta)
 	for task in tasks:
 		task.poll()

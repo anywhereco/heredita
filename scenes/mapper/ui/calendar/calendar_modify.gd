@@ -36,7 +36,9 @@ func _on_confirm_pressed() -> void:
 
 func _complete() -> void:
 	print("sending cal ", calendar.to_json())
+	calendar.update_from_lpt = true
 	State.client.send("calendar_sync", calendar.to_json())
+	calendar.update_from_lpt = false
 	TimekeepingUI._inst.calendar = Calendar.from_json(calendar.to_json())
 	(get_parent() as PromptInstance).close()
 

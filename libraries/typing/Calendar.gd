@@ -40,6 +40,8 @@ var second: float
 
 var paused: bool
 
+var last_process_time: float
+var update_from_lpt: bool
 
 func _init(mpy: float, _year: int) -> void:
 	minutes_per_year = maxf(mpy, MIN_MPY)
@@ -50,6 +52,9 @@ func _init(mpy: float, _year: int) -> void:
 	minute = 0
 	second = 0
 	paused = false
+
+	last_process_time = Time.get_unix_time_from_system()
+	update_from_lpt = false
 
 
 ## Same as the regular function, but in the case of failure throws a null
@@ -62,7 +67,9 @@ static func from_json_safe(json: Dictionary) -> Calendar:
 		or typeof(json["hour"]) not in [TYPE_FLOAT, TYPE_INT]
 		or typeof(json["minute"]) not in [TYPE_FLOAT, TYPE_INT]
 		or typeof(json["second"]) != TYPE_FLOAT
+		or (json.has("last_process_time") and typeof(json["last_process_time"]) != TYPE_FLOAT)
 		or typeof(json["paused"]) != TYPE_BOOL
+		or (json.has("update_from_lpt") and typeof(json["update_from_lpt"]) != TYPE_BOOL)
 	):
 		return null
 	return from_json(json)
@@ -79,6 +86,12 @@ static func from_json(json: Dictionary) -> Calendar:
 	inst.minute = json["minute"]
 	inst.second = json["second"]
 	inst.paused = json["paused"]
+	if json.has("last_process_time") and json.has("update_from_lpt"):
+		inst.last_process_time = json["last_process_time"]
+		inst.update_from_lpt = json["update_from_lpt"]
+	else:
+		inst.last_process_time = Time.get_unix_time_from_system()
+		inst.update_from_lpt = false
 	return inst
 
 
@@ -168,6 +181,14 @@ func days_in_month() -> int:
 
 
 func process(delta: float) -> void:
+	if update_from_lpt:
+		update_from_lpt = false
+		process(Time.get_unix_time_from_system() - last_process_time)
+		last_process_time = Time.get_unix_time_from_system()
+		return
+
+	last_process_time = Time.get_unix_time_from_system()
+
 	if paused:
 		return
 
@@ -244,9 +265,15 @@ func to_json() -> Dictionary:
 		"hour": hour,
 		"minute": minute,
 		"second": second,
-		"paused": paused
+		"last_process_time": last_process_time,
+		"paused": paused,
+		"update_from_lpt": update_from_lpt
 	}
 
 
 func _to_string() -> String:
 	return "Calendar%s" % to_json()
+
+
+func dupe() -> Calendar:
+	return from_json(to_json())
