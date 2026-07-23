@@ -5,6 +5,7 @@ static var _instance: Map
 
 @export_range(1.0 / 32, 1, 1.0 / 32, "suffix:units/px") var pixel_size: float = 3.0 / 32
 
+
 @onready var player_camera: Camera3D = $"../LocalPlayer/CameraPivot/CameraArm/PlayerCamera"
 @onready var water: MeshInstance3D = $"../Water"
 
@@ -13,6 +14,9 @@ static var _instance: Map
 @onready var map_markings: MapMarkings = $MapMarkings
 
 var default_target_color: Color = Color(1, 1, 1)
+
+## null if no calendar is specified by the map, otherwise timekeeperui will look for this when it inits
+var timekeeper_calendar_default: Calendar = null
 
 var chunk_creation_mutexes: Array[Mutex] = []
 ## Array[Array[Sprite3D]], x,y/z order
@@ -219,11 +223,17 @@ func get_data() -> MapData:
 		data.markings = map_markings.serialize_markings()
 	else:
 		data.markings = pending_markings
+	data.calendar = TimekeepingUI._inst.calendar.dupe()
 	return data
 
 
 func set_data(data: MapData) -> void:
 	original_map = data.image
+	if TimekeepingUI._inst.get("calendar") != null:
+		TimekeepingUI._inst.calendar = data.calendar.dupe()
+	else:
+		timekeeper_calendar_default = data.calendar.dupe()
+	
 	if is_node_ready():
 		map_markings.set_markings(data.markings)
 	else:

@@ -24,6 +24,8 @@ func _init() -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	if Map._instance.get("timekeeper_calendar_default") != null:
+		calendar = Map._instance.timekeeper_calendar_default
 	if not State.player.privileged():
 		pause.hide()
 		configure.hide()
