@@ -142,7 +142,7 @@ func _connected(peer_id: int) -> void:
 		var rid := create_room(json.val()["details"], msg["data"])
 		peer_rooms[peer_id] = rid
 		var r := rooms[rid]
-		r._connected(peer_id, true)
+		r._connected(peer_id, true, rid)
 		return
 	ws_server.close(peer_id, 4096, "Protocol failuree")
 
