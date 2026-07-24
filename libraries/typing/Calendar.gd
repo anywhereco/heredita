@@ -256,6 +256,12 @@ func time_string() -> String:
 		return "%02d:%02d" % [hour, minute]
 
 
+func primary_string() -> String:
+	if minutes_per_year < 0.1:
+		return year_string()
+	return date_string() + ", " + year_string()
+	
+	
 func to_json() -> Dictionary:
 	return {
 		"minutes_per_year": minutes_per_year,

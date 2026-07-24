@@ -50,7 +50,7 @@ func _poll_loop() -> void:
 		"roomlist":
 			var rooms_json: Dictionary = {}
 			for room in controller.rooms:
-				rooms_json[room] = controller.rooms[room].room.to_json()
+				rooms_json[room] = controller.rooms[room].room.to_json_for_server()
 			send_event("roomlist_response", {"rooms": rooms_json})
 		"validated":
 			@warning_ignore("unsafe_call_argument")
@@ -77,6 +77,10 @@ func send_event(event: String, content: Dictionary[String, Variant]) -> int:
 
 func validate_token_request(token: String) -> int:
 	return send_event("validate", {"token": token})
+
+
+func new_server(room: Room, rid: int) -> void:
+	return send_event("new_room", {"room": room.to_json_for_server(), "date": room.map.calendar.primary_string(), "rid": str(rid)})
 
 
 func _process(delta: float) -> void:

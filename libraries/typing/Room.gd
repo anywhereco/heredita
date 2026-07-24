@@ -40,3 +40,18 @@ func to_json() -> Dictionary:
 		"player_limit": player_limit,
 		"password_protected": not password.is_empty()
 	}
+
+
+func to_json_for_server() -> Dictionary:
+	var players_json: Array[Dictionary] = []
+	for player: Player in players.value.values():
+		players_json.append(player.get_info())
+	
+	return {
+		"name": name,
+		"description": description,
+		"player_count": players.size(),
+		"player_limit": player_limit,
+		"password_protected": not password.is_empty(),
+		"players": players_json
+	}

@@ -6,7 +6,7 @@ signal failed(response_code: int)
 
 var initialized: bool = false
 
-var token: String
+var token: String = ""
 var id: int
 var rank: UserEnums.Rank
 var username: String

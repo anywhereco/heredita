@@ -13,6 +13,7 @@ var handler: RoomHandler
 @onready var title: Label = %Title
 @onready var description: Label = %Description
 @onready var player_count: Label = %PlayerCount
+@onready var friend_count: Label = %FriendCount
 
 
 static func of(
@@ -21,7 +22,8 @@ static func of(
 	title_: String,
 	desc: String,
 	players: int,
-	max_players: int
+	max_players: int,
+	friends: Array[Player]
 ) -> RoomTemplate:
 	var inst: RoomTemplate = ROOM_TEMPLATE.instantiate()
 	inst._readied.connect(
@@ -31,6 +33,10 @@ static func of(
 			inst.title.text = title_
 			inst.description.text = desc
 			inst.player_count.text = "%d/%d" % [players, max_players]
+			inst.friend_count.text = TranslationServer.translate_plural("roomlist/friend.count", "roomlist/friend.count_plural", friends.size()) 
+			inst.friend_count.text %= friends.size()
+			if friends.size() == 0:
+				inst.friend_count.hide()
 	)
 	return inst
 

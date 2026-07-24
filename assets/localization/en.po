@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-18 21:12+0000\n"
+"PO-Revision-Date: 2026-07-24 01:11+0000\n"
 "Last-Translator: ACC Admin <webmaster@accorp.net>\n"
 "Language-Team: English <https://weblate.accorp.net/projects/heredita/game/en/>\n"
 "Language: en\n"
@@ -152,3 +152,8 @@ msgstr "Failed to load gallery items."
 
 msgid "roomcreate/gallery.headerwithattribution"
 msgstr "Selected map: {map} by {author}"
+
+msgid "roomlist/friend.count"
+msgid_plural "roomlist/friend.count_plural"
+msgstr[0] "%d friend"
+msgstr[1] "%d friends"

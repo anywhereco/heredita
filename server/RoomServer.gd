@@ -3,6 +3,8 @@ class_name RoomServer
 
 const NOT_VALID_PLAYER_ID = -3
 
+var rid: int = -1
+
 var room: Room = null
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
@@ -112,7 +114,7 @@ func close_room() -> void:
 	queue_free()
 
 
-func _connected(peer_id: int, created: bool = false) -> void:
+func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 	if room.players.size() >= room.player_limit:
 		ws_server.close(peer_id, 6144, "The room is at maximum capacity.")
 		return
@@ -125,6 +127,7 @@ func _connected(peer_id: int, created: bool = false) -> void:
 		room.id_iterator += 1
 
 	if created:
+		rid = _rid
 		ws_server.send_targeted_event(
 			peer_id,
 			"_is2_room_info",
@@ -200,10 +203,12 @@ func _connected(peer_id: int, created: bool = false) -> void:
 	)
 	send_event("_is2_player_join", {"player_id": player_id, "details": player.get_info()})
 
-	if not created:
+	if created:
+		server_controller.bridge.new_server(room, rid)
+	else:
 		var serialized := room.map.serialize()
 		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
-
+	
 	
 	room.map.calendar.update_from_lpt = true
 	ws_server.send_targeted_event(peer_id, "calendar_sync", room.map.calendar.to_json())
