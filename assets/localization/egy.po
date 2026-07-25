@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-24 01:11+0000\n"
+"PO-Revision-Date: 2026-07-25 22:16+0000\n"
 "Last-Translator: ACC Admin <webmaster@accorp.net>\n"
 "Language-Team: Developer debug language <https://weblate.accorp.net/projects/heredita/game/egy/>\n"
 "Language: egy\n"
@@ -157,3 +157,14 @@ msgid "roomlist/friend.count"
 msgid_plural "roomlist/friend.count_plural"
 msgstr[0] "locd: %d friend"
 msgstr[1] "locd: %d friends"
+
+msgid "roomcreate/pixelsperunit"
+msgstr "locd: Pixels per unit"
+
+msgid "roomcreate/pixelsperunit.tooltip"
+msgstr ""
+"locd: For reference, the polandball has a diameter of 1 unit,\n"
+"so you can think of this as \"x pixels per polandball\"."
+
+msgid "roomcreate/pixelsperunit.value"
+msgstr "locd: %.1f ppu"

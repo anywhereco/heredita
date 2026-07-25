@@ -24,7 +24,7 @@
 [ext_resource type="Script" uid="uid://db26k4s8p0vg1" path="res://scenes/mapper/ui/toolui/brush_size.gd" id="12_0sgq1"]
 [ext_resource type="Script" uid="uid://boffekhvui4ql" path="res://scenes/mapper/ui/toolui/brush.gd" id="12_2eddf"]
 [ext_resource type="Texture2D" uid="uid://5530a3jumjn0" path="res://assets/icons/calendar/pause.svg" id="12_c8yws"]
-[ext_resource type="Script" uid="uid://cik5kpwsako5a" path="res://scenes/mapper/ui/calendar/time.gd" id="12_m62g0"]
+[ext_resource type="Script" uid="uid://btsw18v24f6h4" path="res://scenes/mapper/ui/calendar/time.gd" id="12_m62g0"]
 [ext_resource type="Script" uid="uid://boj66ccjdmq6n" path="res://libraries/ui/Unfocus.gd" id="12_vdunj"]
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="12_wbt2f"]
 [ext_resource type="Script" uid="uid://4l3n0jimw2sw" path="res://scenes/mapper/ui/chat_box.gd" id="14_0eah7"]

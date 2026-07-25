@@ -7,6 +7,7 @@
 [ext_resource type="FontVariation" uid="uid://cyxhummrwgoly" path="res://assets/font/_variants/proitalics650.tres" id="4_e8htd"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="5_wms38"]
 [ext_resource type="FontFile" uid="uid://dymfhuoc1cmtw" path="res://assets/font/fonts/CrimsonProper.ttf" id="6_357y2"]
+[ext_resource type="Texture2D" uid="uid://fh6dgx07m5la" path="res://assets/ui/tooltip.png" id="7_bcf2e"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ua2xh"]
 content_margin_left = 0.0
@@ -524,6 +525,17 @@ corner_radius_bottom_left = 4
 corner_detail = 1
 anti_aliasing = false
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_itdwe"]
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 11.0
+texture = ExtResource("7_bcf2e")
+texture_margin_left = 9.0
+texture_margin_top = 9.0
+texture_margin_right = 9.0
+texture_margin_bottom = 14.0
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e8htd"]
 content_margin_left = 2.0
 content_margin_top = 2.0
@@ -731,6 +743,14 @@ ToolButton/styles/hover = SubResource("StyleBoxFlat_bcf2e")
 ToolButton/styles/hover_pressed = SubResource("StyleBoxFlat_7g2p0")
 ToolButton/styles/normal = SubResource("StyleBoxFlat_357y2")
 ToolButton/styles/pressed = SubResource("StyleBoxFlat_llqld")
+TooltipLabel/colors/font_color = Color(0.96, 0.61152, 0.32639998, 1)
+TooltipLabel/colors/font_outline_color = Color(0, 0, 0, 0.42352942)
+TooltipLabel/colors/font_shadow_color = Color(0, 0, 0, 0)
+TooltipLabel/constants/outline_size = 1
+TooltipLabel/constants/shadow_offset_x = 1
+TooltipLabel/constants/shadow_offset_y = 1
+TooltipLabel/font_sizes/font_size = 18
+TooltipPanel/styles/panel = SubResource("StyleBoxTexture_itdwe")
 TransparentFoldableContainer/base_type = &"FoldableContainer"
 TransparentFoldableContainer/styles/panel = SubResource("StyleBoxFlat_e8htd")
 TransparentFoldableContainer/styles/title_collapsed_hover_panel = SubResource("StyleBoxFlat_wms38")
