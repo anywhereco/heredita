@@ -3,6 +3,8 @@
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="1_5vjh0"]
 [ext_resource type="Script" uid="uid://h6gmhcdgqkaq" path="res://scenes/main_menu/pages/room_list/new_room/new_room_prompt.gd" id="1_pf8od"]
 [ext_resource type="Script" uid="uid://80rk2bwsgwf4" path="res://scenes/main_menu/pages/room_list/new_room/back_landing.gd" id="3_7vv4v"]
+[ext_resource type="Script" uid="uid://ba5en04q703k5" path="res://libraries/ui/TextDisplayButton.gd" id="3_t4kyh"]
+[ext_resource type="Script" uid="uid://d0mmgk3mhkoqq" path="res://scenes/main_menu/pages/room_list/new_room/nrp_ppuslider.gd" id="4_m4wmb"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fgy55"]
 font = ExtResource("1_5vjh0")
@@ -48,7 +50,7 @@ layout_mode = 2
 
 [node name="Name" type="LineEdit" parent="." unique_id=165496074]
 layout_mode = 2
-text = "This should be replaced at runtime"
+text = "(replaced at runtime)"
 placeholder_text = "roomcreate/name.placeholder"
 
 [node name="Description" type="TextEdit" parent="." unique_id=1203058588]
@@ -60,6 +62,8 @@ scroll_smooth = true
 scroll_v_scroll_speed = 10.0
 
 [node name="Password" type="LineEdit" parent="." unique_id=683002425]
+editor_description = "I hid this for now since it's broken"
+visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 placeholder_text = "roomcreate/password.placeholder"
@@ -80,6 +84,59 @@ size_flags_horizontal = 4
 min_value = 4.0
 max_value = 20.0
 value = 20.0
+
+[node name="PPUBox" type="VBoxContainer" parent="." unique_id=834522314]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PPUBox" unique_id=1133822952]
+layout_mode = 2
+alignment = 1
+
+[node name="Label2" type="Label" parent="PPUBox/HBoxContainer" unique_id=2119002449]
+layout_mode = 2
+mouse_filter = 1
+text = "roomcreate/pixelsperunit"
+horizontal_alignment = 1
+
+[node name="UnitSizeInfo" type="Button" parent="PPUBox/HBoxContainer" unique_id=688876286]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 12
+toggle_mode = true
+text = "i"
+script = ExtResource("3_t4kyh")
+text_to_show = "roomcreate/pixelsperunit.tooltip"
+metadata/_custom_type_script = "uid://ba5en04q703k5"
+
+[node name="PPUValue" type="HBoxContainer" parent="PPUBox" unique_id=495179061]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+script = ExtResource("4_m4wmb")
+
+[node name="Count" type="Label" parent="PPUBox/PPUValue" unique_id=2070344405]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 1
+text = "roomcreate/pixelsperunit.value"
+horizontal_alignment = 1
+
+[node name="PPUSlider" type="HSlider" parent="PPUBox/PPUValue" unique_id=424140772]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 8.0
+value = 3.0
+rounded = true
+tick_count = 8
+ticks_on_borders = true
+ticks_position = 3
 
 [node name="ChangeMap" type="Button" parent="." unique_id=1911909449]
 layout_mode = 2
@@ -118,3 +175,5 @@ script = ExtResource("3_7vv4v")
 [node name="Create" type="Button" parent="Buttons" unique_id=1346182965]
 layout_mode = 2
 text = "roomcreate/finish"
+
+[connection signal="value_changed" from="PPUBox/PPUValue/PPUSlider" to="PPUBox/PPUValue" method="_on_ppu_slider_value_changed"]
