@@ -10,33 +10,36 @@
 font = ExtResource("1_5vjh0")
 font_size = 20
 
-[sub_resource type="Gradient" id="Gradient_7vv4v"]
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0.15294118, 0.15686275, 0.30980393, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_pf8od"]
-gradient = SubResource("Gradient_7vv4v")
-height = 32
-
 [sub_resource type="Gradient" id="Gradient_7t0hk"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_vpn6m"]
 gradient = SubResource("Gradient_7t0hk")
 height = 32
 
-[node name="NewRoomPrompt" type="VBoxContainer" unique_id=1920594828]
+[sub_resource type="Gradient" id="Gradient_7vv4v"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.15294118, 0.15686275, 0.30980393, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_pf8od"]
+gradient = SubResource("Gradient_7vv4v")
+width = 32
+height = 32
+
+[node name="VBoxContainer2" type="VBoxContainer" unique_id=1131304742]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -335.0
+offset_top = -123.5
+offset_right = 335.0
+offset_bottom = 123.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
 script = ExtResource("1_pf8od")
 
 [node name="Title" type="Label" parent="." unique_id=2053284206]
@@ -48,12 +51,24 @@ horizontal_alignment = 1
 [node name="HSeparator" type="HSeparator" parent="." unique_id=491921009]
 layout_mode = 2
 
-[node name="Name" type="LineEdit" parent="." unique_id=165496074]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=722921232]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MainPrompt" type="VBoxContainer" parent="HBoxContainer" unique_id=1920594828]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Name" type="LineEdit" parent="HBoxContainer/MainPrompt" unique_id=165496074]
+unique_name_in_owner = true
 layout_mode = 2
 text = "(replaced at runtime)"
 placeholder_text = "roomcreate/name.placeholder"
 
-[node name="Description" type="TextEdit" parent="." unique_id=1203058588]
+[node name="Description" type="TextEdit" parent="HBoxContainer/MainPrompt" unique_id=1203058588]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 59)
 layout_mode = 2
 placeholder_text = "roomcreate/description.placeholder"
@@ -61,46 +76,110 @@ wrap_mode = 1
 scroll_smooth = true
 scroll_v_scroll_speed = 10.0
 
-[node name="Password" type="LineEdit" parent="." unique_id=683002425]
+[node name="Password" type="LineEdit" parent="HBoxContainer/MainPrompt" unique_id=683002425]
+unique_name_in_owner = true
 editor_description = "I hid this for now since it's broken"
 visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 placeholder_text = "roomcreate/password.placeholder"
 
-[node name="PlayerCapBox" type="HBoxContainer" parent="." unique_id=12239804]
+[node name="PlayerCapBox" type="HBoxContainer" parent="HBoxContainer/MainPrompt" unique_id=12239804]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Label2" type="Label" parent="PlayerCapBox" unique_id=806400194]
+[node name="Label2" type="Label" parent="HBoxContainer/MainPrompt/PlayerCapBox" unique_id=806400194]
 layout_mode = 2
 text = "roomcreate/playercap"
 horizontal_alignment = 1
 
-[node name="PlayerCap" type="SpinBox" parent="PlayerCapBox" unique_id=1248767228]
+[node name="PlayerCap" type="SpinBox" parent="HBoxContainer/MainPrompt/PlayerCapBox" unique_id=1248767228]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 min_value = 4.0
 max_value = 20.0
 value = 20.0
 
-[node name="PPUBox" type="VBoxContainer" parent="." unique_id=834522314]
+[node name="PPUBox" type="VBoxContainer" parent="HBoxContainer/MainPrompt" unique_id=834522314]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PPUBox" unique_id=1133822952]
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/MainPrompt/PPUBox" unique_id=1133822952]
 layout_mode = 2
 alignment = 1
 
-[node name="Label2" type="Label" parent="PPUBox/HBoxContainer" unique_id=2119002449]
+[node name="Spacer" type="Control" parent="HBoxContainer/MainPrompt" unique_id=417460217]
 layout_mode = 2
-mouse_filter = 1
-text = "roomcreate/pixelsperunit"
-horizontal_alignment = 1
+size_flags_vertical = 3
 
-[node name="UnitSizeInfo" type="Button" parent="PPUBox/HBoxContainer" unique_id=688876286]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=1507592610]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/VBoxContainer" unique_id=792604808]
+layout_mode = 2
+
+[node name="Map" type="TextureRect" parent="HBoxContainer/VBoxContainer/CenterContainer" unique_id=2023055921]
+unique_name_in_owner = true
+z_index = 1
+custom_minimum_size = Vector2(220, 220)
+custom_maximum_size = Vector2(500, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = SubResource("GradientTexture2D_vpn6m")
+expand_mode = 3
+
+[node name="OceanRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/CenterContainer/Map" unique_id=1143949700]
+z_index = -1
+custom_minimum_size = Vector2(220, 220)
+custom_maximum_size = Vector2(500, 400)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+texture = SubResource("GradientTexture2D_pf8od")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="ChangeMap" type="Button" parent="HBoxContainer/VBoxContainer/CenterContainer/Map" unique_id=1911909449]
+unique_name_in_owner = true
+z_index = 1
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -158.0
+offset_top = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 8
+mouse_behavior_recursive = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.8217887, 0.82178867, 0.82178867, 1)
+theme_override_colors/font_hover_color = Color(0.91764706, 0.91764706, 0.91764706, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.82605994, 0.82606006, 0.8260599, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("1_5vjh0")
+text = "roomcreate/choosemap"
+flat = true
+
+[node name="PPUValue" type="HBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=495179061]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+script = ExtResource("4_m4wmb")
+
+[node name="UnitSizeInfo" type="Button" parent="HBoxContainer/VBoxContainer/PPUValue" unique_id=688876286]
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -112,13 +191,7 @@ script = ExtResource("3_t4kyh")
 text_to_show = "roomcreate/pixelsperunit.tooltip"
 metadata/_custom_type_script = "uid://ba5en04q703k5"
 
-[node name="PPUValue" type="HBoxContainer" parent="PPUBox" unique_id=495179061]
-unique_name_in_owner = true
-layout_mode = 2
-alignment = 1
-script = ExtResource("4_m4wmb")
-
-[node name="Count" type="Label" parent="PPUBox/PPUValue" unique_id=2070344405]
+[node name="Count" type="Label" parent="HBoxContainer/VBoxContainer/PPUValue" unique_id=2070344405]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -126,7 +199,7 @@ mouse_filter = 1
 text = "roomcreate/pixelsperunit.value"
 horizontal_alignment = 1
 
-[node name="PPUSlider" type="HSlider" parent="PPUBox/PPUValue" unique_id=424140772]
+[node name="PPUSlider" type="HSlider" parent="HBoxContainer/VBoxContainer/PPUValue" unique_id=424140772]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -138,31 +211,6 @@ tick_count = 8
 ticks_on_borders = true
 ticks_position = 3
 
-[node name="ChangeMap" type="Button" parent="." unique_id=1911909449]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "roomcreate/choosemap"
-
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1285368030]
-layout_mode = 2
-
-[node name="OceanRect" type="TextureRect" parent="CenterContainer" unique_id=1143949700]
-custom_minimum_size = Vector2(0, 80)
-layout_mode = 2
-size_flags_horizontal = 4
-texture = SubResource("GradientTexture2D_pf8od")
-expand_mode = 3
-
-[node name="Map" type="TextureRect" parent="CenterContainer" unique_id=2023055921]
-custom_minimum_size = Vector2(0, 80)
-layout_mode = 2
-size_flags_horizontal = 4
-texture = SubResource("GradientTexture2D_vpn6m")
-expand_mode = 3
-
-[node name="Spacer" type="Control" parent="." unique_id=417460217]
-layout_mode = 2
-
 [node name="Buttons" type="HBoxContainer" parent="." unique_id=789915965]
 layout_mode = 2
 alignment = 1
@@ -172,8 +220,13 @@ layout_mode = 2
 text = "roomcreate/back"
 script = ExtResource("3_7vv4v")
 
+[node name="Control" type="Control" parent="Buttons" unique_id=1291903555]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="Create" type="Button" parent="Buttons" unique_id=1346182965]
+unique_name_in_owner = true
 layout_mode = 2
 text = "roomcreate/finish"
 
-[connection signal="value_changed" from="PPUBox/PPUValue/PPUSlider" to="PPUBox/PPUValue" method="_on_ppu_slider_value_changed"]
+[connection signal="value_changed" from="HBoxContainer/VBoxContainer/PPUValue/PPUSlider" to="HBoxContainer/VBoxContainer/PPUValue" method="_on_ppu_slider_value_changed"]
