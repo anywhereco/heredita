@@ -10,6 +10,9 @@ const CHUNK_SIZE_FLOAT: float = float(CHUNK_SIZE)
 
 
 static func initialize() -> void:
+	if OS.has_feature("debug"):
+		HEREDITA_URL = "http://127.0.0.1:9000"
+		SERVER_URL = "ws://127.0.0.1:9001"
 	var user_args := OS.get_cmdline_user_args()
 	for i in range(user_args.size()):
 		if user_args[i].contains("--heredita-url="):
