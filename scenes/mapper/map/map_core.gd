@@ -3,7 +3,7 @@ extends Node3D
 
 static var _instance: Map
 
-@export_range(1.0 / 32, 1, 1.0 / 32, "suffix:units/px") var pixel_size: float = 3.0 / 32
+@export_range(1.0 / 20, 1, 1.0 / 20, "suffix:units/px") var pixel_size: float = 1.0 / 10
 
 
 @onready var player_camera: Camera3D = $"../LocalPlayer/CameraPivot/CameraArm/PlayerCamera"
@@ -229,6 +229,7 @@ func get_data() -> MapData:
 
 func set_data(data: MapData) -> void:
 	original_map = data.image
+	pixel_size = data.pixel_size
 	if TimekeepingUI._inst.get("calendar") != null:
 		TimekeepingUI._inst.calendar = data.calendar.dupe()
 	else:

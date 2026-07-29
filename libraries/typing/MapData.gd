@@ -1,5 +1,6 @@
 class_name MapData
 
+const DEFAULT_PIXEL_SIZE := 0.1
 
 static var DEFAULT_CALENDAR := Calendar.new(12, 1984): # heh
 	set(v): 
@@ -14,7 +15,9 @@ var markings: Array[Dictionary] = []
 
 var calendar: Calendar = DEFAULT_CALENDAR
 
-const PACKAGE_VERSION = 2
+var pixel_size: float = DEFAULT_PIXEL_SIZE 
+
+const PACKAGE_VERSION = 3
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -30,7 +33,8 @@ func package() -> Dictionary[String, Variant]:
 		"image": image.get_data(),
 		"image_size": image.get_size(),
 		"markings": markings,
-		"calendar": calendar.to_json()
+		"calendar": calendar.to_json(),
+		"pixel_size": pixel_size
 	}
 
 
@@ -91,6 +95,12 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.calendar = Calendar.from_json_safe(map_data.get("calendar"))
 		if md.calendar == null:
 			md.calendar = DEFAULT_CALENDAR
+	if package_version >= 3: # Pixel size
+		if map_data.has("pixel_size") and Verify.is_numeric(map_data["pixel_size"]):
+			@warning_ignore("unsafe_call_argument")
+			md.pixel_size = map_data["pixel_size"]
+		if md.calendar == null:
+			md.pixel_size = DEFAULT_PIXEL_SIZE
 	return md
 
 

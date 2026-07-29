@@ -44,6 +44,7 @@ func new_fullscreen_prompt(force: bool = false, exclusive: bool = false) -> Resu
 	ui.add_child(prompt_inst)
 	var _prompt: PromptInstance = prompt_inst.get_child(0).get_child(0)
 	_prompt.idx = prompts.size()
+	_prompt.z_index = 32 * prompts.size()
 	prompts.append(_prompt)
 	_prompt.get_parent().get_parent().name = "prompt_%d" % _prompt.idx
 	return Result.ok(_prompt)

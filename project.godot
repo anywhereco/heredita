@@ -196,7 +196,6 @@ switch_targeting_status={
 [internationalization]
 
 locale/translations=PackedStringArray("res://assets/localization/en.po", "res://assets/localization/egy.po")
-locale/test.editor="egy"
 
 [layer_names]
 
