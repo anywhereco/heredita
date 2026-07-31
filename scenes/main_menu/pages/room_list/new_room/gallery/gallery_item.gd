@@ -54,11 +54,18 @@ func _http_request_completed(
 		hide()
 		return
 	loading_placeholder.hide()
-	thumbnail = Image.create_empty(256, 128, false, Image.FORMAT_RGBA8)
-	thumbnail.load_png_from_buffer(body)
+	thumbnail = Image.new()
+	if thumbnail.load_png_from_buffer(body) != OK:
+		hide()
+		return
+	thumbnail.convert(Image.FORMAT_RGBA8)
 	var tex: ImageTexture = ImageTexture.create_from_image(thumbnail)
 	map.texture = tex
 	map.show()
+
+	if _picker.current_picked == id:
+		_picker.get_parent().get_parent().get_node("MapPickerButton").image.value = thumbnail
+
 
 func convert_to_map(item: Variant) -> MapData:
 	if item is MapData:
@@ -71,6 +78,7 @@ func convert_to_map(item: Variant) -> MapData:
 		push_error("Invalid map in gallery")
 		return MapData.new()
 
+
 @warning_ignore("unused_parameter")
 func _http_request_completed_full(
 	result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
@@ -79,19 +87,17 @@ func _http_request_completed_full(
 		return
 	if response_code != 200:
 		return
-	image = Image.create_empty(4096, 2048, false, Image.FORMAT_RGBA8)
-	image.load_png_from_buffer(body)  # TODO: support .map soonish [when its actually a thing]      haha i updated your todo -Digi
-	(
-		_picker
-		. get_parent()
-		. get_parent()
-		. get_parent()
-		. find_child("MapPickerButton")
-		. map
-		. _set_value
-		. call_deferred(convert_to_map(image))
+	image = Image.new()
+	if image.load_png_from_buffer(body) != OK:
+		_picker.loading_mutex.unlock.call_deferred()
+		return
+	image.convert(Image.FORMAT_RGBA8)
+	var map_picker_button: MapPickerButton = _picker.get_parent().get_parent().get_node(
+		"MapPickerButton"
 	)
-	_picker.loading_mutex.unlock.call_deferred()  # TODO: probably need to be smarter about running this
+	map_picker_button.map._set_value.call_deferred(convert_to_map(image))
+	map_picker_button.image.value = image
+	_picker.loading_mutex.unlock.call_deferred()
 	Prompts.get_prompt_in(self).closing_paused.value = false
 
 
@@ -101,9 +107,12 @@ func _picked() -> void:
 	_picker.current_picked = id
 	prepare_load_full_image()
 	Prompts.get_prompt_in(self).closing_paused.value = true
-	_picker.get_parent().get_parent().get_parent().find_child("MapPickerButton").image.value = thumbnail
-	_picker.get_parent().get_parent().get_parent().get_parent().find_child("MapName").text = (
-		tr("roomcreate/gallery.headerwithattribution").format(
-			{"map": map_name, "author": attribution}
-		)
+	var map_picker_button: MapPickerButton = _picker.get_parent().get_parent().get_node(
+		"MapPickerButton"
+	)
+	if thumbnail:
+		map_picker_button.image.value = thumbnail
+	map_picker_button.get_parent().get_parent().get_parent().get_node("MapName").text = (
+		tr("roomcreate/gallery.headerwithattribution")
+		. format({"map": map_name, "author": attribution})
 	)

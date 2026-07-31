@@ -22,7 +22,7 @@ func setup(map: ReactiveMapData) -> void:
 	_update_from_map()
 
 
-func _on_map_changed(_new_map: MapData) -> void:
+func _on_map_changed(_new_map: ReactiveMapData) -> void:
 	_update_from_map()
 
 
