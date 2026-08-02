@@ -20,11 +20,8 @@ var _loading_prompt: PromptInstance
 var _loading_prompt_spinner: Spinner
 var _loading_prompt_label: Label
 
-var _game_load_time: float = 0.0
 var _buffered_map_data: PackedByteArray = PackedByteArray()
 var _mapper_ready := false
-
-const LOAD_TIMEOUT: float = 30.0
 
 
 func _ready() -> void:
@@ -86,7 +83,6 @@ func enter_mapper(map: MapData = null) -> void:
 	_buffered_map_data.clear()
 	_mapper_load_started = true
 	_game_load_finishing = false
-	_game_load_time = 0.0
 	_game_load_progress.clear()
 	_set_game_load_detail("Preparing mapper...")
 
@@ -97,11 +93,6 @@ func enter_mapper(map: MapData = null) -> void:
 
 func _update_game_loading(delta: float) -> void:
 	if not _mapper_load_started:
-		return
-
-	_game_load_time += delta
-	if _game_load_time > LOAD_TIMEOUT:
-		_fail_game_load("Loading timed out.")
 		return
 
 	if not _game_load_finishing:
