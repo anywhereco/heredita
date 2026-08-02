@@ -27,6 +27,7 @@ func _on_file_selected(path: String) -> void:
 		_map = MapData.new()
 		_map.image = res.val()
 	map.value = _map
+	image.value = _map.image
 	_new_image(path.get_file())
 	
 func _file_handle_to_map(file: HTML5FileHandle) -> Result:
