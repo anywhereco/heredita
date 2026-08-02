@@ -9,7 +9,8 @@ const MAX_MARKINGS := 8192
 const CITY_MESH_SCALE := 0.063
 const FORT_MESH_SCALE := 0.22
 const FORT_MESH_HEIGHT_SCALE := 0.08
-const LABEL_VISIBLE_DISTANCE := 18.0
+const LABEL_VISIBLE_DISTANCE := 26.0
+const LABEL_VISIBLE_DISTANCE_SQ := LABEL_VISIBLE_DISTANCE * LABEL_VISIBLE_DISTANCE
 const LABEL_COLOR := Color(0.95, 0.95, 0.9)
 const LABEL_OUTLINE_COLOR := Color(0.08, 0.08, 0.1)
 
@@ -220,4 +221,7 @@ func _process(_delta: float) -> void:
 	if camera == null:
 		return
 	for label: Label3D in labels.values():
-		label.visible = camera.global_position.distance_to(label.global_position) <= LABEL_VISIBLE_DISTANCE
+		label.visible = (
+			camera.global_position.distance_squared_to(label.global_position)
+			<= LABEL_VISIBLE_DISTANCE_SQ
+		)
