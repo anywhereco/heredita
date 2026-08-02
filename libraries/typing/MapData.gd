@@ -82,7 +82,7 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			for marking: Variant in map_data["markings"]:
 				@warning_ignore("unsafe_call_argument")
 				if marking is Dictionary and _valid_serialized_marking(marking):
-					if package_version < 3:
+					if package_version < 4:
 						marking["position"] *= 32/3.0
 					md.markings.append(marking)
 		md.map_width = image_size.x
