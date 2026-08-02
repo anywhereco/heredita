@@ -88,9 +88,11 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 					if package_version == 3:
 						if map_data.has("pixel_size") and Verify.is_numeric(map_data["pixel_size"]):
 							@warning_ignore("unsafe_call_argument")
-							marking["position"] /= map_data["pixel_size"]
+							marking["position"][0] /= map_data["pixel_size"]
+							marking["position"][1] /= map_data["pixel_size"]
 					elif package_version < 3:
-						marking["position"] *= 32/3.0
+						marking["position"][0] *= 32/3.0
+						marking["position"][1] *= 32/3.0
 					md.markings.append(marking)
 		md.map_width = image_size.x
 		if is_server:

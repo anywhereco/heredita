@@ -24,6 +24,18 @@ var SVG_MAP_FILTER := PackedStringArray(
 		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp,*.map;Image and Map Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp,application/heredita-map"
 	]
 )
+var NO_SVG_NO_MAP_FILTER_WEB := PackedStringArray(
+	[".png,.jpg,.jpeg,.webp,.bmp"]
+)
+var SVG_NO_MAP_FILTER_WEB := PackedStringArray(
+	[".png,.jpg,.jpeg,.svg,.webp,.bmp"]
+)
+var NO_SVG_MAP_FILTER_WEB := PackedStringArray(
+	[".png,.jpg,.jpeg,.webp,.bmp,.map"]
+)
+var SVG_MAP_FILTER_WEB := PackedStringArray(
+	[".png,.jpg,.jpeg,.svg,.webp,.bmp,.map"]
+)
 
 var image := ReactiveImage.new(null)
 
@@ -121,6 +133,16 @@ func _process(_delta: float) -> void:
 
 func _pressed() -> void:
 	if is_web:
+		if allow_svgs:
+			if allow_maps:
+				web_file_dialog.filters = SVG_MAP_FILTER_WEB
+			else:
+				web_file_dialog.filters = SVG_NO_MAP_FILTER_WEB
+		else:
+			if allow_maps:
+				web_file_dialog.filters = NO_SVG_MAP_FILTER_WEB
+			else:
+				web_file_dialog.filters = NO_SVG_NO_MAP_FILTER_WEB
 		web_file_dialog.show()
 	else:
 		if allow_svgs:
