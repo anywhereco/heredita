@@ -82,7 +82,11 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			for marking: Variant in map_data["markings"]:
 				@warning_ignore("unsafe_call_argument")
 				if marking is Dictionary and _valid_serialized_marking(marking):
-					if package_version < 4:
+					if package_version == 3:
+						if map_data.has("pixel_size") and Verify.is_numeric(map_data["pixel_size"]):
+							@warning_ignore("unsafe_call_argument")
+							marking["position"] /= map_data["pixel_size"]
+					elif package_version < 3:
 						marking["position"] *= 32/3.0
 					md.markings.append(marking)
 		md.map_width = image_size.x
@@ -101,7 +105,7 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 		if map_data.has("pixel_size") and Verify.is_numeric(map_data["pixel_size"]):
 			@warning_ignore("unsafe_call_argument")
 			md.pixel_size = map_data["pixel_size"]
-		if md.calendar == null:
+		if md.pixel_size == null:
 			md.pixel_size = DEFAULT_PIXEL_SIZE
 	return md
 
