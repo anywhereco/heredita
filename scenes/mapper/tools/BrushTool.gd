@@ -8,6 +8,7 @@ var paint_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 var target_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 var is_targeted: ReactiveBool = ReactiveBool.new(true)
 var _last_sent_pos := Vector2(-INF, -INF)
+var _last_painted_pos := Vector2(-INF, -INF)
 
 
 func _init() -> void:
@@ -78,6 +79,7 @@ func brush_events(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		is_painting = true
 		_last_sent_pos = Vector2(-INF, -INF)
+		_last_painted_pos = Vector2(-INF, -INF)
 	if (
 		event is InputEventMouseButton
 		and not event.pressed
@@ -109,6 +111,7 @@ func _update_brush() -> void:
 	var mod: Color = paint_color.value * (Settings.getv("map_brightness") as float)
 	mod.a = 0.5
 	Map._instance.preview_plane.modulate = mod
+	_last_painted_pos = Vector2(-INF, -INF)
 
 
 func _send_brush_update(pos: Vector2) -> void:
@@ -123,9 +126,11 @@ func _send_brush_update(pos: Vector2) -> void:
 
 func _process(_delta: float) -> void:
 	if is_painting:
-		brush_action(size, paint_color.value, target_color.value)
+		var cur_pos := Map._instance.map_pos.value
+		if cur_pos != _last_painted_pos:
+			_last_painted_pos = cur_pos
+			brush_action(size, paint_color.value, target_color.value)
 		if State.client:
-			var cur_pos := Map._instance.map_pos.value
 			if cur_pos != _last_sent_pos:
 				_last_sent_pos = cur_pos
 				_send_brush_update(cur_pos)

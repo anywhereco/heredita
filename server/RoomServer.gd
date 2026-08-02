@@ -346,11 +346,14 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 
 func revert_peer_drawing(peer: int) -> void:
 	var user: int = room.players.getv(peer).peer_id
-	for x in room.map.image.get_width():
-		for y in room.map.image.get_height():
-			if room.map.map_last_painter[y * room.map.map_width + x] == user:
-				room.map.image.set_pixel(x, y, room.map.map_last_color[y * room.map.map_width + x])
-				room.map.map_last_painter[y * room.map.map_width + x] = -2
+	var pixel_list: PackedInt32Array = room.map.map_player_pixels.get(user, PackedInt32Array())
+	for index in pixel_list:
+		if room.map.map_last_painter[index] == user:
+			var x := index % room.map.map_width
+			var y := index / room.map.map_width
+			room.map.image.set_pixel(x, y, room.map.map_last_color[index])
+			room.map.map_last_painter[index] = -2
+	room.map.map_player_pixels.erase(user)
 
 	send_binary_event(ISUtil.BinaryEvents.FORCE_RESYNC_MAP, room.map.serialize())
 

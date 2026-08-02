@@ -10,6 +10,9 @@ static var DEFAULT_CALENDAR := Calendar.new(12, 1984): # heh
 var image: Image
 var map_last_painter := PackedInt32Array()
 var map_last_color := PackedColorArray()
+## peer_id -> flattened pixel indices (y * map_width + x) that peer has written
+## only populated on the server
+var map_player_pixels: Dictionary[int, PackedInt32Array] = {}
 var map_width := -1
 var markings: Array[Dictionary] = []
 
@@ -89,6 +92,7 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.map_last_painter.fill(-2)
 			md.map_last_color.resize(image_size.x * image_size.y)
 			md.map_last_color.fill(Color.TRANSPARENT)
+			md.map_player_pixels = {}
 	if package_version >= 2: # Calendar
 		if map_data.has("calendar") and map_data["calendar"] is Dictionary:
 			@warning_ignore("unsafe_call_argument")
@@ -243,8 +247,12 @@ func set_pixels_at_targeted(
 			continue
 		var img_color := image.get_pixelv(pos)
 		if img_color.is_equal_approx(target):
-			map_last_color[int(pos.y * map_width + pos.x)] = img_color
-			map_last_painter[int(pos.y * map_width + pos.x)] = peer
+			var index := int(pos.y * map_width + pos.x)
+			map_last_color[index] = img_color
+			map_last_painter[index] = peer
+			if not map_player_pixels.has(peer):
+				map_player_pixels[peer] = PackedInt32Array()
+			map_player_pixels[peer].append(index)
 			image.set_pixelv(Vector2i(pos), color)
 
 func set_pixels_at(
@@ -256,8 +264,12 @@ func set_pixels_at(
 			continue
 		var img_color := image.get_pixelv(pos)
 		if img_color.a > 0:
-			map_last_color[int(pos.y * map_width + pos.x)] = img_color
-			map_last_painter[int(pos.y * map_width + pos.x)] = peer
+			var index := int(pos.y * map_width + pos.x)
+			map_last_color[index] = img_color
+			map_last_painter[index] = peer
+			if not map_player_pixels.has(peer):
+				map_player_pixels[peer] = PackedInt32Array()
+			map_player_pixels[peer].append(index)
 			image.set_pixelv(Vector2i(pos), color)
 
 func set_pixels_at_maybe_targeted(
