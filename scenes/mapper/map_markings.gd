@@ -1,6 +1,8 @@
 class_name MapMarkings
 extends Node3D
 
+@onready var map: Map = $".."
+
 @onready var cities_mesh: MultiMeshInstance3D = $Cities
 @onready var forts_mesh: MultiMeshInstance3D = $Forts
 @onready var text_meshes: Node3D = $TextMeshes
@@ -37,11 +39,11 @@ var labels: Dictionary[String, Label3D] = {}
 	func get_mesh_scale() -> Vector3:
 		return Vector3.ONE * CITY_MESH_SCALE
 
-	func to_data() -> Dictionary:
+	func to_data(pixel_size: float) -> Dictionary:
 		return {
 			"id": id,
 			"marking_type": marking_type,
-			"position": ISUtil.from_vec2(position),
+			"position": ISUtil.from_vec2(position / pixel_size),
 			"scale": scale,
 			"rotation": rotation,
 			"color": ISUtil.from_color(color),
@@ -115,6 +117,7 @@ func set_markings(data: Array[Dictionary]) -> void:
 	labels.clear()
 	for marking: Dictionary in data:
 		var object := MapObject.from_data(marking)
+		object.position *= map.pixel_size
 		if object:
 			map_objects[object.id] = object
 	rebuild()
@@ -123,7 +126,7 @@ func set_markings(data: Array[Dictionary]) -> void:
 func serialize_markings() -> Array[Dictionary]:
 	var data: Array[Dictionary] = []
 	for object: MapObject in map_objects.values():
-		data.append(object.to_data())
+		data.append(object.to_data(map.pixel_size))
 	return data
 
 
