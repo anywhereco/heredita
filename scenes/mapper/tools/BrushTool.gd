@@ -111,6 +111,7 @@ func _update_brush() -> void:
 	var mod: Color = paint_color.value * (Settings.getv("map_brightness") as float)
 	mod.a = 0.5
 	Map._instance.preview_plane.modulate = mod
+	_last_painted_pos = Vector2(-INF, -INF)
 
 
 func _send_brush_update(pos: Vector2) -> void:
