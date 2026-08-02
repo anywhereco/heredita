@@ -17,7 +17,7 @@ var calendar: Calendar = DEFAULT_CALENDAR
 
 var pixel_size: float = DEFAULT_PIXEL_SIZE 
 
-const PACKAGE_VERSION = 3
+const PACKAGE_VERSION = 4
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -82,6 +82,8 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			for marking: Variant in map_data["markings"]:
 				@warning_ignore("unsafe_call_argument")
 				if marking is Dictionary and _valid_serialized_marking(marking):
+					if package_version < 3:
+						marking["position"] *= 32/3.0
 					md.markings.append(marking)
 		md.map_width = image_size.x
 		if is_server:
