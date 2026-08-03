@@ -119,6 +119,7 @@ func _ready():
 	if Engine.is_editor_hint():
 		update_configuration_warnings()
 
+func register():
 	if is_web:
 		JavaScriptBridge.eval(js_snippet)
 		interface = JavaScriptBridge.get_interface("html5filedialoginterface")
