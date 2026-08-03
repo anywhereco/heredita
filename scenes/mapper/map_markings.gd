@@ -50,7 +50,7 @@ var labels: Dictionary[String, Label3D] = {}
 			"name": name
 		}
 
-	static func from_data(data: Dictionary) -> MapObject:
+	static func from_data(data: Dictionary, pixel_size: float) -> MapObject:
 		if not MapData._valid_serialized_marking(data):
 			return null
 		var object: MapObject
@@ -63,7 +63,7 @@ var labels: Dictionary[String, Label3D] = {}
 		object.id = data["id"]
 		object.marking_type = data["marking_type"]
 		@warning_ignore("unsafe_call_argument")
-		object.position = ISUtil.to_vec2(data["position"])
+		object.position = ISUtil.to_vec2(data["position"]) * pixel_size
 		object.scale = data.get("scale", 1.0)
 		object.rotation = data.get("rotation", 0.0)
 		@warning_ignore("unsafe_call_argument")
@@ -116,8 +116,7 @@ func set_markings(data: Array[Dictionary]) -> void:
 		label.queue_free()
 	labels.clear()
 	for marking: Dictionary in data:
-		var object := MapObject.from_data(marking)
-		object.position *= map.pixel_size
+		var object := MapObject.from_data(marking, map.pixel_size)
 		if object:
 			map_objects[object.id] = object
 	rebuild()
@@ -136,7 +135,7 @@ func apply_update(details: Dictionary) -> void:
 	if not MapData._valid_marking_id(id):
 		return
 	if op == "create":
-		var object := MapObject.from_data(details)
+		var object := MapObject.from_data(details, map.pixel_size)
 		if object:
 			map_objects[id] = object
 	elif op == "delete":

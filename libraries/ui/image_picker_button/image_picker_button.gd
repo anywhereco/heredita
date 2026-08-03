@@ -143,6 +143,7 @@ func _pressed() -> void:
 				web_file_dialog.filters = NO_SVG_MAP_FILTER_WEB
 			else:
 				web_file_dialog.filters = NO_SVG_NO_MAP_FILTER_WEB
+		web_file_dialog.register()
 		web_file_dialog.show()
 	else:
 		if allow_svgs:
