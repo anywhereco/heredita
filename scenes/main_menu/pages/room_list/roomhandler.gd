@@ -23,16 +23,55 @@ var _loading_prompt_label: Label
 var _buffered_map_data: PackedByteArray = PackedByteArray()
 var _mapper_ready := false
 
+var _mapper_preload_started := false
+var _mapper_preloaded_scene: PackedScene
+
 
 func _ready() -> void:
 	_instance = self
 	loading_placeholder_text = loading_placeholder_label.text
+	_preload_mapper()
 	_load_rooms()
 
 
 func _process(delta: float) -> void:
 	if _game_loading:
 		_update_game_loading(delta)
+	elif _mapper_preload_started and not OS.has_feature("web") and _mapper_preloaded_scene == null:
+		_update_mapper_preload()
+
+
+func _preload_mapper() -> void:
+	# Kick the mapper scene load off early, while the user is still browsing
+	# rooms, so joining a room later is just an instantiate from cache.
+	if _mapper_preload_started or _mapper_preloaded_scene != null:
+		return
+	_mapper_preload_started = true
+	if OS.has_feature("web"):
+		# On Web the threaded loader can stall mid-load (see enter_mapper), so
+		# preload synchronously at an idle moment instead.
+		_preload_mapper_on_web.call_deferred()
+	else:
+		var err := ResourceLoader.load_threaded_request(MAPPER_3D_PATH, "PackedScene", false)
+		if err != OK:
+			_mapper_preload_started = false
+
+
+func _preload_mapper_on_web() -> void:
+	_mapper_preloaded_scene = ResourceLoader.load(MAPPER_3D_PATH) as PackedScene
+	_mapper_preload_started = false
+
+
+func _update_mapper_preload() -> void:
+	match ResourceLoader.load_threaded_get_status(MAPPER_3D_PATH):
+		ResourceLoader.THREAD_LOAD_LOADED:
+			_mapper_preloaded_scene = ResourceLoader.load_threaded_get(
+				MAPPER_3D_PATH
+			) as PackedScene
+			_mapper_preload_started = false
+		ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			# Let enter_mapper retry with a fresh load.
+			_mapper_preload_started = false
 
 
 func _load_rooms() -> void:
@@ -86,6 +125,26 @@ func enter_mapper(map: MapData = null) -> void:
 	_game_load_progress.clear()
 	_set_game_load_detail("Preparing mapper...")
 
+	if _mapper_preloaded_scene != null:
+		# The background preload already finished, so just swap scenes.
+		_game_load_finishing = true
+		_set_spinner_indeterminate()
+		_set_game_load_detail("Starting mapper...")
+		_finish_mapper_load.call_deferred()
+		return
+
+	if OS.has_feature("web"):
+		# On Web the threaded loader stalls partway (typically ~40%): the load
+		# runs on an emscripten worker and can't get past GPU-bound resources
+		# without main-thread rendering work, which the once-per-frame status
+		# poll never triggers. The mapper scene is small, so just load it
+		# synchronously (in a deferred call so the UI frame still renders).
+		_game_load_finishing = true
+		_set_spinner_indeterminate()
+		_set_game_load_detail("Loading mapper resources...")
+		_load_mapper_on_web.call_deferred()
+		return
+
 	var err := ResourceLoader.load_threaded_request(MAPPER_3D_PATH, "PackedScene", false)
 	if err != OK:
 		_fail_game_load("Could not start loading the mapper.")
@@ -130,10 +189,25 @@ func _set_game_loading_text() -> void:
 
 
 func _finish_mapper_load() -> void:
-	var mapper_scene := ResourceLoader.load_threaded_get(MAPPER_3D_PATH) as PackedScene
+	var mapper_scene := _mapper_preloaded_scene
+	_mapper_preloaded_scene = null
+	if mapper_scene == null:
+		mapper_scene = ResourceLoader.load_threaded_get(MAPPER_3D_PATH) as PackedScene
 	if mapper_scene == null:
 		_fail_game_load("Could not load the mapper.")
 		return
+	_finish_mapper_scene(mapper_scene)
+
+
+func _load_mapper_on_web() -> void:
+	var mapper_scene := ResourceLoader.load(MAPPER_3D_PATH) as PackedScene
+	if mapper_scene == null:
+		_fail_game_load("Could not load the mapper.")
+		return
+	_finish_mapper_scene(mapper_scene)
+
+
+func _finish_mapper_scene(mapper_scene: PackedScene) -> void:
 	var mapper := mapper_scene.instantiate() as MapperRoot
 	if mapper == null:
 		_fail_game_load("Could not create the mapper.")
