@@ -36,7 +36,7 @@ func create_marking(position: Vector2) -> void:
 		"op": "create",
 		"id": id,
 		"marking_type": marking_type,
-		"position": ISUtil.from_vec2(position),
+		"position": ISUtil.from_vec2(position/Map._instance.pixel_size) ,
 		"scale": DEFAULT_SCALE,
 		"rotation": 0.0,
 		"color": ISUtil.from_color(ui.create_color_picker.color.value),
