@@ -24,7 +24,7 @@ func _ready() -> void:
 	create_city_button.button_pressed = true
 	create_city_button.pressed.connect(func() -> void: set_create_type("city"))
 	create_fort_button.pressed.connect(func() -> void: set_create_type("fort"))
-	create_color_picker.color.value = Color(0.85, 0.2, 0.15)
+	create_color_picker.color.value = Color(0.85, 0.85, 0.85)
 	delete_city_checkbox.button_pressed = true
 	delete_fort_checkbox.button_pressed = true
 	edit_color_picker.color.value_changed.connect(_edit_color_changed)
