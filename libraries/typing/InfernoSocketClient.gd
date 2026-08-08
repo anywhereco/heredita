@@ -334,8 +334,8 @@ func _poll_string(message: Dictionary) -> void:
 				message_received.emit("is2_player_join", -1, message.get("details"))
 				return
 			"_is2_player_exit":
-				room.players.erase(message.get("details")) # the details field is just an int
 				message_received.emit("is2_player_exit", -1, message.get("details"))
+				room.players.erase(message.get("details")) # the details field is just an int
 				return
 			"_is2_player_status_update":
 				var player: Player = room.players.getv(

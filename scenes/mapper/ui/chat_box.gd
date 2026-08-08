@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-@onready var text_box: LineEdit = find_child("ChatTextBox")
+@onready var text_box: ChatTextBox = find_child("ChatTextBox")
 @onready var send_button: Button = find_child("ChatSendButton")
 @onready var scroll: ScrollContainer = find_child("ChatScroll")
 @onready var messages: RichTextLabel = find_child("ChatMessages")
@@ -35,7 +35,8 @@ func _process(delta: float) -> void:
 		if typing_timer == 0:
 			State.client.send("typing_status", 0)
 
-func is_typing(text: String) -> void:
+func is_typing() -> void:
+	var text := text_box.text
 	if text:
 		if typing_timer == 0:
 			State.client.send("typing_status", 1)
@@ -64,7 +65,10 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 		add_chat_message(user_id, message as String)
 	elif event == "is2_player_join":
 		var player: Player = State.room.players.getv(message["player_id"])
-		add_message("%s joined the room" % player.username)
+		add_message("[b]%s joined the room[/b]" % player.username)
+	elif event == "is2_player_exit":
+		var player: Player = State.room.players.getv(message)
+		add_message("[b]%s left the room[/b]" % player.username)
 	elif event == "is2_player_status_update":
 		if State.player.status.get("muted", false) and not muted_text:
 			text_box.editable = false
@@ -83,7 +87,7 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 func add_chat_message(sender_id: int, message: String) -> void:
 	var player: Player = State.room.players.getv(sender_id)
 	add_message(
-		"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username), TextFilter.filter_text(Markdown.bb_escape(message))]
+		"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username), Markdown.bb_escape(TextFilter.filter_text(message))]
 	)
 
 
