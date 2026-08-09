@@ -94,8 +94,6 @@ scroll_v_scroll_speed = 10.0
 
 [node name="Password" type="LineEdit" parent="HBoxContainer/MainPrompt" unique_id=683002425]
 unique_name_in_owner = true
-editor_description = "I hid this for now since it's broken"
-visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 placeholder_text = "roomcreate/password.placeholder"

@@ -86,10 +86,18 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 
 func add_chat_message(sender_id: int, message: String) -> void:
 	var player: Player = State.room.players.getv(sender_id)
-	add_message(
-		"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username), Markdown.bb_escape(TextFilter.filter_text(message))]
-	)
-
+	var main_name: String = player.status.get("rp_name", player.username)
+	if player.status.has("rp_name"):
+		add_message(
+			"[b]%s[/b] (%s): %s" % [Markdown.bb_escape(main_name),
+									Markdown.bb_escape(player.username),
+									Markdown.bb_escape(TextFilter.filter_text(message))]
+		)
+	else:
+		add_message(
+			"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username),
+							   Markdown.bb_escape(TextFilter.filter_text(message))]
+		)
 
 func add_message(message: String) -> void:
 	var newline := "\n" if messages_text_full else ""

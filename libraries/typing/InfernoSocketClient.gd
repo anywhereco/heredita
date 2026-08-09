@@ -373,4 +373,6 @@ func _process(delta: float) -> void:
 		#print("client: socket state %s" % socket.get_ready_state())
 		send("_is2_ping")
 		ping_timer -= PING_INTERVAL
+	if socket.get_ready_state() == socket.STATE_CLOSED:
+		queue_free()
 #endregion

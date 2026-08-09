@@ -6,7 +6,7 @@ static var _local_inst: PlayerMovement
 var local: bool = true
 
 var frame_data: Dictionary = {}  #outgoing if local, incoming if non-local
-var new_player: bool = true  #used to send data if a new player joins
+var requested_update: bool = true  #used to send data if a new player joins
 
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var camera: PlayerCamera3D = $CameraPivot/CameraArm/PlayerCamera
@@ -37,20 +37,15 @@ var typing: bool = false
 func _ready() -> void:
 	if local:
 		if State.client:
-			State.client.message_received.connect(received_message)
+			State.client.message_received.connect(received_message_local)
 		_local_inst = self
 	else:
-		State.client.message_received.connect(received_message_local)
+		State.client.message_received.connect(received_message)
 		$CameraPivot.queue_free()
 		$Name.show()
 
 
-func received_message(event: String, _player_id: int, _details: Variant) -> void:
-	if event == "is2_player_join":
-		new_player = true
-
-
-func received_message_local(event: String, _player_id: int, details: Variant) -> void:
+func received_message(event: String, _player_id: int, details: Variant) -> void:
 	if event == "is2_player_status_update":
 		if details.get("player_id") == int(name):
 			var player: Player = State.room.players.getv(int(name))
@@ -69,6 +64,18 @@ func received_message_local(event: String, _player_id: int, details: Variant) ->
 				typing = !typing
 				$TypingIndicator.visible = typing
 
+func received_message_local(event: String, _player_id: int, details: Variant) -> void:
+	if event == "player_update_request":
+		requested_update = true
+	if event == "is2_player_status_update":
+		if details.get("player_id") == State.client.player_id:
+			var player: Player = State.player
+			var rp_name: String = player.status.get("rp_name", "")
+			if rp_name:
+				$Name.show()
+				$Name.text = rp_name
+			else:
+				$Name.hide()
 
 func setup_velocity(direction: Vector3, delta: float) -> void:
 	var target_vel := (
@@ -166,7 +173,7 @@ func _physics_process(delta: float) -> void:
 				"jump": jump
 			}
 			if State.client:
-				if old_frame_data != frame_data or new_player:
+				if old_frame_data != frame_data or requested_update:
 					State.client.send_binary(
 						ISUtil.BinaryEvents.AVATAR_UPDATE,
 						0,
@@ -174,7 +181,7 @@ func _physics_process(delta: float) -> void:
 							position, rotation, velocity, camera_rotation, jump
 						)
 					)
-					new_player = false
+					requested_update = false
 
 
 func add_bubble(message: String) -> void:
@@ -233,4 +240,10 @@ func _process(_delta: float) -> void:
 		$Name.visible = name_distance < MAX_NAME_VIEW_DISTANCE
 		$RealName.pixel_size = 0.0015 * sqrt(name_distance)
 		$RealName.visible = using_rp_name and name_distance < MAX_NAME_VIEW_DISTANCE
+	else:
+		@warning_ignore("unsafe_call_argument")
+		var name_distance: float = get_tree().root.get_camera_3d().global_position.distance_to(
+			$Name.global_position
+		)
+		$Name.pixel_size = 0.0025 * sqrt(name_distance)
 	sort_bubbles()
