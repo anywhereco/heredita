@@ -25,7 +25,6 @@
 [ext_resource type="Script" uid="uid://boffekhvui4ql" path="res://scenes/mapper/ui/toolui/brush.gd" id="12_2eddf"]
 [ext_resource type="Texture2D" uid="uid://5530a3jumjn0" path="res://assets/icons/calendar/pause.svg" id="12_c8yws"]
 [ext_resource type="Script" uid="uid://btsw18v24f6h4" path="res://scenes/mapper/ui/calendar/time.gd" id="12_m62g0"]
-[ext_resource type="Script" uid="uid://boj66ccjdmq6n" path="res://libraries/ui/Unfocus.gd" id="12_vdunj"]
 [ext_resource type="FontVariation" uid="uid://hwc3xdnlf3ke" path="res://assets/font/_variants/pro450.tres" id="12_wbt2f"]
 [ext_resource type="Script" uid="uid://4l3n0jimw2sw" path="res://scenes/mapper/ui/chat_box.gd" id="14_0eah7"]
 [ext_resource type="Texture2D" uid="uid://b8edvgt68hm01" path="res://assets/icons/calendar/gear-full.svg" id="15_5g5qp"]
@@ -35,6 +34,7 @@
 [ext_resource type="Script" uid="uid://db4sp2bv2gtaq" path="res://scenes/mapper/ui/mod_tools_button.gd" id="16_xvqbn"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://chvgaply4i4bc" path="res://assets/icons/topbar/theaterfaces.svg" id="19_3obms"]
+[ext_resource type="Script" uid="uid://dym08n4klnka1" path="res://scenes/mapper/ui/chat_text_box.gd" id="23_3obms"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
 [ext_resource type="Texture2D" uid="uid://0fs4gs4hvf7w" path="res://assets/icons/tools/markings.svg" id="25_v8jk4"]
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
@@ -351,7 +351,7 @@ focus_behavior_recursive = 1
 mouse_filter = 2
 
 [node name="RightItems" type="VBoxContainer" parent="MenubarContainer/Bottom/ChatSplit" unique_id=1861129681]
-custom_minimum_size = Vector2(210, 0)
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 10
 script = SubResource("GDScript_m62g0")
@@ -402,14 +402,17 @@ vertical_alignment = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox" unique_id=1323825566]
 layout_mode = 2
 
-[node name="ChatTextBox" type="LineEdit" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/HBoxContainer" unique_id=1138606363]
+[node name="ChatTextBox" type="TextEdit" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/HBoxContainer" unique_id=549446115]
+custom_minimum_size = Vector2(0, 35)
+custom_maximum_size = Vector2(-1, 133)
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Message"
 editable = false
-keep_editing_on_text_submit = true
 context_menu_enabled = false
-script = ExtResource("12_vdunj")
+wrap_mode = 1
+scroll_fit_content_height = true
+script = ExtResource("23_3obms")
 
 [node name="ChatSendButton" type="Button" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/HBoxContainer" unique_id=1750327156]
 layout_mode = 2

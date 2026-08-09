@@ -15,8 +15,8 @@ func _ready() -> void:
 	if State.room:
 		State.client.message_received.connect(message_received)
 		State.room.players.value_changed.connect(refresh_players)
-	refresh_players(State.room.players)
-
+		refresh_players(State.room.players)
+		State.client.send("player_update_request")
 
 func purge_paint_player(player_id: int) -> void:
 	InfoPrompt.custom_prompt(

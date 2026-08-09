@@ -42,7 +42,7 @@ func _load_rooms() -> void:
 	loading_placeholder_label.text = loading_placeholder_text
 
 	var children := get_children()
-	for i in range(1, children.size() - 1):  # Exclude the first since that's a loading indicator, and the last since that's the creation buttons
+	for i in range(0, children.size() - 2):  # Exclude the last two since they're a loading indicator and the creation buttons
 		var child_to_delete := children[i]
 		child_to_delete.queue_free()
 	
@@ -72,6 +72,7 @@ func _load_rooms() -> void:
 				friends
 			)
 		)
+	move_child(loading_placeholder, -1)
 	move_child(create, -1)
 	loading_placeholder.hide()
 
