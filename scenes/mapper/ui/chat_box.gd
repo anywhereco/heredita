@@ -66,9 +66,11 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 	elif event == "is2_player_join":
 		var player: Player = State.room.players.getv(message["player_id"])
 		add_message("[b]%s joined the room[/b]" % player.username)
+		log_message("%s joined the room" % player.username)
 	elif event == "is2_player_exit":
 		var player: Player = State.room.players.getv(message)
 		add_message("[b]%s left the room[/b]" % player.username)
+		log_message("%s left the room" % player.username)
 	elif event == "is2_player_status_update":
 		if State.player.status.get("muted", false) and not muted_text:
 			text_box.editable = false
@@ -93,20 +95,25 @@ func add_chat_message(sender_id: int, message: String) -> void:
 									Markdown.bb_escape(player.username),
 									Markdown.bb_escape(TextFilter.filter_text(message))]
 		)
+		log_message("%s (%s): %s" % [main_name, player.username, message])
 	else:
 		add_message(
 			"[b]%s[/b]: %s" % [Markdown.bb_escape(player.username),
 							   Markdown.bb_escape(TextFilter.filter_text(message))]
 		)
+		log_message("%s: %s" % [player.username, message])
 
 func add_message(message: String) -> void:
-	var newline := "\n" if messages_text_full else ""
+	var newline := "\n" if messages.text else ""
 	@warning_ignore("unsafe_call_argument")
-	messages_text_full += newline + message
 	messages.text += newline + message
 	if messages.text.get_slice_count("\n") > MAX_LINES:
 		messages.text = messages.text.substr(messages.text.find("\n")+1)
-	
+		
+func log_message(message: String) -> void:
+	var newline := "\n" if messages_text_full else ""
+	@warning_ignore("unsafe_call_argument")
+	messages_text_full += newline + message
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if text_box.has_focus():

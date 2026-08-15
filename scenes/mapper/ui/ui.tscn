@@ -35,6 +35,7 @@
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://chvgaply4i4bc" path="res://assets/icons/topbar/theaterfaces.svg" id="19_3obms"]
 [ext_resource type="Script" uid="uid://dym08n4klnka1" path="res://scenes/mapper/ui/chat_text_box.gd" id="23_3obms"]
+[ext_resource type="Script" uid="uid://bd3lc5cjvbrn6" path="res://scenes/mapper/ui/chat_save_log.gd" id="23_17bel"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
 [ext_resource type="Texture2D" uid="uid://0fs4gs4hvf7w" path="res://assets/icons/tools/markings.svg" id="25_v8jk4"]
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
@@ -398,6 +399,27 @@ scroll_active = false
 scroll_following = true
 scroll_following_visible_characters = true
 vertical_alignment = 2
+
+[node name="ChatOverlay" type="Control" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/PanelContainer/MarginContainer" unique_id=1882951179]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ChatSaveLog" type="Button" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/PanelContainer/MarginContainer/ChatOverlay" unique_id=696502432]
+custom_minimum_size = Vector2(45, 0)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -60.0
+offset_bottom = 38.0
+grow_horizontal = 0
+theme_type_variation = &"ToolButton"
+theme_override_font_sizes/font_size = 14
+text = "  Save log  "
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+script = ExtResource("23_17bel")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox" unique_id=1323825566]
 layout_mode = 2
