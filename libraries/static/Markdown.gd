@@ -4,7 +4,6 @@ class_name Markdown
 static func bb_escape(bbcode_text: String) -> String:  #technically not a markdown function but theres no better place to put it
 	return bbcode_text.replace("[", "[lb]")
 
-
 static func parse_markdown(text: String) -> Dictionary:
 	var idx := 0
 	var parsed := {t = "text", c = [""], p = null, i = null}  #type, content, parent

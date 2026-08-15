@@ -12,6 +12,11 @@ func _map_ready() -> void:
 
 
 func marking_events(event: InputEvent) -> void:
+	if event.is_action_pressed("pick_paint"):
+		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
+		if color.a == 1:
+			UIRoot._instance.marking_ui.create_color_picker.color.value = color
+			UIRoot._instance.marking_ui.edit_color_picker.color.value = color
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
 		return
 	var world_pos := PlayerMovement._local_inst.mouse_pos_on_map()
