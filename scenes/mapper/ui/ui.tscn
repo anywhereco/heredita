@@ -32,6 +32,7 @@
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
 [ext_resource type="Script" uid="uid://dhpdfhubeju8m" path="res://scenes/mapper/ui/change_name_button.gd" id="16_v8jk4"]
 [ext_resource type="Script" uid="uid://db4sp2bv2gtaq" path="res://scenes/mapper/ui/mod_tools_button.gd" id="16_xvqbn"]
+[ext_resource type="Script" uid="uid://3ri038ajklmy" path="res://scenes/mapper/ui/load_button.gd" id="17_76pl1"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://chvgaply4i4bc" path="res://assets/icons/topbar/theaterfaces.svg" id="19_3obms"]
 [ext_resource type="Script" uid="uid://dym08n4klnka1" path="res://scenes/mapper/ui/chat_text_box.gd" id="23_3obms"]
@@ -222,19 +223,6 @@ vertical_icon_alignment = 0
 expand_icon = true
 script = ExtResource("5_rdvpr")
 
-[node name="Load" type="Button" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1823015420]
-visible = false
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-disabled = true
-text = "  Load  "
-icon = ExtResource("5_580mp")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-
 [node name="Spacer" type="Control" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1787439979]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -296,7 +284,20 @@ icon = ExtResource("15_5g5qp")
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=713196267]
 layout_mode = 2
+theme_override_constants/separation = 8
 alignment = 2
+
+[node name="Load" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=327612633]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+theme_override_font_sizes/font_size = 14
+text = "  Load  "
+icon = ExtResource("5_580mp")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+script = ExtResource("17_76pl1")
 
 [node name="ModTools" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=2093026585]
 custom_minimum_size = Vector2(50, 0)
@@ -315,12 +316,24 @@ custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_type_variation = &"ToolButton"
 theme_override_font_sizes/font_size = 14
-text = " Change Name "
+text = " Alias "
 icon = ExtResource("19_3obms")
 icon_alignment = 1
 vertical_icon_alignment = 0
 expand_icon = true
 script = ExtResource("16_v8jk4")
+
+[node name="ChatSaveLog" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=696502432]
+custom_minimum_size = Vector2(45, 0)
+layout_mode = 2
+theme_type_variation = &"ToolButton"
+theme_override_font_sizes/font_size = 14
+text = "  Save log  "
+icon = ExtResource("4_n7ck4")
+icon_alignment = 1
+vertical_icon_alignment = 0
+expand_icon = true
+script = ExtResource("23_17bel")
 
 [node name="SideSpacer2" type="Control" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=1382616942]
 custom_minimum_size = Vector2(5, 0)
@@ -399,27 +412,6 @@ scroll_active = false
 scroll_following = true
 scroll_following_visible_characters = true
 vertical_alignment = 2
-
-[node name="ChatOverlay" type="Control" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/PanelContainer/MarginContainer" unique_id=1882951179]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="ChatSaveLog" type="Button" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/PanelContainer/MarginContainer/ChatOverlay" unique_id=696502432]
-custom_minimum_size = Vector2(45, 0)
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -60.0
-offset_bottom = 38.0
-grow_horizontal = 0
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-text = "  Save log  "
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-script = ExtResource("23_17bel")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox" unique_id=1323825566]
 layout_mode = 2

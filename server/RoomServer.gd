@@ -1,6 +1,7 @@
 extends Node
 class_name RoomServer
 
+const TIMEOUT: int = 10000  #ms
 const NOT_VALID_PLAYER_ID = -3
 
 var rid: int = -1
@@ -21,6 +22,18 @@ func get_text_data(peer_id: int) -> Dictionary:
 		peer = ret[0]
 	return ret[1]
 
+func get_binary_data(peer_id: int) -> Dictionary:
+	var peer := 0x7fffffffffffffff
+	var ret: Array
+	while peer != peer_id:
+		var timer := get_tree().create_timer(TIMEOUT)
+		ret = await TimedPromise.new(timer, ws_server.binary_message).done
+		if not ret:  #timed out
+			return {}
+		peer = ret[0]
+	return {
+		"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]
+	}
 
 func parse_json(text: String) -> Result:
 	var json := JSON.new()
@@ -236,6 +249,15 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		"mod:roomblock_creator":
 			var ip: String = room.creator_ip
 			server_controller.roomblock(ip)
+		"load_map":
+			if room.players.getv(peer_player_id(peer_id)).privileged():
+				var msg := await get_binary_data(peer_id)
+				if msg["event"] != ISUtil.BinaryEvents.FORCE_RESYNC_MAP:
+					return false #Dude. Uncool
+				@warning_ignore("unsafe_call_argument")
+				room.map = MapData.deserialize(msg["data"], true)
+				send_binary_event(ISUtil.BinaryEvents.FORCE_RESYNC_MAP, msg["data"])
+			return false
 		"map_update":
 			@warning_ignore("unsafe_call_argument")
 			room.map.get_map_update(data["details"], peer_id)
@@ -367,7 +389,7 @@ func _text_data(peer_id: int, data: Dictionary) -> void:
 		var data_json := Result.ok(data)
 		if ISUtil.valid_event(data_json):
 			@warning_ignore("unsafe_call_argument")
-			if parse_event(data_json.val(), peer_id):
+			if await parse_event(data_json.val(), peer_id):
 				@warning_ignore("unsafe_call_argument")
 				send_event(
 					data_json.val()["event"], data_json.val()["details"], peer_player_id(peer_id)
@@ -401,11 +423,11 @@ func _ready() -> void:
 	tasks.append(Task.new(sync_calendar, 5))
 
 	## ctrl+k this to show the server map
-	var trect := TextureRect.new()
-	trect.texture = ImageTexture.create_from_image(room.map.image)
-	trect.scale = Vector2.ONE / 8
-	tasks.append(Task.new(func() -> void: trect.texture.update(room.map.image), 1))
-	add_child(trect)
+	#var trect := TextureRect.new()
+	#trect.texture = ImageTexture.create_from_image(room.map.image)
+	#trect.scale = Vector2.ONE / 8
+	#tasks.append(Task.new(func() -> void: trect.texture.update(room.map.image), 1))
+	#add_child(trect)
 
 
 func _process(delta: float) -> void:
