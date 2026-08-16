@@ -6,34 +6,34 @@ const DEFAULT_IMAGE = preload("uid://dtur4inp5a2k4")
 
 var error_tween: Tween
 
-var NO_SVG_NO_MAP_FILTER := PackedStringArray(
+static var NO_SVG_NO_MAP_FILTER := PackedStringArray(
 	["*.png,*.jpg,*.jpeg,*.webp,*.bmp;Image Files;image/png,image/jpeg,image/webp,image/bmp"]
 )
-var SVG_NO_MAP_FILTER := PackedStringArray(
+static var SVG_NO_MAP_FILTER := PackedStringArray(
 	[
 		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp;Image Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp"
 	]
 )
-var NO_SVG_MAP_FILTER := PackedStringArray(
+static var NO_SVG_MAP_FILTER := PackedStringArray(
 	[
 		"*.png,*.jpg,*.jpeg,*.webp,*.bmp,*.map;Image and Map Files;image/png,image/jpeg,image/webp,image/bmp,application/heredita-map"
 	]
 )
-var SVG_MAP_FILTER := PackedStringArray(
+static var SVG_MAP_FILTER := PackedStringArray(
 	[
 		"*.png,*.jpg,*.jpeg,*.svg,*.webp,*.bmp,*.map;Image and Map Files;image/png,image/jpeg,image/svg+xml,image/webp,image/bmp,application/heredita-map"
 	]
 )
-var NO_SVG_NO_MAP_FILTER_WEB := PackedStringArray(
+static var NO_SVG_NO_MAP_FILTER_WEB := PackedStringArray(
 	[".png,.jpg,.jpeg,.webp,.bmp"]
 )
-var SVG_NO_MAP_FILTER_WEB := PackedStringArray(
+static var SVG_NO_MAP_FILTER_WEB := PackedStringArray(
 	[".png,.jpg,.jpeg,.svg,.webp,.bmp"]
 )
-var NO_SVG_MAP_FILTER_WEB := PackedStringArray(
+static var NO_SVG_MAP_FILTER_WEB := PackedStringArray(
 	[".png,.jpg,.jpeg,.webp,.bmp,.map"]
 )
-var SVG_MAP_FILTER_WEB := PackedStringArray(
+static var SVG_MAP_FILTER_WEB := PackedStringArray(
 	[".png,.jpg,.jpeg,.svg,.webp,.bmp,.map"]
 )
 

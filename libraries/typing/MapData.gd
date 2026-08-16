@@ -68,6 +68,45 @@ static func read_from_file(path: String) -> Result:
 	var file := FileAccess.open(path, FileAccess.READ)
 	var data := file.get_buffer(file.get_length())
 	return read_from_buffer(data)
+	
+static func create_from_buffer(data: PackedByteArray) -> Result:
+	var _map: MapData
+	var is_map := data.decode_u64(0) == _MAGIC_FILE_HEADER
+	if is_map:
+		var result := read_from_buffer(data)
+		if result.is_ok():
+			_map = result.val()
+	else:
+		var get_image := await _bytes_to_image("png", data) #TODO: fix this heaping mess
+		if get_image.is_ok():
+			_map = MapData.new()
+			_map.image = get_image.val()
+		else:
+			return get_image
+	return Result.ok(_map)
+	
+static func _bytes_to_image(fmt: String, buf: PackedByteArray) -> Result:
+	var buf_stream := StreamPeerBuffer.new()
+	buf_stream.data_array = buf
+	var res := Vector2i.ZERO
+	var _image := Image.new()
+	
+	if fmt in ["png", "bmp", "jpg", "jpeg", "webp"]:
+		res = ImageHeaderReader.get_reader(fmt).read_resolution(buf_stream)
+	
+	match fmt:
+		"png":
+			_image.load_png_from_buffer(buf)
+		"bmp":
+			_image.load_bmp_from_buffer(buf)
+		"jpg", "jpeg":
+			_image.load_jpg_from_buffer(buf)
+		"webp":
+			_image.load_webp_from_buffer(buf)
+	if _image.is_empty():
+		return Result.err(1)
+	_image.convert(Image.FORMAT_RGBA8)
+	return Result.ok(_image)
 
 static func deserialize(serialized: PackedByteArray, is_server: bool = false) -> MapData:
 	var md := MapData.new()
