@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Heredita"
-config/version="0.5.2.3"
+config/version="0.5.3"
 run/main_scene="uid://bxwiva1eghxgy"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Heredita"
