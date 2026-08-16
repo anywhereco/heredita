@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://yb2j237qhuec" path="res://scenes/mapper/ui/ui.tscn" id="2_htv7j"]
 [ext_resource type="Script" uid="uid://bsvdn8owdbv8m" path="res://scenes/mapper/player/network_players.gd" id="3_sm41v"]
 [ext_resource type="Script" uid="uid://clxj0fu6d2g3r" path="res://scenes/mapper/map/map_core.gd" id="6_sm41v"]
+[ext_resource type="Script" uid="uid://b6jsaivilpijj" path="res://scenes/mapper/free_camera.gd" id="7_freecam"]
 [ext_resource type="Script" uid="uid://bsiv8ukmfm4wg" path="res://scenes/mapper/map_markings.gd" id="9_l0uxc"]
 [ext_resource type="ArrayMesh" uid="uid://dtef8pb44sygw" path="res://assets/map/markings/city_mesh.tres" id="10_0kc0x"]
 [ext_resource type="ArrayMesh" uid="uid://tw8id7844a8w" path="res://assets/map/markings/fort_mesh.tres" id="11_fort"]
@@ -114,3 +115,17 @@ directional_shadow_max_distance = 70.0
 
 [node name="Environment" type="WorldEnvironment" parent="." unique_id=2070133541]
 environment = SubResource("Environment_1goaf")
+
+[node name="FreeCamera" type="Node3D" parent="." unique_id=103681106]
+script = ExtResource("7_freecam")
+
+[node name="FreeCameraHUD" type="CanvasLayer" parent="." unique_id=321952408]
+layer = 100
+
+[node name="SpeedLabel" type="Label" parent="FreeCameraHUD" unique_id=395411512]
+visible = false
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 500.0
+offset_bottom = 28.0
+mouse_behavior_recursive = 1
