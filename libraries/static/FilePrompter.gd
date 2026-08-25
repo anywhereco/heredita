@@ -32,6 +32,8 @@ static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedS
 		web_file_dialog.file_mode = HTML5FileDialog.FileMode.OPEN_FILE
 		web_file_dialog.filters = filter_web
 		root.add_child(web_file_dialog, false, root.INTERNAL_MODE_BACK)
+		web_file_dialog.register()
+		web_file_dialog.show()
 		var handle: HTML5FileHandle = await web_file_dialog.file_selected
 		return await handle.as_buffer()
 	else:

@@ -25,7 +25,7 @@ func _ready() -> void:
 	if State.player.privileged():
 		seperator()
 		entry("Load a map", OPENFOLDER, load_map)
-
+	super()
 	
 
 func load_map() -> void:
