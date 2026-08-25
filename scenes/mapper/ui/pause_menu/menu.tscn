@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://c0u25c467ur31"]
+
+[ext_resource type="Texture2D" uid="uid://c0udqbl4trv2i" path="res://assets/logo_large.png" id="1_2yg6o"]
+[ext_resource type="Texture2D" uid="uid://dl2432kvta2xt" path="res://assets/icons/exit.svg" id="2_8k4jq"]
+[ext_resource type="Script" uid="uid://b6wekdyqxe7s" path="res://scenes/mapper/ui/pause_menu/exit_button.gd" id="3_5cy1v"]
+[ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="4_2aofd"]
+[ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/pause_menu/settings_button.gd" id="5_c7mel"]
+[ext_resource type="Texture2D" uid="uid://d0yc4lb4yd1s" path="res://assets/icons/file-map.svg" id="5_e1isu"]
+[ext_resource type="Script" uid="uid://c71dg1pf5xgl3" path="res://scenes/mapper/ui/pause_menu/back_button.gd" id="7_0mayp"]
+
+[node name="PanelContainer" type="PanelContainer" unique_id=1812601549]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -87.0
+offset_right = 75.0
+offset_bottom = 87.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+theme_type_variation = &"TooltipPanelContainer"
+
+[node name="Menu" type="VBoxContainer" parent="." unique_id=920170964]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Menu" unique_id=1927273899]
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+texture = ExtResource("1_2yg6o")
+expand_mode = 5
+stretch_mode = 4
+
+[node name="HSeparator" type="HSeparator" parent="Menu" unique_id=1102337550]
+layout_mode = 2
+
+[node name="BackToRoomButton" type="Button" parent="Menu" unique_id=1732506225]
+layout_mode = 2
+theme_type_variation = &"ColoredButton"
+text = "Back to game"
+icon = ExtResource("5_e1isu")
+script = ExtResource("7_0mayp")
+
+[node name="SettingsButton" type="Button" parent="Menu" unique_id=1335039403]
+layout_mode = 2
+theme_type_variation = &"ColoredButton"
+text = "Settings"
+icon = ExtResource("4_2aofd")
+script = ExtResource("5_c7mel")
+
+[node name="ExitRoomButton" type="Button" parent="Menu" unique_id=955346617]
+layout_mode = 2
+theme_type_variation = &"ColoredButton"
+text = "Exit the room"
+icon = ExtResource("2_8k4jq")
+script = ExtResource("3_5cy1v")
