@@ -2,22 +2,19 @@
 
 [ext_resource type="Script" uid="uid://8x5gnweq47eb" path="res://scenes/mapper/ui/ui_root.gd" id="1_em4te"]
 [ext_resource type="Material" uid="uid://dayrr5lupf1h2" path="res://scenes/_shared/glass.tres" id="2_tv71d"]
-[ext_resource type="Texture2D" uid="uid://dl2432kvta2xt" path="res://assets/icons/exit.svg" id="3_2eddf"]
 [ext_resource type="Script" uid="uid://b6i1m2ju6n7mu" path="res://libraries/ui/BumpedPanelContainer.gd" id="3_y5csc"]
+[ext_resource type="Texture2D" uid="uid://bpcrhc7xh8epg" path="res://assets/icons/menu.svg" id="4_76pl1"]
+[ext_resource type="Texture2D" uid="uid://d0yc4lb4yd1s" path="res://assets/icons/file-map.svg" id="4_d3sgq"]
 [ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="4_itatv"]
-[ext_resource type="Script" uid="uid://b6wekdyqxe7s" path="res://scenes/mapper/ui/exit_button.gd" id="4_m4x71"]
-[ext_resource type="Texture2D" uid="uid://bvjemq5dgx8om" path="res://assets/icons/floppy.svg" id="4_n7ck4"]
 [ext_resource type="Texture2D" uid="uid://bf21ocaw21o0l" path="res://assets/icons/_REDO_send.svg" id="4_rh4gq"]
-[ext_resource type="Texture2D" uid="uid://5aj3tv2mf361" path="res://assets/icons/gear.svg" id="5_5g7k5"]
-[ext_resource type="Texture2D" uid="uid://btb4jabo6nmoe" path="res://assets/icons/openfolder.svg" id="5_580mp"]
-[ext_resource type="Script" uid="uid://0hayhtf85w6v" path="res://scenes/mapper/ui/settings.gd" id="5_jj21m"]
-[ext_resource type="Script" uid="uid://82u1nskr1k2o" path="res://scenes/mapper/ui/export_button.gd" id="5_rdvpr"]
-[ext_resource type="Texture2D" uid="uid://dtur4inp5a2k4" path="res://assets/icons/image.svg" id="6_rdvpr"]
+[ext_resource type="Script" uid="uid://dwia3c6f1ihg8" path="res://scenes/mapper/ui/menu_button.gd" id="5_76pl1"]
 [ext_resource type="FontVariation" uid="uid://dci33svbxkhv6" path="res://assets/font/_variants/pro650.tres" id="6_wbt2f"]
 [ext_resource type="Script" uid="uid://cyue2b6ml14cg" path="res://scenes/mapper/ui/toolui/tool_changer.gd" id="7_0sgq1"]
+[ext_resource type="Script" uid="uid://th886sncvjeg" path="res://scenes/mapper/ui/map_button.gd" id="7_r38pq"]
 [ext_resource type="Texture2D" uid="uid://b75i52xuegece" path="res://assets/icons/tools/brush.svg" id="8_2eddf"]
+[ext_resource type="Texture2D" uid="uid://cqnebsifeyeex" path="res://assets/icons/file-overlay.svg" id="8_eqxxf"]
 [ext_resource type="Texture2D" uid="uid://c1f7wmtt6awxc" path="res://assets/icons/tools/inprogress.png" id="8_tv71d"]
-[ext_resource type="Script" uid="uid://5xbmllolc8ya" path="res://scenes/mapper/ui/save_button.gd" id="9_puon5"]
+[ext_resource type="Script" uid="uid://dpx7d3kxsm01n" path="res://scenes/mapper/ui/overlay_button.gd" id="9_puon5"]
 [ext_resource type="Script" uid="uid://c3107fy0fo6nv" path="res://scenes/mapper/ui/toolui/tool_ui.gd" id="9_x7h6p"]
 [ext_resource type="Script" uid="uid://cccfbeboro2t7" path="res://scenes/mapper/ui/toolui/tool_ui_container.gd" id="10_tv71d"]
 [ext_resource type="PackedScene" uid="uid://ciprbhp7oi7jo" path="res://scenes/mapper/ui/toolui/color_picker.tscn" id="11_mey8b"]
@@ -32,9 +29,9 @@
 [ext_resource type="Script" uid="uid://b7ubdvwh8kpkq" path="res://scenes/mapper/ui/player_list/player_list.gd" id="16_i44o3"]
 [ext_resource type="Script" uid="uid://dhpdfhubeju8m" path="res://scenes/mapper/ui/change_name_button.gd" id="16_v8jk4"]
 [ext_resource type="Script" uid="uid://db4sp2bv2gtaq" path="res://scenes/mapper/ui/mod_tools_button.gd" id="16_xvqbn"]
-[ext_resource type="Script" uid="uid://3ri038ajklmy" path="res://scenes/mapper/ui/load_button.gd" id="17_76pl1"]
 [ext_resource type="Script" uid="uid://j2x0souh6d7c" path="res://libraries/ui/PinnedScrollContainer.gd" id="18_v8jk4"]
 [ext_resource type="Texture2D" uid="uid://chvgaply4i4bc" path="res://assets/icons/topbar/theaterfaces.svg" id="19_3obms"]
+[ext_resource type="Texture2D" uid="uid://djs6yg7hms2xm" path="res://assets/icons/chat-file.svg" id="22_d3sgq"]
 [ext_resource type="Script" uid="uid://dym08n4klnka1" path="res://scenes/mapper/ui/chat_text_box.gd" id="23_3obms"]
 [ext_resource type="Script" uid="uid://bd3lc5cjvbrn6" path="res://scenes/mapper/ui/chat_save_log.gd" id="23_17bel"]
 [ext_resource type="Texture2D" uid="uid://c4yv3vyc3cf5u" path="res://assets/icons/tools/dice.svg" id="25_5g5qp"]
@@ -148,9 +145,9 @@ script = ExtResource("1_em4te")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 5.0
+offset_left = 4.5
 offset_top = 5.0
-offset_right = -5.0
+offset_right = -4.5
 offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -160,72 +157,49 @@ material = ExtResource("2_tv71d")
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 script = ExtResource("3_y5csc")
-bump_space = 20.0
+bump_space = 40.0
 bump_protrusion = 2.0
 metadata/_custom_type_script = "uid://b6i1m2ju6n7mu"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=39126391]
 layout_mode = 2
-theme_override_constants/separation = 8
+size_flags_horizontal = 0
+theme_override_constants/separation = 4
 
 [node name="SideSpacer" type="Control" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1376754982]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="Exit" type="Button" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=2064989610]
-custom_minimum_size = Vector2(45, 0)
+[node name="Menu" type="Button" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1255375466]
 layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-text = "  Exit  "
-icon = ExtResource("3_2eddf")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-script = ExtResource("4_m4x71")
+size_flags_vertical = 0
+theme_override_constants/icon_max_width = 18
+theme_override_font_sizes/font_size = 15
+text = "Menu"
+icon = ExtResource("4_76pl1")
+flat = true
+script = ExtResource("5_76pl1")
 
-[node name="Settings" type="Button" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=244665713]
-custom_minimum_size = Vector2(50, 0)
+[node name="Map" type="MenuButton" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=630976856]
 layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-text = "  Settings  "
-icon = ExtResource("5_5g7k5")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-script = ExtResource("5_jj21m")
+size_flags_vertical = 0
+theme_type_variation = &"FlatMenuButton"
+theme_override_constants/icon_max_width = 18
+theme_override_font_sizes/font_size = 15
+text = "Map"
+icon = ExtResource("4_d3sgq")
+script = ExtResource("7_r38pq")
+metadata/_custom_type_script = "uid://ctyqma3at8ji8"
 
-[node name="VSeparator" type="VSeparator" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=283201679]
+[node name="Overlays" type="MenuButton" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1973521505]
 layout_mode = 2
-
-[node name="Save" type="Button" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1070942052]
-custom_minimum_size = Vector2(45, 0)
-layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-text = "  Save  "
-icon = ExtResource("4_n7ck4")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
+size_flags_vertical = 0
+theme_type_variation = &"FlatMenuButton"
+theme_override_constants/icon_max_width = 18
+theme_override_font_sizes/font_size = 15
+text = "Overlays"
+icon = ExtResource("8_eqxxf")
 script = ExtResource("9_puon5")
-
-[node name="Export" type="Button" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1268296346]
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-text = "  Export  "
-icon = ExtResource("6_rdvpr")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-script = ExtResource("5_rdvpr")
-
-[node name="Spacer" type="Control" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1787439979]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="Time" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=117182332]
 layout_mode = 2
@@ -236,13 +210,14 @@ script = ExtResource("12_m62g0")
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = -10
+theme_override_constants/margin_right = -5
 theme_override_constants/margin_bottom = 0
 
 [node name="Pause" type="Button" parent="MenubarContainer/Menubar/Time/PauseMargin" unique_id=1432359683]
 layout_mode = 2
 size_flags_vertical = 8
 icon = ExtResource("12_c8yws")
+flat = true
 
 [node name="TimeInner" type="VBoxContainer" parent="MenubarContainer/Menubar/Time" unique_id=1731809799]
 custom_minimum_size = Vector2(120, 0)
@@ -260,7 +235,7 @@ horizontal_alignment = 1
 
 [node name="Year" type="Label" parent="MenubarContainer/Menubar/Time/TimeInner" unique_id=333699788]
 layout_mode = 2
-text = "99999"
+text = "9999999"
 label_settings = SubResource("LabelSettings_5g5qp")
 horizontal_alignment = 1
 
@@ -272,7 +247,7 @@ horizontal_alignment = 1
 
 [node name="ConfMargin" type="MarginContainer" parent="MenubarContainer/Menubar/Time" unique_id=64617773]
 layout_mode = 2
-theme_override_constants/margin_left = -10
+theme_override_constants/margin_left = -5
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 0
@@ -281,58 +256,43 @@ theme_override_constants/margin_bottom = 0
 layout_mode = 2
 size_flags_vertical = 8
 icon = ExtResource("15_5g5qp")
+flat = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Menubar" unique_id=713196267]
 layout_mode = 2
-theme_override_constants/separation = 8
+size_flags_horizontal = 8
+theme_override_constants/separation = 4
 alignment = 2
 
-[node name="Load" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=327612633]
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
-text = "  Load  "
-icon = ExtResource("5_580mp")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
-script = ExtResource("17_76pl1")
-
 [node name="ModTools" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=2093026585]
-custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
+size_flags_vertical = 0
+theme_type_variation = &"FlatButton"
+theme_override_constants/icon_max_width = 18
+theme_override_font_sizes/font_size = 15
 text = " Mod Tools "
 icon = ExtResource("16_eqxxf")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
+flat = true
 script = ExtResource("16_xvqbn")
 
 [node name="ChangeName" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=43959448]
-custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
+size_flags_vertical = 0
+theme_override_constants/icon_max_width = 18
+theme_override_font_sizes/font_size = 15
 text = " Alias "
 icon = ExtResource("19_3obms")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
+flat = true
 script = ExtResource("16_v8jk4")
 
 [node name="ChatSaveLog" type="Button" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=696502432]
-custom_minimum_size = Vector2(45, 0)
 layout_mode = 2
-theme_type_variation = &"ToolButton"
-theme_override_font_sizes/font_size = 14
+size_flags_vertical = 0
+theme_override_constants/icon_max_width = 18
+theme_override_font_sizes/font_size = 15
 text = "  Save log  "
-icon = ExtResource("4_n7ck4")
-icon_alignment = 1
-vertical_icon_alignment = 0
-expand_icon = true
+icon = ExtResource("22_d3sgq")
+flat = true
 script = ExtResource("23_17bel")
 
 [node name="SideSpacer2" type="Control" parent="MenubarContainer/Menubar/HBoxContainer2" unique_id=1382616942]
