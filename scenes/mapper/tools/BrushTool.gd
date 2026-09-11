@@ -73,6 +73,7 @@ func brush_events(event: InputEvent) -> void:
 		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
 		if color.a == 1:
 			UIRoot._instance.brush_ui.target_picker.color.value = color
+			is_targeted.value = true
 	if event.is_action_pressed("switch_targeting_status"):
 		is_targeted.value = not is_targeted.value
 
