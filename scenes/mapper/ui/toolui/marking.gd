@@ -3,15 +3,15 @@ extends TabContainer
 
 signal edit_requested(id: String, changes: Dictionary)
 
-@onready var create_city_button: Button = $Create/HBoxContainer/City
-@onready var create_fort_button: Button = $Create/HBoxContainer/Fort
-@onready var create_color_picker: HereditaColorPicker = $Create/ColorPicker
-@onready var delete_city_checkbox: CheckBox = $Delete/City
-@onready var delete_fort_checkbox: CheckBox = $Delete/Fort
-@onready var edit_title: Label = $Edit/Label2
-@onready var edit_color_picker: HereditaColorPicker = $Edit/HBoxContainer/MarginContainer/ColorPicker
-@onready var edit_name: LineEdit = $Edit/HBoxContainer/VBoxContainer/LineEdit
-@onready var edit_name_label: Label = $Edit/HBoxContainer/VBoxContainer/Label2
+@onready var create_city_button: Button = $"Create [Z]"/HBoxContainer/City
+@onready var create_fort_button: Button = $"Create [Z]"/HBoxContainer/Fort
+@onready var create_color_picker: HereditaColorPicker = $"Create [Z]"/ColorPicker
+@onready var delete_city_checkbox: CheckBox = $"Delete [X]"/City
+@onready var delete_fort_checkbox: CheckBox = $"Delete [X]"/Fort
+@onready var edit_title: Label = $"Edit [C]"/Label2
+@onready var edit_color_picker: HereditaColorPicker = $"Edit [C]"/HBoxContainer/MarginContainer/ColorPicker
+@onready var edit_name: LineEdit = $"Edit [C]"/HBoxContainer/VBoxContainer/LineEdit
+@onready var edit_name_label: Label = $"Edit [C]"/HBoxContainer/VBoxContainer/Label2
 
 var create_type := "city"
 var selected_marking_id := ""
@@ -80,3 +80,13 @@ func _edit_name_submitted() -> void:
 	if suppress_edit_signals or selected_marking_id.is_empty():
 		return
 	edit_requested.emit(selected_marking_id, {"name": edit_name.text.left(64)})
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("ui_tab_1"):
+		current_tab = 0
+	elif event.is_action_pressed("ui_tab_2"):
+		current_tab = 1
+	elif event.is_action_pressed("ui_tab_3"):
+		current_tab = 2
