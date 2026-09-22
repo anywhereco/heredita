@@ -47,6 +47,8 @@ func _poll_loop() -> void:
 	if not message.has("event"):
 		return
 	match message["event"]:
+		"key":
+			send_event("key_of", {"key": Statics.S2S_KEY})
 		"roomlist":
 			var rooms_json: Dictionary = {}
 			for room in controller.rooms:
