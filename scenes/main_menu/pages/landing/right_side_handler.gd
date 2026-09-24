@@ -19,13 +19,13 @@ func _ready() -> void:
 			return
 	player_welcome.hide()
 	search_bar.get_node("Button").disabled = true
-	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
+	search_bar.get_node("LineEdit").placeholder_text = tr("mainmenu/friends.comingsoon")
 
 
 func _update_user() -> void:
 	player_welcome.show()
 	search_bar.get_node("Button").disabled = true
-	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
+	search_bar.get_node("LineEdit").placeholder_text = tr("mainmenu/friends.comingsoon")
 	player_welcome.text = pattern % State.user.username
 	for friend: UserPartial in State.user.friends:
 		var friend_node: FriendNode = FRIEND.instantiate()
@@ -36,6 +36,6 @@ func _update_user() -> void:
 func _update_userless(_id: int) -> void:
 	player_welcome.hide()
 	search_bar.get_node("Button").disabled = true
-	search_bar.get_node("LineEdit").placeholder_text = "Friends coming soon :]"
+	search_bar.get_node("LineEdit").placeholder_text = tr("mainmenu/friends.comingsoon")
 	for user: Node in user_list.get_children():
 		user.queue_free()

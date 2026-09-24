@@ -9,15 +9,15 @@ grow_vertical = 2
 
 [node name="Label" type="Label" parent="." unique_id=1409291308]
 layout_mode = 2
-text = "Moderator Tools"
+text = "mapper/modtools.title"
 horizontal_alignment = 1
 
 [node name="Button" type="Button" parent="." unique_id=1574361793]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Roomblock Room Creator"
+text = "mapper/modtools.roomblock_creator"
 
 [node name="Label2" type="Label" parent="." unique_id=1515480802]
 layout_mode = 2
-text = "(More will be provided soon)"
+text = "mapper/modtools.more_soon"
 horizontal_alignment = 1

@@ -19,7 +19,7 @@ script = ExtResource("1_jkeml")
 
 [node name="Titlebar" type="Label" parent="." unique_id=873236194]
 layout_mode = 2
-text = "Modify Calendar"
+text = "calendar/modify.title"
 label_settings = SubResource("LabelSettings_0myyi")
 horizontal_alignment = 1
 
@@ -34,7 +34,7 @@ custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 focus_next = NodePath("../Day")
 text = "January"
-placeholder_text = "Month"
+placeholder_text = "calendar/modify.month"
 
 [node name="Day" type="LineEdit" parent="Date" unique_id=307220222]
 custom_minimum_size = Vector2(42, 0)
@@ -43,7 +43,7 @@ size_flags_horizontal = 0
 focus_next = NodePath("../Year")
 theme_override_constants/minimum_character_width = 0
 text = "31st"
-placeholder_text = "Day"
+placeholder_text = "calendar/modify.day"
 
 [node name="Comma" type="Label" parent="Date" unique_id=1445306719]
 layout_mode = 2
@@ -56,7 +56,7 @@ size_flags_horizontal = 0
 focus_previous = NodePath("../../Time/Hour")
 theme_override_constants/minimum_character_width = 3
 text = "99999 AD"
-placeholder_text = "Year"
+placeholder_text = "calendar/modify.year"
 
 [node name="Time" type="HBoxContainer" parent="." unique_id=932369489]
 layout_mode = 2
@@ -69,7 +69,7 @@ size_flags_horizontal = 0
 focus_next = NodePath("../Minute")
 theme_override_constants/minimum_character_width = 1
 text = "23"
-placeholder_text = "Hr"
+placeholder_text = "calendar/modify.hour"
 
 [node name="Colon" type="Label" parent="Time" unique_id=405871130]
 layout_mode = 2
@@ -82,7 +82,7 @@ size_flags_horizontal = 0
 focus_next = NodePath("../Second")
 theme_override_constants/minimum_character_width = 1
 text = "59"
-placeholder_text = "Mn"
+placeholder_text = "calendar/modify.minute"
 
 [node name="Colon2" type="Label" parent="Time" unique_id=635779024]
 layout_mode = 2
@@ -94,7 +94,7 @@ layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/minimum_character_width = 1
 text = "59"
-placeholder_text = "Sec"
+placeholder_text = "calendar/modify.second"
 
 [node name="AtMPY" type="HBoxContainer" parent="." unique_id=1240766148]
 layout_mode = 2
@@ -102,7 +102,7 @@ alignment = 1
 
 [node name="At" type="Label" parent="AtMPY" unique_id=1109908571]
 layout_mode = 2
-text = "at "
+text = "calendar/modify.at"
 
 [node name="MinutesPerYear" type="LineEdit" parent="AtMPY" unique_id=2111619851]
 custom_minimum_size = Vector2(75, 0)
@@ -111,11 +111,11 @@ size_flags_horizontal = 0
 focus_next = NodePath("../Minute")
 theme_override_constants/minimum_character_width = 1
 text = "12"
-placeholder_text = "Mins/yr"
+placeholder_text = "calendar/modify.minutes_per_year"
 
 [node name="MPY" type="Label" parent="AtMPY" unique_id=1615668922]
 layout_mode = 2
-text = "MPY"
+text = "calendar/modify.mpy"
 
 [node name="HSeparator2" type="HSeparator" parent="." unique_id=1533185594]
 layout_mode = 2
@@ -126,11 +126,11 @@ alignment = 1
 
 [node name="Cancel" type="Button" parent="HBoxContainer" unique_id=1182834381]
 layout_mode = 2
-text = "Cancel"
+text = "common/cancel"
 
 [node name="Confirm" type="Button" parent="HBoxContainer" unique_id=1975649684]
 layout_mode = 2
-text = "Confirm"
+text = "common/confirm"
 
 [connection signal="editing_toggled" from="Date/Month" to="." method="_on_month_editing_toggled"]
 [connection signal="text_submitted" from="Date/Month" to="." method="_on_month_text_submitted" binds= [false]]

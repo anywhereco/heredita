@@ -31,7 +31,7 @@ func _login_btn() -> void:
 	for i in 10:
 		tween.tween_property(button, "modulate", Color(.8, .8, .8), .5)
 		tween.tween_property(button, "modulate", Color.WHITE, .5)
-	tween.tween_callback(func() -> void: error_label.err("Server took too long to respond"))
+	tween.tween_callback(func() -> void: error_label.err(tr("login/error.timeout")))
 	tween.set_parallel(true)
 	tween.tween_callback(func() -> void: button.modulate = error_color)
 	tween.tween_property(button, "modulate", Color.WHITE, 2)
@@ -59,7 +59,7 @@ func callback(response_code: int) -> void:
 		button.modulate = error_color
 		username.modulate = error_color
 		password.modulate = error_color
-		error_label.err("Invalid username or password")
+		error_label.err(tr("login/error.invalidcredentials"))
 		tween = (
 			create_tween()
 			.set_ease(Tween.EASE_IN)
@@ -71,6 +71,6 @@ func callback(response_code: int) -> void:
 		tween.tween_property(password, "modulate", Color.WHITE, 2)
 	else:
 		button.modulate = error_color
-		error_label.err("Server error (try again later)")
+		error_label.err(tr("login/error.servererror.short"))
 		tween = create_tween().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 		tween.tween_property(button, "modulate", Color.WHITE, 2)

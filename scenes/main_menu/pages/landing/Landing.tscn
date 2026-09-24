@@ -75,7 +75,6 @@ stretch_mode = 5
 
 [node name="Label" type="Label" parent="LeftSide/MarginContainer/VBoxContainer/Control" unique_id=2055185515]
 layout_mode = 2
-text = "beta %s"
 label_settings = SubResource("LabelSettings_ikikv")
 horizontal_alignment = 1
 script = ExtResource("3_ecxkw")
@@ -219,7 +218,7 @@ layout_mode = 2
 [node name="LineEdit" type="LineEdit" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=818308122]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "Friends coming soon :]"
+placeholder_text = "mainmenu/friends.comingsoon"
 max_length = 20
 editable = false
 
@@ -227,7 +226,7 @@ editable = false
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 disabled = true
-text = "  Add  "
+text = "mainmenu/friends.add"
 
 [node name="BottomPadding" type="Control" parent="RightSide" unique_id=1430361985]
 custom_minimum_size = Vector2(0, 20)

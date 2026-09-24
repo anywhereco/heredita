@@ -78,10 +78,12 @@ func _process(delta: float) -> void:
 	var basis := Basis.from_euler(_rotation_current)
 	player_camera.global_transform = Transform3D(basis, _position_current)
 
-	speed_label.text = (
-		"Speed: %.2f  Cam Smooth: %.3f  Move Smooth: %.3f  Cam Speed: %.4f\nijkl to move, u/o up and down\n(hide this with alt-shift-x)"
-		% [move_speed, camera_smoothing, movement_smoothing, camera_speed]
-	)
+	speed_label.text = tr("mapper/free_camera.stats").format({
+		"move_speed": "%.2f" % move_speed,
+		"camera_smoothing": "%.3f" % camera_smoothing,
+		"movement_smoothing": "%.3f" % movement_smoothing,
+		"camera_speed": "%.4f" % camera_speed,
+	})
 
 
 func set_active(value: bool) -> void:

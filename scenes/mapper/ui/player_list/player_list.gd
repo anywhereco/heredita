@@ -20,10 +20,10 @@ func _ready() -> void:
 
 func purge_paint_player(player_id: int) -> void:
 	InfoPrompt.custom_prompt(
-		"Purge this player's paint?",
+		"mapper/player.purge.confirm",
 		{
-			"Cancel": Prompts.close_top_prompt,
-			"Purge paint": (func() -> void:
+			"common/cancel": Prompts.close_top_prompt,
+			"mapper/player.purge": (func() -> void:
 				Prompts.close_top_prompt()
 				State.client.send("purge_player", player_id)
 				)
@@ -32,14 +32,14 @@ func purge_paint_player(player_id: int) -> void:
 
 func ban_player(player_id: int) -> void:
 	InfoPrompt.custom_prompt(
-		"Ban this player?",
+		"mapper/player.ban.confirm",
 		{
-			"Cancel": Prompts.close_top_prompt,
-			"Ban": (func() -> void:
+			"common/cancel": Prompts.close_top_prompt,
+			"mapper/player.ban": (func() -> void:
 				Prompts.close_top_prompt()
 				State.client.send("ban", player_id)
 				),
-			"Ban and clear paint": (func() -> void:
+			"mapper/player.ban_and_purge": (func() -> void:
 				Prompts.close_top_prompt()
 				State.client.send("purge_player", player_id)
 				State.client.send("ban", player_id)
@@ -50,14 +50,14 @@ func ban_player(player_id: int) -> void:
 
 func kick_player(player_id: int) -> void:
 	InfoPrompt.custom_prompt(
-		"Kick this player?",
+		"mapper/player.kick.confirm",
 		{
-			"Cancel": Prompts.close_top_prompt,
-			"Kick": (func() -> void:
+			"common/cancel": Prompts.close_top_prompt,
+			"mapper/player.kick": (func() -> void:
 				Prompts.close_top_prompt()
 				State.client.send("kick", player_id)
 				),
-			"Kick and clear paint": (func() -> void:
+			"mapper/player.kick_and_purge": (func() -> void:
 				Prompts.close_top_prompt()
 				State.client.send("purge_player", player_id)
 				State.client.send("kick", player_id)
@@ -85,18 +85,18 @@ func player_clicked(player_node: Control, player_id: int) -> void:
 	var menu := CPopupMenu.new()
 	var player: Player = State.room.players.getv(player_id)
 	if State.player.privileged_over(player) and player_id != State.client.player_id:
-		menu.add_item("Ban", ban_player.bind(player_id))
-		menu.add_item("Kick", kick_player.bind(player_id))
-		menu.add_item("Purge paint", purge_paint_player.bind(player_id))
+		menu.add_item(tr("mapper/player.ban"), ban_player.bind(player_id))
+		menu.add_item(tr("mapper/player.kick"), kick_player.bind(player_id))
+		menu.add_item(tr("mapper/player.purge"), purge_paint_player.bind(player_id))
 		if player.status.get("muted", false):
-			menu.add_item("Unmute", unmute_player.bind(player_id))
+			menu.add_item(tr("mapper/player.unmute"), unmute_player.bind(player_id))
 		else:
-			menu.add_item("Mute", mute_player.bind(player_id))
+			menu.add_item(tr("mapper/player.mute"), mute_player.bind(player_id))
 		if player.operator:
-			menu.add_item("Remove operator", remove_player_operator.bind(player_id))
+			menu.add_item(tr("mapper/player.remove_operator"), remove_player_operator.bind(player_id))
 	if State.player.privileged() and player_id != State.client.player_id:
 		if not player.operator:
-			menu.add_item("Make operator", make_player_operator.bind(player_id))
+			menu.add_item(tr("mapper/player.make_operator"), make_player_operator.bind(player_id))
 	if not menu.item_count():  #no items so no menu
 		menu.queue_free()
 		return
@@ -116,21 +116,21 @@ func add_player(player_id: int) -> void:
 	player_node.get_node("Button").pressed.connect(player_clicked.bind(player_node, player_id))
 	add_child(player_node)
 	if not player.logged_in:
-		player_node.add_badge(BADGE_PLAYER_LOGGEDOUT, "Player")
+		player_node.add_badge(BADGE_PLAYER_LOGGEDOUT, tr("mapper/rank.player"))
 		if player.operator:
-			player_node.add_badge(BADGE_OPERATOR, "Room operator")
+			player_node.add_badge(BADGE_OPERATOR, tr("mapper/rank.operator"))
 		return
 	match player.rank:
 		UserEnums.Rank.PLAYER:
-			player_node.add_badge(BADGE_PLAYER, "Logged in")
+			player_node.add_badge(BADGE_PLAYER, tr("mapper/rank.logged_in"))
 			if player.operator:
-				player_node.add_badge(BADGE_OPERATOR, "Room operator")
+				player_node.add_badge(BADGE_OPERATOR, tr("mapper/rank.operator"))
 		UserEnums.Rank.MODERATOR:
-			player_node.add_badge(BADGE_MODERATOR, "Moderator")
+			player_node.add_badge(BADGE_MODERATOR, tr("mapper/rank.moderator"))
 		UserEnums.Rank.ADMIN:
-			player_node.add_badge(BADGE_ADMINISTRATOR, "Admin")
+			player_node.add_badge(BADGE_ADMINISTRATOR, tr("mapper/rank.admin"))
 		UserEnums.Rank.DEV:
-			player_node.add_badge(BADGE_DEVELOPER, "Developer")
+			player_node.add_badge(BADGE_DEVELOPER, tr("mapper/rank.developer"))
 
 
 func remove_player(player_id: int) -> void:
@@ -152,7 +152,10 @@ func refresh_players(players: ReactiveDictionary) -> void:
 			to_erase.append(player)
 	for removed_player: int in to_erase:
 		players_listed.erase(removed_player)
-	get_parent().title = "%d in room" % len(players_listed)
+	var player_count := len(players_listed)
+	get_parent().title = TranslationServer.translate_plural(
+		"mapper/players.in_room", "mapper/players.in_room_plural", player_count
+	) % player_count
 
 func message_received(event: String, _player_id: int, details: Variant) -> void:
 	if event == "is2_player_operator_status_update":
@@ -161,6 +164,6 @@ func message_received(event: String, _player_id: int, details: Variant) -> void:
 		var player_node := get_node(str(player_id))
 		if details.get("operator"):
 			if player.rank < UserEnums.Rank.MODERATOR:
-				player_node.add_badge(BADGE_OPERATOR, "Room operator")
+				player_node.add_badge(BADGE_OPERATOR, tr("mapper/rank.operator"))
 		else:
-			player_node.elements.find_child("Room operator", false, false).queue_free()
+			player_node.elements.find_child(tr("mapper/rank.operator"), false, false).queue_free()

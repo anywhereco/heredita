@@ -39,20 +39,20 @@ layout_mode = 2
 [node name="BackToRoomButton" type="Button" parent="Menu" unique_id=1732506225]
 layout_mode = 2
 theme_type_variation = &"ColoredButton"
-text = "Back to game"
+text = "mapper/pause.back"
 icon = ExtResource("5_e1isu")
 script = ExtResource("7_0mayp")
 
 [node name="SettingsButton" type="Button" parent="Menu" unique_id=1335039403]
 layout_mode = 2
 theme_type_variation = &"ColoredButton"
-text = "Settings"
+text = "mainmenu/settings"
 icon = ExtResource("4_2aofd")
 script = ExtResource("5_c7mel")
 
 [node name="ExitRoomButton" type="Button" parent="Menu" unique_id=955346617]
 layout_mode = 2
 theme_type_variation = &"ColoredButton"
-text = "Exit the room"
+text = "mapper/pause.exit"
 icon = ExtResource("2_8k4jq")
 script = ExtResource("3_5cy1v")

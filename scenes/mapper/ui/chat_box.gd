@@ -65,16 +65,16 @@ func receive_message(event: String, user_id: int, message: Variant) -> void:
 		add_chat_message(user_id, message as String)
 	elif event == "is2_player_join":
 		var player: Player = State.room.players.getv(message["player_id"])
-		add_message("[b]%s joined the room[/b]" % player.username)
-		log_message("%s joined the room" % player.username)
+		add_message("[b]%s[/b]" % (tr("mapper/chat.player_joined") % player.username))
+		log_message(tr("mapper/chat.player_joined") % player.username)
 	elif event == "is2_player_exit":
 		var player: Player = State.room.players.getv(message)
-		add_message("[b]%s left the room[/b]" % player.username)
-		log_message("%s left the room" % player.username)
+		add_message("[b]%s[/b]" % (tr("mapper/chat.player_left") % player.username))
+		log_message(tr("mapper/chat.player_left") % player.username)
 	elif event == "is2_player_status_update":
 		if State.player.status.get("muted", false) and not muted_text:
 			text_box.editable = false
-			text_box.placeholder_text = "You are muted!"
+			text_box.placeholder_text = tr("mapper/chat.muted")
 			muted_text = text_box.text
 			muted = true
 			text_box.text = ""

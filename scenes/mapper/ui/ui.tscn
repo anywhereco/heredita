@@ -175,7 +175,7 @@ layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 15
-text = "Menu"
+text = "mapper/menu"
 icon = ExtResource("4_76pl1")
 flat = true
 script = ExtResource("5_76pl1")
@@ -186,7 +186,7 @@ size_flags_vertical = 0
 theme_type_variation = &"FlatMenuButton"
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 15
-text = "Map"
+text = "mapper/map"
 icon = ExtResource("4_d3sgq")
 script = ExtResource("7_r38pq")
 metadata/_custom_type_script = "uid://ctyqma3at8ji8"
@@ -197,7 +197,7 @@ size_flags_vertical = 0
 theme_type_variation = &"FlatMenuButton"
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 15
-text = "Overlays"
+text = "mapper/overlays"
 icon = ExtResource("8_eqxxf")
 script = ExtResource("9_puon5")
 
@@ -270,7 +270,7 @@ size_flags_vertical = 0
 theme_type_variation = &"FlatButton"
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 15
-text = " Mod Tools "
+text = "mapper/modtools"
 icon = ExtResource("16_eqxxf")
 flat = true
 script = ExtResource("16_xvqbn")
@@ -280,7 +280,7 @@ layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 15
-text = " Alias "
+text = "mapper/alias"
 icon = ExtResource("19_3obms")
 flat = true
 script = ExtResource("16_v8jk4")
@@ -290,7 +290,7 @@ layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 15
-text = "  Save log  "
+text = "mapper/chat.save_log"
 icon = ExtResource("22_d3sgq")
 flat = true
 script = ExtResource("23_17bel")
@@ -351,8 +351,7 @@ layout_mode = 2
 [node name="ChatSP" type="RichTextLabel" parent="MenubarContainer/Bottom/ChatSplit/RightItems/ChatPanel/ChatBox/PanelContainer/MarginContainer" unique_id=1407761411]
 layout_mode = 2
 bbcode_enabled = true
-text = "[i]Chat is disabled in singleplayer![/i]
-"
+text = "mapper/chat.singleplayer_disabled"
 scroll_active = false
 scroll_following = true
 scroll_following_visible_characters = true
@@ -381,7 +380,7 @@ custom_minimum_size = Vector2(0, 35)
 custom_maximum_size = Vector2(-1, 133)
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "Message"
+placeholder_text = "mapper/chat.placeholder"
 editable = false
 context_menu_enabled = false
 wrap_mode = 1
@@ -416,7 +415,7 @@ script = ExtResource("16_i44o3")
 custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "You are in singleplayer!"
+text = "mapper/singleplayer"
 label_settings = SubResource("LabelSettings_mey8b")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -443,7 +442,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/HBoxContainer" unique_id=452209279]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Tools"
+text = "mapper/tools.title"
 horizontal_alignment = 1
 
 [node name="Close" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/HBoxContainer" unique_id=1341467040]
@@ -544,7 +543,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Tool Settings"
+text = "mapper/tools.settings"
 horizontal_alignment = 1
 
 [node name="Close" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/HBoxContainer" unique_id=954544806]
@@ -565,14 +564,16 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/none" unique_id=55078666]
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/none/VBoxContainer" unique_id=1766386087]
 layout_mode = 2
-text = "Click a tool to equip it!"
+text = "mapper/tools.select_prompt"
 label_settings = SubResource("LabelSettings_tv71d")
 horizontal_alignment = 1
 vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="Control" type="Control" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/none/VBoxContainer" unique_id=1206095836]
 custom_minimum_size = Vector2(0, 10)
@@ -602,7 +603,7 @@ script = ExtResource("12_0sgq1")
 
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" unique_id=1552818025]
 layout_mode = 2
-text = "Brush size"
+text = "mapper/brush.size"
 label_settings = SubResource("LabelSettings_rh4gq")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -629,7 +630,7 @@ size_flags_horizontal = 2
 
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint" unique_id=1123948738]
 layout_mode = 2
-text = "Paint [Q]"
+text = "mapper/brush.paint"
 label_settings = SubResource("LabelSettings_0sgq1")
 horizontal_alignment = 1
 
@@ -643,7 +644,7 @@ size_flags_horizontal = 2
 
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target" unique_id=1149861412]
 layout_mode = 2
-text = "Target [E]"
+text = "mapper/brush.target"
 label_settings = SubResource("LabelSettings_2eddf")
 horizontal_alignment = 1
 
@@ -657,17 +658,17 @@ layout_mode = 2
 [node name="Button" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=864971231]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "HSV"
+text = "mapper/color.hsv"
 
 [node name="Button2" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1255581329]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "RGB"
+text = "mapper/color.rgb"
 
 [node name="Button3" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1269357231]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Hex"
+text = "mapper/color.hex"
 
 [node name="Button4" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1411445771]
 visible = false
@@ -683,7 +684,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 theme_override_constants/icon_max_width = 16
 theme_override_font_sizes/font_size = 12
-text = "Untargeted [T]"
+text = "mapper/brush.untargeted"
 
 [node name="dice" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=889499975]
 visible = false
@@ -695,7 +696,7 @@ script = ExtResource("33_m62g0")
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/dice" unique_id=197942183]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Size"
+text = "mapper/size"
 
 [node name="SpinBox" type="SpinBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/dice" unique_id=1789389572]
 layout_mode = 2
@@ -720,7 +721,7 @@ metadata/_tab_index = 0
 
 [node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create [Z]" unique_id=170988155]
 layout_mode = 2
-text = "create a..."
+text = "mapper/marking.create.prompt"
 label_settings = SubResource("LabelSettings_q22fc")
 horizontal_alignment = 1
 
@@ -730,15 +731,15 @@ alignment = 1
 
 [node name="City" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create [Z]/HBoxContainer" unique_id=518520028]
 layout_mode = 2
-text = "City"
+text = "mapper/marking.city"
 
 [node name="Fort" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create [Z]/HBoxContainer" unique_id=1212653521]
 layout_mode = 2
-text = "Fort"
+text = "mapper/marking.fort"
 
 [node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Create [Z]" unique_id=1448362885]
 layout_mode = 2
-text = "with color..."
+text = "mapper/marking.color.prompt"
 label_settings = SubResource("LabelSettings_q22fc")
 horizontal_alignment = 1
 
@@ -754,20 +755,20 @@ metadata/_tab_index = 1
 
 [node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Delete [X]" unique_id=774962091]
 layout_mode = 2
-text = "delete nearby"
+text = "mapper/marking.delete.nearby"
 label_settings = SubResource("LabelSettings_q22fc")
 horizontal_alignment = 1
 
 [node name="City" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Delete [X]" unique_id=1578510529]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "cities"
+text = "mapper/marking.cities"
 flat = true
 
 [node name="Fort" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Delete [X]" unique_id=392591771]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "forts"
+text = "mapper/marking.forts"
 flat = true
 
 [node name="Edit [C]" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=689485550]
@@ -778,7 +779,7 @@ metadata/_tab_index = 2
 
 [node name="Label2" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking/Edit [C]" unique_id=1409725229]
 layout_mode = 2
-text = "Edit this [fort/city]"
+text = "mapper/marking.edit.format.city"
 label_settings = SubResource("LabelSettings_q22fc")
 horizontal_alignment = 1
 
@@ -825,13 +826,13 @@ script = ExtResource("34_v8jk4")
 visible = false
 modulate = Color(0.79570293, 0.79570293, 0.79570293, 1)
 layout_mode = 2
-text = "Resyncing..."
+text = "mapper/resyncing"
 label_settings = SubResource("LabelSettings_5rjrm")
 
 [node name="LockMessage" type="Label" parent="AlertRow" unique_id=887406348]
 visible = false
 layout_mode = 2
-text = "Your camera is locked, press Shift+B to unlock"
+text = "mapper/camera.locked"
 label_settings = SubResource("LabelSettings_5rjrm")
 
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/PauseMargin/Pause" to="MenubarContainer/Menubar/Time" method="_on_pause_pressed"]

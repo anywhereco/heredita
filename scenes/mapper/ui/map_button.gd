@@ -8,14 +8,14 @@ const OPENFOLDER = preload("res://assets/icons/openfolder.svg")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if State.player.privileged():
-		entry("Save this map", FLOPPY,
+		entry("mapper/map.save", FLOPPY,
 			func() -> void:
 				var data: MapData = Map._instance.get_data()
 				var buffer := data.serialize_with_header()
 				FilePrompter.save(self, buffer, "saved_map.map", "map", "application/heredita-map")
 		)
 		
-	entry("Export this map", IMAGE,
+	entry("mapper/map.export", IMAGE,
 		func() -> void:
 			var img: Image = Map._instance.get_map_as_image()
 			var buffer := img.save_png_to_buffer()
@@ -24,7 +24,7 @@ func _ready() -> void:
 	
 	if State.player.privileged():
 		seperator()
-		entry("Load a map", OPENFOLDER, load_map)
+		entry("mapper/map.load", OPENFOLDER, load_map)
 	super()
 	
 

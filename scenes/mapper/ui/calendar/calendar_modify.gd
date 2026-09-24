@@ -14,7 +14,7 @@ var calendar: Calendar
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	calendar = Calendar.from_json(TimekeepingUI._inst.calendar.to_json())
-	month_edit.text = Calendar.Month.keys()[calendar.month].capitalize()
+	month_edit.text = Calendar.month_string(calendar.month)
 	day_edit.text = Calendar.get_ordinal(calendar.day)
 	year_edit.text = calendar.year_string()
 	hour_edit.text = "%02d" % calendar.hour
@@ -51,20 +51,20 @@ func _on_month_text_submitted(from_unfocus: bool, new_text: String) -> void:
 		monthnumber -= 1
 		if monthnumber < Calendar.Month.MAXIMUM and monthnumber >= 0:
 			calendar.month = monthnumber as Calendar.Month
-			month_edit.text = Calendar.Month.keys()[monthnumber].capitalize()
+			month_edit.text = Calendar.month_string(monthnumber as Calendar.Month)
 			day_edit.grab_focus()
 			return
 		else:
-			month_edit.text = Calendar.Month.keys()[calendar.month].capitalize()
+			month_edit.text = Calendar.month_string(calendar.month)
 			return
 
 	var month := Calendar.str_to_month(new_text)
 	if month == Calendar.Month.MAXIMUM:
-		month_edit.text = Calendar.Month.keys()[calendar.month].capitalize()
+		month_edit.text = Calendar.month_string(calendar.month)
 		return
 
 	calendar.month = month
-	month_edit.text = Calendar.Month.keys()[month].capitalize()
+	month_edit.text = Calendar.month_string(month)
 	if not from_unfocus:
 		day_edit.grab_focus()
 
@@ -101,8 +101,14 @@ func _on_day_editing_toggled(toggled_on: bool) -> void:
 
 func _on_year_text_submitted(new_text: String, from_unfocus: bool) -> void:
 	new_text = new_text.to_lower()
-	if new_text.ends_with(" ad"):
+	var ad_suffix := tr("calendar/era.ad").to_lower()
+	var bc_suffix := tr("calendar/era.bc").to_lower()
+	if new_text.ends_with(" " + ad_suffix):
+		new_text = new_text.substr(0, len(new_text) - ad_suffix.length() - 1)
+	elif new_text.ends_with(" ad"):
 		new_text = new_text.substr(0, len(new_text) - 3)
+	elif new_text.ends_with(" " + bc_suffix):
+		new_text = "-" + new_text.substr(0, len(new_text) - bc_suffix.length() - 1)
 	elif new_text.ends_with(" bc"):
 		new_text = "-" + new_text.substr(0, len(new_text) - 3)
 

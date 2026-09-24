@@ -73,11 +73,11 @@ func _init(
 func _ready() -> void:
 	socket.outbound_buffer_size = BUFFER_SIZE_KB * 1024
 	socket.inbound_buffer_size = BUFFER_SIZE_KB * 1024
-	loading_status_updated.emit({"message": "Connecting to game server..."})
+	loading_status_updated.emit({"message": tr("network/status.connecting")})
 	var err := self.connect_to_url(websocket_url)
 	if err != OK:
 		print("Unable to connect")
-		loading_status_updated.emit({"failed": true, "message": "Unable to connect to game server."})
+		loading_status_updated.emit({"failed": true, "message": tr("network/status.connect_failed")})
 		set_process(false)
 
 
@@ -173,10 +173,10 @@ func poll() -> void:
 	if last_state != state:
 		last_state = state
 		if state == socket.STATE_OPEN:
-			loading_status_updated.emit({"message": "Connected. Waiting for handshake..."})
+			loading_status_updated.emit({"message": tr("network/status.connected_waiting")})
 			connected_to_server.emit()
 		elif state == socket.STATE_CLOSED:
-			loading_status_updated.emit({"message": "Connection closed."})
+			loading_status_updated.emit({"message": tr("network/connection.closed")})
 			connection_closed.emit()
 	while socket.get_ready_state() != socket.STATE_CLOSED and socket.get_available_packet_count():
 		#print("wa")
@@ -216,7 +216,7 @@ func _poll_string(message: Dictionary) -> void:
 				if creating_room:
 					loading_status_updated.emit(
 						{
-							"message": "Creating room and uploading map...",
+							"message": tr("network/status.creating_room"),
 							"map_size": creating_map.size(),
 						}
 					)
@@ -243,7 +243,7 @@ func _poll_string(message: Dictionary) -> void:
 					#)
 					#await get_tree().create_timer(0.1).timeout
 					#return
-				loading_status_updated.emit({"message": "Requesting room information..."})
+				loading_status_updated.emit({"message": tr("network/status.requesting_room")})
 				send("_is2_room_info", room_id)
 				return
 			"_is2_room_info":
@@ -253,7 +253,7 @@ func _poll_string(message: Dictionary) -> void:
 				player_id = message.get("details").get("player_id") as int
 				loading_status_updated.emit(
 					{
-						"message": "Joined room %d. Finishing handshake..." % room_id,
+						"message": tr("network/status.joined_room") % room_id,
 						"room_id": room_id,
 						"player_id": player_id,
 					}
@@ -262,10 +262,10 @@ func _poll_string(message: Dictionary) -> void:
 				return
 			"_is2_login":
 				if creating_room.has("password") and not (creating_room["password"] as String).is_empty():
-					loading_status_updated.emit({"message": "Confirming room password..."})
+					loading_status_updated.emit({"message": tr("network/status.confirming_password")})
 					send("_is2_password_attempt", creating_room["password"])
 					return
-				loading_status_updated.emit({"message": "Room password required."})
+				loading_status_updated.emit({"message": tr("network/password.required")})
 				_prompt_instance = load("res://libraries/ui/infernosocket/PasswordPrompt.tscn").instantiate()
 				(_prompt_instance.find_child("PasswordEdit") as LineEdit).text_submitted.connect(
 					func password_attempt(pwd: String) -> void: send("_is2_password_attempt", pwd)
@@ -277,7 +277,7 @@ func _poll_string(message: Dictionary) -> void:
 				_prompt.add_child(_prompt_instance)
 				return
 			"_is2_login_valid_password":
-				loading_status_updated.emit({"message": "Password accepted."})
+				loading_status_updated.emit({"message": tr("network/password.accepted")})
 				return
 			"_is2_login_invalid_password":
 				_attempts -= 1
@@ -288,17 +288,21 @@ func _poll_string(message: Dictionary) -> void:
 					return
 				if not is_instance_valid(_prompt_instance):
 					loading_status_updated.emit(
-						{"failed": true, "message": "The room password was rejected."}
+						{"failed": true, "message": tr("network/password.rejected")}
 					)
 					socket.close()
 					return
 				var attempts_label: Label = _prompt_instance.find_child("AttemptsLabel")
 				attempts_label.show()
-				attempts_label.text = "%d attempts remaining" % _attempts
+				attempts_label.text = TranslationServer.translate_plural(
+					"network/password.attempt_remaining",
+					"network/password.attempts_remaining",
+					_attempts
+				)
 				return
 			"_is2_username":
 				print("username")
-				loading_status_updated.emit({"message": "Sending username..."})
+				loading_status_updated.emit({"message": tr("network/status.sending_username")})
 				if State.user.initialized:
 					send("_is2_username", State.user.username)
 				else:
@@ -306,7 +310,7 @@ func _poll_string(message: Dictionary) -> void:
 				return
 			"_is2_token":
 				print("token")
-				loading_status_updated.emit({"message": "Checking account token..."})
+				loading_status_updated.emit({"message": tr("network/status.checking_token")})
 				if State.user.initialized:
 					var token_res: Variant = State.user.token
 					send("_is2_token", token_res)
@@ -315,7 +319,7 @@ func _poll_string(message: Dictionary) -> void:
 				return
 			"_is2_handshake_complete":
 				print("complete")
-				loading_status_updated.emit({"message": "Handshake complete. Loading mapper..."})
+				loading_status_updated.emit({"message": tr("network/status.handshake_complete")})
 				room = Room.new()
 				State.room = room
 				room.name = message.get("details").get("name")

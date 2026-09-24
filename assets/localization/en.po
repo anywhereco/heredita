@@ -168,3 +168,550 @@ msgstr ""
 
 msgid "roomcreate/mapconfig"
 msgstr "Map configuration..."
+
+msgid "mainmenu/version.editor"
+msgstr "(editor build)"
+
+msgid "mainmenu/version.commit"
+msgstr "(commit %s)"
+
+msgid "mainmenu/friends.comingsoon"
+msgstr "Friends coming soon :]"
+
+msgid "mainmenu/friends.add"
+msgstr "Add"
+
+msgid "login/signup.email_optional"
+msgstr "Email (optional)"
+
+msgid "mainmenu/version"
+msgstr "beta %s"
+
+msgid "roomlist/loading.mapper.prepare"
+msgstr "Preparing mapper..."
+
+msgid "roomlist/loading.mapper.start_failed"
+msgstr "Could not start loading the mapper."
+
+msgid "roomlist/loading.mapper.resources"
+msgstr "Loading mapper resources... %d%%"
+
+msgid "roomlist/loading.mapper.starting"
+msgstr "Starting mapper..."
+
+msgid "roomlist/loading.mapper.failed"
+msgstr "Could not load the mapper."
+
+msgid "roomlist/loading.mapper.not_found"
+msgstr "Could not find the mapper scene."
+
+msgid "roomlist/loading.mapper.create_failed"
+msgstr "Could not create the mapper."
+
+msgid "roomlist/join.failed"
+msgstr "Failed to join room: %d"
+
+msgid "roomlist/join.failed.reason"
+msgstr "%s (%s)"
+
+msgid "common/ok"
+msgstr "OK"
+
+msgid "common/cancel"
+msgstr "Cancel"
+
+msgid "common/confirm"
+msgstr "Confirm"
+
+msgid "network/status.connecting"
+msgstr "Connecting to game server..."
+
+msgid "network/status.connect_failed"
+msgstr "Unable to connect to game server."
+
+msgid "network/status.connected_waiting"
+msgstr "Connected. Waiting for handshake..."
+
+msgid "network/connection.closed"
+msgstr "The connection was closed."
+
+msgid "network/status.creating_room"
+msgstr "Creating room and uploading map..."
+
+msgid "network/status.requesting_room"
+msgstr "Requesting room information..."
+
+msgid "network/status.joined_room"
+msgstr "Joined room %d. Finishing handshake..."
+
+msgid "network/status.confirming_password"
+msgstr "Confirming room password..."
+
+msgid "network/status.sending_username"
+msgstr "Sending username..."
+
+msgid "network/status.checking_token"
+msgstr "Checking account token..."
+
+msgid "network/status.handshake_complete"
+msgstr "Handshake complete. Loading mapper..."
+
+msgid "network/password.required"
+msgstr "This room requires a password."
+
+msgid "network/password.enter"
+msgstr "Enter the password..."
+
+msgid "network/password.accepted"
+msgstr "Password accepted."
+
+msgid "network/password.rejected"
+msgstr "The room password was rejected."
+
+msgid "network/password.attempt_remaining"
+msgid_plural "network/password.attempts_remaining"
+msgstr[0] "%d attempt remaining"
+msgstr[1] "%d attempts remaining"
+
+msgid "calendar/modify.title"
+msgstr "Modify Calendar"
+
+msgid "calendar/modify.month"
+msgstr "Month"
+
+msgid "calendar/modify.day"
+msgstr "Day"
+
+msgid "calendar/modify.year"
+msgstr "Year"
+
+msgid "calendar/modify.hour"
+msgstr "Hr"
+
+msgid "calendar/modify.minute"
+msgstr "Mn"
+
+msgid "calendar/modify.second"
+msgstr "Sec"
+
+msgid "calendar/modify.at"
+msgstr "at "
+
+msgid "calendar/modify.minutes_per_year"
+msgstr "Mins/yr"
+
+msgid "calendar/modify.mpy"
+msgstr "MPY"
+
+msgid "calendar/ordinal.first"
+msgstr "%dst"
+
+msgid "calendar/ordinal.second"
+msgstr "%dnd"
+
+msgid "calendar/ordinal.third"
+msgstr "%drd"
+
+msgid "calendar/ordinal.other"
+msgstr "%dth"
+
+msgid "calendar/month.january"
+msgstr "January"
+
+msgid "calendar/month.february"
+msgstr "February"
+
+msgid "calendar/month.march"
+msgstr "March"
+
+msgid "calendar/month.april"
+msgstr "April"
+
+msgid "calendar/month.may"
+msgstr "May"
+
+msgid "calendar/month.june"
+msgstr "June"
+
+msgid "calendar/month.july"
+msgstr "July"
+
+msgid "calendar/month.august"
+msgstr "August"
+
+msgid "calendar/month.september"
+msgstr "September"
+
+msgid "calendar/month.october"
+msgstr "October"
+
+msgid "calendar/month.november"
+msgstr "November"
+
+msgid "calendar/month.december"
+msgstr "December"
+
+msgid "calendar/date"
+msgstr "%s %s"
+
+msgid "calendar/date_year"
+msgstr "%s, %s"
+
+msgid "calendar/era.ad"
+msgstr "AD"
+
+msgid "calendar/era.bc"
+msgstr "BC"
+
+msgid "calendar/year.ad"
+msgstr "%d AD"
+
+msgid "calendar/year.bc"
+msgstr "%d BC"
+
+msgid "mapper/menu"
+msgstr "Menu"
+
+msgid "mapper/map"
+msgstr "Map"
+
+msgid "mapper/overlays"
+msgstr "Overlays"
+
+msgid "mapper/modtools"
+msgstr "Mod Tools"
+
+msgid "mapper/alias"
+msgstr "Alias"
+
+msgid "mapper/chat.save_log"
+msgstr "Save log"
+
+msgid "mapper/chat.singleplayer_disabled"
+msgstr "[i]Chat is disabled in singleplayer![/i]"
+
+msgid "mapper/chat.placeholder"
+msgstr "Message"
+
+msgid "mapper/chat.muted"
+msgstr "You are muted!"
+
+msgid "mapper/chat.player_joined"
+msgstr "%s joined the room"
+
+msgid "mapper/chat.player_left"
+msgstr "%s left the room"
+
+msgid "mapper/players.in_room"
+msgid_plural "mapper/players.in_room_plural"
+msgstr[0] "%d player in room"
+msgstr[1] "%d players in room"
+
+msgid "mapper/singleplayer"
+msgstr "You are in singleplayer!"
+
+msgid "mapper/tools.title"
+msgstr "Tools"
+
+msgid "mapper/tools.settings"
+msgstr "Tool Settings"
+
+msgid "mapper/tools.select_prompt"
+msgstr "Click a tool to equip it!"
+
+msgid "mapper/tool.none"
+msgstr "Tools"
+
+msgid "mapper/tool.brush"
+msgstr "Brush"
+
+msgid "mapper/tool.dice"
+msgstr "Dice"
+
+msgid "mapper/tool.fill"
+msgstr "Fill"
+
+msgid "mapper/tool.line"
+msgstr "Line"
+
+msgid "mapper/tool.pick"
+msgstr "Pick"
+
+msgid "mapper/tool.inspect"
+msgstr "Inspect"
+
+msgid "mapper/tool.pan"
+msgstr "Pan"
+
+msgid "mapper/tool.marking"
+msgstr "Marking"
+
+msgid "mapper/dice.roller"
+msgstr "%s rolled"
+
+msgid "mapper/free_camera.stats"
+msgstr "Speed: {move_speed}  Cam Smooth: {camera_smoothing}  Move Smooth: {movement_smoothing}  Cam Speed: {camera_speed}\nijkl to move, u/o up and down\n(hide this with alt-shift-x)"
+
+msgid "mapper/brush.size"
+msgstr "Brush size"
+
+msgid "mapper/brush.paint"
+msgstr "Paint [Q]"
+
+msgid "mapper/brush.target"
+msgstr "Target [E]"
+
+msgid "mapper/color.hsv"
+msgstr "HSV"
+
+msgid "mapper/color.rgb"
+msgstr "RGB"
+
+msgid "mapper/color.hex"
+msgstr "Hex"
+
+msgid "mapper/brush.untargeted"
+msgstr "Untargeted [T]"
+
+msgid "mapper/size"
+msgstr "Size"
+
+msgid "mapper/marking.tab.create"
+msgstr "Create [Z]"
+
+msgid "mapper/marking.tab.delete"
+msgstr "Delete [X]"
+
+msgid "mapper/marking.tab.edit"
+msgstr "Edit [C]"
+
+msgid "mapper/marking.create.prompt"
+msgstr "create a..."
+
+msgid "mapper/marking.city"
+msgstr "City"
+
+msgid "mapper/marking.fort"
+msgstr "Fort"
+
+msgid "mapper/marking.color.prompt"
+msgstr "with color..."
+
+msgid "mapper/marking.delete.nearby"
+msgstr "delete nearby"
+
+msgid "mapper/marking.cities"
+msgstr "cities"
+
+msgid "mapper/marking.forts"
+msgstr "forts"
+
+msgid "mapper/marking.edit.select"
+msgstr "Select a marking"
+
+msgid "mapper/marking.edit.format.city"
+msgstr "Edit this city"
+
+msgid "mapper/marking.edit.format.fort"
+msgstr "Edit this fort"
+
+msgid "mapper/marking.name.generic"
+msgstr "Name"
+
+msgid "mapper/marking.name.format.city"
+msgstr "City name"
+
+msgid "mapper/marking.name.format.fort"
+msgstr "Fort name"
+
+msgid "mapper/marking.name.placeholder.city"
+msgstr "City name..."
+
+msgid "mapper/marking.name.placeholder.fort"
+msgstr "Fort name..."
+
+msgid "mapper/resyncing"
+msgstr "Resyncing..."
+
+msgid "mapper/camera.locked"
+msgstr "Your camera is locked, press Shift+B to unlock"
+
+msgid "mapper/pause.back"
+msgstr "Back to game"
+
+msgid "mapper/pause.exit"
+msgstr "Exit the room"
+
+msgid "mapper/modtools.title"
+msgstr "Moderator Tools"
+
+msgid "mapper/modtools.roomblock_creator"
+msgstr "Roomblock Room Creator"
+
+msgid "mapper/modtools.more_soon"
+msgstr "(More will be provided soon)"
+
+msgid "mapper/name_prompt.title"
+msgstr "Set your RP name"
+
+msgid "mapper/player.purge.confirm"
+msgstr "Purge this player's paint?"
+
+msgid "mapper/player.purge"
+msgstr "Purge paint"
+
+msgid "mapper/player.ban.confirm"
+msgstr "Ban this player?"
+
+msgid "mapper/player.ban"
+msgstr "Ban"
+
+msgid "mapper/player.ban_and_purge"
+msgstr "Ban and clear paint"
+
+msgid "mapper/player.kick.confirm"
+msgstr "Kick this player?"
+
+msgid "mapper/player.kick"
+msgstr "Kick"
+
+msgid "mapper/player.kick_and_purge"
+msgstr "Kick and clear paint"
+
+msgid "mapper/player.unmute"
+msgstr "Unmute"
+
+msgid "mapper/player.mute"
+msgstr "Mute"
+
+msgid "mapper/player.remove_operator"
+msgstr "Remove operator"
+
+msgid "mapper/player.make_operator"
+msgstr "Make operator"
+
+msgid "mapper/rank.player"
+msgstr "Player"
+
+msgid "mapper/rank.operator"
+msgstr "Room operator"
+
+msgid "mapper/rank.logged_in"
+msgstr "Logged in"
+
+msgid "mapper/rank.moderator"
+msgstr "Moderator"
+
+msgid "mapper/rank.admin"
+msgstr "Admin"
+
+msgid "mapper/rank.developer"
+msgstr "Developer"
+
+msgid "mapper/map.save"
+msgstr "Save this map"
+
+msgid "mapper/map.export"
+msgstr "Export this map"
+
+msgid "mapper/map.load"
+msgstr "Load a map"
+
+msgid "mapper/overlay.load"
+msgstr "Load an overlay"
+
+msgid "mapper/overlay.load_local"
+msgstr "Load an overlay locally"
+
+msgid "settings/category/input"
+msgstr "Input"
+
+msgid "settings/category/display"
+msgstr "Display"
+
+msgid "settings/category/chat"
+msgstr "Chat"
+
+msgid "settings/label/camera_sensitivity"
+msgstr "Camera sensitivity"
+
+msgid "settings/label/enable_blurred_ui"
+msgstr "Blur background of UIs"
+
+msgid "settings/label/enable_seconds"
+msgstr "Enable seconds on clock"
+
+msgid "settings/label/filter_mode"
+msgstr "Filter"
+
+msgid "settings/label/map_brightness"
+msgstr "Map brightness"
+
+msgid "settings/label/mouse_sensitivity"
+msgstr "Mouse sensitivity"
+
+msgid "settings/label/ssao_enabled"
+msgstr "Ambient occlusion (SSAO)"
+
+msgid "settings/label/ui_scale"
+msgstr "UI scale"
+
+msgid "settings/label/unfocus_on_chat_submission"
+msgstr "Unfocus on chat submission"
+
+msgid "settings/option/filter_mode/off"
+msgstr "Off"
+
+msgid "settings/option/filter_mode/offensive"
+msgstr "Offensive"
+
+msgid "settings/option/filter_mode/full"
+msgstr "Full"
+
+msgid "roomcreate/name.empty"
+msgstr "Cannot create a room with an empty name!"
+
+msgid "roomlist/loading.progress"
+msgstr "Loading..."
+
+msgid "login/error.timeout"
+msgstr "Server took too long to respond"
+
+msgid "login/error.invalidcredentials"
+msgstr "Invalid username or password"
+
+msgid "login/error.servererror.short"
+msgstr "Server error (try again later)"
+
+msgid "network/close.request_rejected"
+msgstr "The server rejected the request."
+
+msgid "network/close.password_attempts"
+msgstr "Too many password attempts."
+
+msgid "network/close.username_invalid"
+msgstr "Invalid username."
+
+msgid "network/close.username_in_use"
+msgstr "That username is already in use."
+
+msgid "network/close.token_invalid"
+msgstr "Your account token is invalid."
+
+msgid "network/close.banned"
+msgstr "You are banned from this room."
+
+msgid "network/close.kicked"
+msgstr "You were kicked from this room."
+
+msgid "network/close.capacity"
+msgstr "The room is at maximum capacity."
+
+msgid "network/close.room_not_found"
+msgstr "This room does not exist."
+
+msgid "roomcreate/gallery.defaultmap"
+msgstr "Default"
+
+msgid "network/status.map_size"
+msgstr "{message} ({size} KiB)"
