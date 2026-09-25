@@ -20,3 +20,7 @@ func open_pause_menu() -> void:
 		prompt.hide_panel()
 		var menu := preload("res://scenes/mapper/ui/pause_menu/menu.tscn").instantiate()
 		prompt.add_child(menu)
+
+
+func settings_prompt_closed() -> void:
+	pause_menu_open = false
