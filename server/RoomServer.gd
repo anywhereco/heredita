@@ -302,6 +302,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 					room.map.calendar.year = 1_000_000_000
 				sync_calendar()
 				return false
+			return false
 		"ban":
 			var id := parse_player_id(data["details"])
 			if id == NOT_VALID_PLAYER_ID:
@@ -400,6 +401,8 @@ func _text_data(peer_id: int, data: Dictionary) -> void:
 func _binary_message(
 	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
 ) -> void:
+	if peer_id not in connected_peers:
+		return
 	if event == ISUtil.BinaryEvents.BRUSH_UPDATE:
 		var brush_data := ISUtil.decode_brush_update(details)
 		if brush_data.is_empty():

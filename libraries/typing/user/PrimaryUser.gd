@@ -17,6 +17,7 @@ var friend_requests_sent: Array[UserPartial]
 var friend_requests_received: Array[UserPartial]
 
 var http: HTTPRequest
+var _signup_callback: Callable
 
 
 func _init(_http: HTTPRequest = null, _token: String = "<no token>") -> void:
@@ -25,16 +26,24 @@ func _init(_http: HTTPRequest = null, _token: String = "<no token>") -> void:
 
 
 func signup(_username: String, password: String, _email: String) -> void:
-	http.request_completed.connect(_signup_complete.bind(_username, password))
+	if _signup_callback.is_valid() and http.request_completed.is_connected(_signup_callback):
+		return
+	_signup_callback = _signup_complete.bind(_username, password)
+	http.request_completed.connect(_signup_callback, CONNECT_ONE_SHOT)
 	var body := "username=%s&password=%s" % [_username.uri_encode(), password.uri_encode()]
 	if _email:
 		body += "&email=%s" % _email.uri_encode()
-	http.request(
+	var request_error := http.request(
 		Statics.HEREDITA_URL + "/auth/users/new",
 		["Content-Type: application/x-www-form-urlencoded"],
 		HTTPClient.METHOD_POST,
 		body
 	)
+	if request_error != OK:
+		if http.request_completed.is_connected(_signup_callback):
+			http.request_completed.disconnect(_signup_callback)
+		_signup_callback = Callable()
+		failed.emit(request_error)
 
 
 @warning_ignore("unused_parameter")
@@ -46,8 +55,9 @@ func _signup_complete(
 	_username: String,
 	_password: String
 ) -> void:
-	http.request_completed.disconnect(_signup_complete)
-	print(http.request_completed.get_connections())
+	if http.request_completed.is_connected(_signup_callback):
+		http.request_completed.disconnect(_signup_callback)
+	_signup_callback = Callable()
 	if response_code >= 300:
 		failed.emit(response_code)
 		return
