@@ -54,4 +54,4 @@ text = "M"
 [node name="UserJoin" type="Button" parent="MarginContainer/HBoxContainer" unique_id=671681191]
 visible = false
 layout_mode = 2
-text = "  Join  "
+text = "roomlist/room.join"

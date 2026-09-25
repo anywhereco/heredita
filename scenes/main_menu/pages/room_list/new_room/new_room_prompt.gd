@@ -42,7 +42,7 @@ func change_map() -> void:
 func create_room() -> void:
 	var create_dict: Dictionary = {}
 	if not %Name.text:
-		InfoPrompt.prompt("Cannot create a room with an empty name!")
+		InfoPrompt.prompt("roomcreate/name.empty")
 		return
 	create_dict["name"] = %Name.text
 	create_dict["description"] = %Description.text

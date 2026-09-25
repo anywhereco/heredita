@@ -85,11 +85,11 @@ func enter_mapper(map: MapData = null) -> void:
 	_mapper_load_started = true
 	_game_load_finishing = false
 	_game_load_progress.clear()
-	_set_game_load_detail("Preparing mapper...")
+	_set_game_load_detail(tr("roomlist/loading.mapper.prepare"))
 
 	var err := ResourceLoader.load_threaded_request(MAPPER_3D_PATH, "PackedScene", false)
 	if err != OK:
-		_fail_game_load("Could not start loading the mapper.")
+		_fail_game_load(tr("roomlist/loading.mapper.start_failed"))
 
 
 func _update_game_loading(delta: float) -> void:
@@ -107,17 +107,17 @@ func _update_game_loading(delta: float) -> void:
 				if not _game_load_progress.is_empty():
 					percent = roundi((_game_load_progress[0] as float) * 100.0)
 					_set_spinner_progress(percent)
-				_game_load_detail = "Loading mapper resources... %d%%" % percent
+				_game_load_detail = tr("roomlist/loading.mapper.resources") % percent
 			ResourceLoader.THREAD_LOAD_LOADED:
 				_game_load_finishing = true
 				_set_spinner_indeterminate()
-				_game_load_detail = "Starting mapper..."
+				_game_load_detail = tr("roomlist/loading.mapper.starting")
 				_finish_mapper_load.call_deferred()
 			ResourceLoader.THREAD_LOAD_FAILED:
-				_fail_game_load("Could not load the mapper.")
+				_fail_game_load(tr("roomlist/loading.mapper.failed"))
 				return
 			ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
-				_fail_game_load("Could not find the mapper scene.")
+				_fail_game_load(tr("roomlist/loading.mapper.not_found"))
 				return
 
 	_set_game_loading_text()
@@ -133,11 +133,11 @@ func _set_game_loading_text() -> void:
 func _finish_mapper_load() -> void:
 	var mapper_scene := ResourceLoader.load_threaded_get(MAPPER_3D_PATH) as PackedScene
 	if mapper_scene == null:
-		_fail_game_load("Could not load the mapper.")
+		_fail_game_load(tr("roomlist/loading.mapper.failed"))
 		return
 	var mapper := mapper_scene.instantiate() as MapperRoot
 	if mapper == null:
-		_fail_game_load("Could not create the mapper.")
+		_fail_game_load(tr("roomlist/loading.mapper.create_failed"))
 		return
 	_close_game_loading_prompt()
 	if not _buffered_map_data.is_empty():
@@ -200,7 +200,7 @@ func _show_game_loading_prompt() -> void:
 	_loading_prompt_label = Label.new()
 	_loading_prompt_label.custom_minimum_size = Vector2(280, 0)
 	_loading_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_loading_prompt_label.text = "Loading..."
+	_loading_prompt_label.text = tr("roomlist/loading.progress")
 	_loading_prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 	content.add_child(_loading_prompt_spinner)
@@ -245,21 +245,24 @@ func _client_loading_status_updated(details: Dictionary) -> void:
 		return
 	if details.has("map_size"):
 		var map_size_kb := ceili((details["map_size"] as int) / 1024.0)
-		message = "%s (%d KiB)" % [message, map_size_kb]
+		message = tr("network/status.map_size").format({
+			"message": message,
+			"size": "%d" % map_size_kb,
+		})
 	_set_game_load_detail(message)
 
 
 func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> void:
 	if _game_loading:
 		return
-	_begin_game_loading("Connecting to game server...")
+	_begin_game_loading(tr("network/status.connecting"))
 	if creation:
 		assert(map != null, "Attempted to create room with no map")
 		State.client = InfernoSocketClient.new(Statics.SERVER_URL, 0, creation, map.serialize())
 	else:
 		State.client = InfernoSocketClient.new(Statics.SERVER_URL, int(_id))
 	State.client.connected_to_server.connect(
-		_set_game_load_detail.bind("Connected. Waiting for handshake...")
+		_set_game_load_detail.bind(tr("network/status.connected_waiting"))
 	)
 	State.client.loading_status_updated.connect(_client_loading_status_updated)
 	State.client.connection_closed.connect(premature_close)
@@ -279,7 +282,29 @@ func premature_close() -> void:
 	var reason_text := State.client.socket.get_close_reason()
 	print("Failed to join room: %d" % reason)
 	if _game_loading and not _mapper_load_started:
-		var message := "Failed to join room: %d" % reason
-		if not reason_text.is_empty():
-			message = "%s (%s)" % [message, reason_text]
+		var message := tr("roomlist/join.failed") % reason
+		var localized_reason := ""
+		match reason:
+			4096:
+				localized_reason = tr("network/close.request_rejected")
+			4097:
+				localized_reason = tr("network/close.password_attempts")
+			4099:
+				localized_reason = tr("network/close.username_invalid")
+			4100:
+				localized_reason = tr("network/close.username_in_use")
+			4101:
+				localized_reason = tr("network/close.token_invalid")
+			5000, 6145:
+				localized_reason = tr("network/close.banned")
+			5001:
+				localized_reason = tr("network/close.kicked")
+			6144:
+				localized_reason = tr("network/close.capacity")
+			6146:
+				localized_reason = tr("network/close.room_not_found")
+		if localized_reason.is_empty():
+			localized_reason = reason_text
+		if not localized_reason.is_empty():
+			message = tr("roomlist/join.failed.reason") % [message, localized_reason]
 		_fail_game_load(message)

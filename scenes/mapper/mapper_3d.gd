@@ -139,6 +139,6 @@ func closed() -> void:
 	#if not connection_string:
 	#connection_string = "The connection was closed."
 	#InfoPrompt.prompt(connection_string)
-	InfoPrompt.prompt("The connection was closed.")
+	InfoPrompt.prompt("network/connection.closed")
 	#eventually have a more detailed message if you're kicked/banned/etc though idk how they'd send that
 	get_tree().current_scene = menu

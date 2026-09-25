@@ -19,6 +19,9 @@ var suppress_edit_signals := false
 
 
 func _ready() -> void:
+	set_tab_title(0, tr("mapper/marking.tab.create"))
+	set_tab_title(1, tr("mapper/marking.tab.delete"))
+	set_tab_title(2, tr("mapper/marking.tab.edit"))
 	create_city_button.toggle_mode = true
 	create_fort_button.toggle_mode = true
 	create_city_button.button_pressed = true
@@ -52,19 +55,19 @@ func set_selected(marking: MapMarkings.MapObject) -> void:
 	suppress_edit_signals = true
 	if marking == null:
 		selected_marking_id = ""
-		edit_title.text = "Select a marking"
+		edit_title.text = tr("mapper/marking.edit.select")
 		edit_name.editable = false
 		edit_name.text = ""
 		edit_name.placeholder_text = ""
-		edit_name_label.text = "Name"
+		edit_name_label.text = tr("mapper/marking.name.generic")
 		edit_color_picker.modulate = Color(1, 1, 1, 0.45)
 	else:
 		selected_marking_id = marking.id
-		edit_title.text = "Edit this %s" % marking.marking_type
+		edit_title.text = tr("mapper/marking.edit.format." + marking.marking_type)
 		edit_name.editable = true
 		edit_name.text = marking.name
-		edit_name.placeholder_text = "%s name..." % marking.marking_type.capitalize()
-		edit_name_label.text = "%s name" % marking.marking_type.capitalize()
+		edit_name.placeholder_text = tr("mapper/marking.name.placeholder." + marking.marking_type)
+		edit_name_label.text = tr("mapper/marking.name.format." + marking.marking_type)
 		edit_color_picker.color.value = marking.color
 		edit_color_picker.modulate = Color.WHITE
 	suppress_edit_signals = false

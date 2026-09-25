@@ -59,7 +59,7 @@ func display_result(position: Vector3, player_id: int, result: DiceResult) -> vo
 		pass  #this doesnt happen yet so we dont have to deal with it
 	var roller: String
 	if State.client:
-		roller = "%s rolled" % State.room.players.getv(player_id).username
+		roller = tr("mapper/dice.roller") % State.room.players.getv(player_id).username
 	else:
 		roller = ""
 	var dice_bubble := DiceBubble.create(result["die_string"] as String, result_string, roller)

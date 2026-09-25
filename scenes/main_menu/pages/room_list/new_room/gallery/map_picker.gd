@@ -13,4 +13,4 @@ func _ready() -> void:
 	image = map_picker_button.image
 	map = map_picker_button.map
 	image.value = MAP_BLANK.duplicate()
-	map_name.text = tr("roomcreate/gallery.header") % "Default"
+	map_name.text = tr("roomcreate/gallery.header") % tr("roomcreate/gallery.defaultmap")

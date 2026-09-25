@@ -27,11 +27,11 @@ func make_toggle(_setting_data: ToggleSetting) -> Control:
 	return node
 
 
-func make_dropdown(setting_data: DropdownSetting) -> Control:
+func make_dropdown(setting: StringName, setting_data: DropdownSetting) -> Control:
 	var node: Control = preload("res://scenes/_settings/dropdown.tscn").instantiate()
 	var dropdown: Control = node.find_child("Value")
 	for option in setting_data.options:
-		dropdown.add_item(option)
+		dropdown.add_item(tr("settings/option/%s/%s" % [String(setting), option.to_lower()]))
 	return node
 
 
@@ -46,7 +46,7 @@ func tab_add_setting(tab: Container, setting: StringName, setting_data: Settings
 		setting_node = make_toggle(setting_data)
 	elif setting_data is DropdownSetting:
 		@warning_ignore("unsafe_call_argument")
-		setting_node = make_dropdown(setting_data)
+		setting_node = make_dropdown(setting, setting_data)
 	else:
 		push_error("Cannot make setting node for type %s" % setting_data.get_class())
 		return
@@ -54,7 +54,7 @@ func tab_add_setting(tab: Container, setting: StringName, setting_data: Settings
 	setting_node.setting = Settings.get_reactive(setting)
 	
 	var setting_label: Label = preload("res://scenes/_settings/setting_label.tscn").instantiate()
-	setting_label.text = setting_data.label
+	setting_label.text = tr("settings/label/" + String(setting))
 	tab.add_child(setting_label)
 	tab.add_child(setting_node)
 
@@ -81,6 +81,8 @@ func _ready() -> void:
 				tab_add_setting(tab_node, setting, setting_data)
 		
 		if tab_node.get_child_count() > 0:
+			var tab_title := tr("settings/category/" + String(tab).to_lower())
 			add_child(tab_node)
+			set_tab_title(get_tab_idx_from_control(tab_node), tab_title)
 		else:
 			tab_node.queue_free()

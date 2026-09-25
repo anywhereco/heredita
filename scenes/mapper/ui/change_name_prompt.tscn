@@ -9,7 +9,7 @@ grow_vertical = 2
 
 [node name="Label" type="Label" parent="." unique_id=1409291308]
 layout_mode = 2
-text = "Set your RP name"
+text = "mapper/name_prompt.title"
 horizontal_alignment = 1
 
 [node name="LineEdit" type="LineEdit" parent="." unique_id=54786335]
@@ -18,4 +18,4 @@ layout_mode = 2
 [node name="Button" type="Button" parent="." unique_id=1574361793]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "OK"
+text = "common/ok"

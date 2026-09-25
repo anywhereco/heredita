@@ -103,14 +103,21 @@ static func is_leap_year(year: int) -> bool:
 static func get_ordinal(number: int) -> String:
 	var last_digit: int = number % 10
 	var last_pair: int = number % 100
+	var ordinal_key := "other"
 
 	if last_digit == 1 and last_pair != 11:
-		return str(number) + "st"
-	if last_digit == 2 and last_pair != 12:
-		return str(number) + "nd"
-	if last_digit == 3 and last_pair != 13:
-		return str(number) + "rd"
-	return str(number) + "th"
+		ordinal_key = "first"
+	elif last_digit == 2 and last_pair != 12:
+		ordinal_key = "second"
+	elif last_digit == 3 and last_pair != 13:
+		ordinal_key = "third"
+	return TranslationServer.translate("calendar/ordinal." + ordinal_key) % number
+
+
+@warning_ignore("shadowed_variable")
+static func month_string(month: Month) -> String:
+	@warning_ignore("unsafe_call_argument")
+	return TranslationServer.translate("calendar/month." + Month.keys()[month].to_lower())
 
 
 @warning_ignore("shadowed_variable")
@@ -147,6 +154,11 @@ static func days_in_month_static(month: Month, year: int) -> int:
 
 ## Returns Month.MAXIMUM if no valid month could be determined
 static func str_to_month(string: String) -> Month:
+	@warning_ignore("shadowed_variable")
+	for month: int in range(Month.MAXIMUM):
+		if string.to_lower() == month_string(month as Month).to_lower():
+			return month as Month
+
 	match string.to_lower():
 		"jan", "january":
 			return Month.JANUARY
@@ -236,16 +248,17 @@ func process(delta: float) -> void:
 
 
 func date_string() -> String:
-	var month_str: String = Month.keys()[month]
-	month_str = month_str.to_lower().capitalize()
-	return month_str + " " + get_ordinal(day)
+	return tr("calendar/date").format({
+		"month": month_string(month),
+		"date": get_ordinal(day),
+	})
 
 
 func year_string() -> String:
 	if year < 0:
-		return str(-year) + " BC"
+		return tr("calendar/year.bc") % -year
 	elif year < 1500:
-		return str(year) + " AD"
+		return tr("calendar/year.ad") % year
 	return str(year)
 
 
@@ -259,7 +272,10 @@ func time_string() -> String:
 func primary_string() -> String:
 	if minutes_per_year < 0.1:
 		return year_string()
-	return date_string() + ", " + year_string()
+	return tr("calendar/date_year").format({
+		"date": date_string(),
+		"year": year_string(),
+	})
 	
 	
 func to_json() -> Dictionary:

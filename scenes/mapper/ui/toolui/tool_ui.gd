@@ -16,5 +16,5 @@ func _process(_delta: float) -> void:
 
 
 func new_tool(id: ReactiveInt) -> void:
-	var tool_name: String = MapperRoot.Tool.keys()[id.value].capitalize()
-	title.text = tool_name
+	var tool_key: String = MapperRoot.Tool.keys()[id.value].to_lower()
+	title.text = tr("mapper/tool." + tool_key)

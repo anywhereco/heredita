@@ -129,7 +129,7 @@ secret = true
 [node name="Email" type="LineEdit" parent="LoginOptions/SignupPanel/Signup" unique_id=845787002]
 visible = false
 layout_mode = 2
-placeholder_text = "Email (optional)"
+placeholder_text = "login/signup.email_optional"
 secret = true
 
 [node name="Button" type="Button" parent="LoginOptions/SignupPanel/Signup" unique_id=54171063]

@@ -168,3 +168,550 @@ msgstr ""
 
 msgid "roomcreate/mapconfig"
 msgstr "locd: Map configuration..."
+
+msgid "mainmenu/version.editor"
+msgstr "locd: (editor build)"
+
+msgid "mainmenu/version.commit"
+msgstr "locd: (commit %s)"
+
+msgid "mainmenu/friends.comingsoon"
+msgstr "locd: Friends coming soon :]"
+
+msgid "mainmenu/friends.add"
+msgstr "locd: Add"
+
+msgid "login/signup.email_optional"
+msgstr "locd: Email (optional)"
+
+msgid "mainmenu/version"
+msgstr "locd: beta %s"
+
+msgid "roomlist/loading.mapper.prepare"
+msgstr "locd: Preparing mapper..."
+
+msgid "roomlist/loading.mapper.start_failed"
+msgstr "locd: Could not start loading the mapper."
+
+msgid "roomlist/loading.mapper.resources"
+msgstr "locd: Loading mapper resources... %d%%"
+
+msgid "roomlist/loading.mapper.starting"
+msgstr "locd: Starting mapper..."
+
+msgid "roomlist/loading.mapper.failed"
+msgstr "locd: Could not load the mapper."
+
+msgid "roomlist/loading.mapper.not_found"
+msgstr "locd: Could not find the mapper scene."
+
+msgid "roomlist/loading.mapper.create_failed"
+msgstr "locd: Could not create the mapper."
+
+msgid "roomlist/join.failed"
+msgstr "locd: Failed to join room: %d"
+
+msgid "roomlist/join.failed.reason"
+msgstr "locd: %s (%s)"
+
+msgid "common/ok"
+msgstr "locd: OK"
+
+msgid "common/cancel"
+msgstr "locd: Cancel"
+
+msgid "common/confirm"
+msgstr "locd: Confirm"
+
+msgid "network/status.connecting"
+msgstr "locd: Connecting to game server..."
+
+msgid "network/status.connect_failed"
+msgstr "locd: Unable to connect to game server."
+
+msgid "network/status.connected_waiting"
+msgstr "locd: Connected. Waiting for handshake..."
+
+msgid "network/connection.closed"
+msgstr "locd: The connection was closed."
+
+msgid "network/status.creating_room"
+msgstr "locd: Creating room and uploading map..."
+
+msgid "network/status.requesting_room"
+msgstr "locd: Requesting room information..."
+
+msgid "network/status.joined_room"
+msgstr "locd: Joined room %d. Finishing handshake..."
+
+msgid "network/status.confirming_password"
+msgstr "locd: Confirming room password..."
+
+msgid "network/status.sending_username"
+msgstr "locd: Sending username..."
+
+msgid "network/status.checking_token"
+msgstr "locd: Checking account token..."
+
+msgid "network/status.handshake_complete"
+msgstr "locd: Handshake complete. Loading mapper..."
+
+msgid "network/password.required"
+msgstr "locd: This room requires a password."
+
+msgid "network/password.enter"
+msgstr "locd: Enter the password..."
+
+msgid "network/password.accepted"
+msgstr "locd: Password accepted."
+
+msgid "network/password.rejected"
+msgstr "locd: The room password was rejected."
+
+msgid "network/password.attempt_remaining"
+msgid_plural "network/password.attempts_remaining"
+msgstr[0] "locd: %d attempt remaining"
+msgstr[1] "locd: %d attempts remaining"
+
+msgid "calendar/modify.title"
+msgstr "locd: Modify Calendar"
+
+msgid "calendar/modify.month"
+msgstr "locd: Month"
+
+msgid "calendar/modify.day"
+msgstr "locd: Day"
+
+msgid "calendar/modify.year"
+msgstr "locd: Year"
+
+msgid "calendar/modify.hour"
+msgstr "locd: Hr"
+
+msgid "calendar/modify.minute"
+msgstr "locd: Mn"
+
+msgid "calendar/modify.second"
+msgstr "locd: Sec"
+
+msgid "calendar/modify.at"
+msgstr "locd: at "
+
+msgid "calendar/modify.minutes_per_year"
+msgstr "locd: Mins/yr"
+
+msgid "calendar/modify.mpy"
+msgstr "locd: MPY"
+
+msgid "calendar/ordinal.first"
+msgstr "locd: %dst"
+
+msgid "calendar/ordinal.second"
+msgstr "locd: %dnd"
+
+msgid "calendar/ordinal.third"
+msgstr "locd: %drd"
+
+msgid "calendar/ordinal.other"
+msgstr "locd: %dth"
+
+msgid "calendar/month.january"
+msgstr "locd: January"
+
+msgid "calendar/month.february"
+msgstr "locd: February"
+
+msgid "calendar/month.march"
+msgstr "locd: March"
+
+msgid "calendar/month.april"
+msgstr "locd: April"
+
+msgid "calendar/month.may"
+msgstr "locd: May"
+
+msgid "calendar/month.june"
+msgstr "locd: June"
+
+msgid "calendar/month.july"
+msgstr "locd: July"
+
+msgid "calendar/month.august"
+msgstr "locd: August"
+
+msgid "calendar/month.september"
+msgstr "locd: September"
+
+msgid "calendar/month.october"
+msgstr "locd: October"
+
+msgid "calendar/month.november"
+msgstr "locd: November"
+
+msgid "calendar/month.december"
+msgstr "locd: December"
+
+msgid "calendar/date"
+msgstr "locd: {month} {date}"
+
+msgid "calendar/date_year"
+msgstr "locd: {date}, {year}"
+
+msgid "calendar/era.ad"
+msgstr "locd: AD"
+
+msgid "calendar/era.bc"
+msgstr "locd: BC"
+
+msgid "calendar/year.ad"
+msgstr "locd: %d AD"
+
+msgid "calendar/year.bc"
+msgstr "locd: %d BC"
+
+msgid "mapper/menu"
+msgstr "locd: Menu"
+
+msgid "mapper/map"
+msgstr "locd: Map"
+
+msgid "mapper/overlays"
+msgstr "locd: Overlays"
+
+msgid "mapper/modtools"
+msgstr "locd: Mod Tools"
+
+msgid "mapper/alias"
+msgstr "locd: Alias"
+
+msgid "mapper/chat.save_log"
+msgstr "locd: Save log"
+
+msgid "mapper/chat.singleplayer_disabled"
+msgstr "locd: [i]Chat is disabled in singleplayer![/i]"
+
+msgid "mapper/chat.placeholder"
+msgstr "locd: Message"
+
+msgid "mapper/chat.muted"
+msgstr "locd: You are muted!"
+
+msgid "mapper/chat.player_joined"
+msgstr "locd: %s joined the room"
+
+msgid "mapper/chat.player_left"
+msgstr "locd: %s left the room"
+
+msgid "mapper/players.in_room"
+msgid_plural "mapper/players.in_room_plural"
+msgstr[0] "locd: %d player in room"
+msgstr[1] "locd: %d players in room"
+
+msgid "mapper/singleplayer"
+msgstr "locd: You are in singleplayer!"
+
+msgid "mapper/tools.title"
+msgstr "locd: Tools"
+
+msgid "mapper/tools.settings"
+msgstr "locd: Tool Settings"
+
+msgid "mapper/tools.select_prompt"
+msgstr "locd: Click a tool to equip it!"
+
+msgid "mapper/tool.none"
+msgstr "locd: Tools"
+
+msgid "mapper/tool.brush"
+msgstr "locd: Brush"
+
+msgid "mapper/tool.dice"
+msgstr "locd: Dice"
+
+msgid "mapper/tool.fill"
+msgstr "locd: Fill"
+
+msgid "mapper/tool.line"
+msgstr "locd: Line"
+
+msgid "mapper/tool.pick"
+msgstr "locd: Pick"
+
+msgid "mapper/tool.inspect"
+msgstr "locd: Inspect"
+
+msgid "mapper/tool.pan"
+msgstr "locd: Pan"
+
+msgid "mapper/tool.marking"
+msgstr "locd: Marking"
+
+msgid "mapper/dice.roller"
+msgstr "locd: %s rolled"
+
+msgid "mapper/free_camera.stats"
+msgstr "locd: Speed: {move_speed}  Cam Smooth: {camera_smoothing}  Move Smooth: {movement_smoothing}  Cam Speed: {camera_speed}\nijkl to move, u/o up and down\n(hide this with alt-shift-x)"
+
+msgid "mapper/brush.size"
+msgstr "locd: Brush size"
+
+msgid "mapper/brush.paint"
+msgstr "locd: Paint [Q]"
+
+msgid "mapper/brush.target"
+msgstr "locd: Target [E]"
+
+msgid "mapper/color.hsv"
+msgstr "locd: HSV"
+
+msgid "mapper/color.rgb"
+msgstr "locd: RGB"
+
+msgid "mapper/color.hex"
+msgstr "locd: Hex"
+
+msgid "mapper/brush.untargeted"
+msgstr "locd: Untargeted [T]"
+
+msgid "mapper/size"
+msgstr "locd: Size"
+
+msgid "mapper/marking.tab.create"
+msgstr "locd: Create [Z]"
+
+msgid "mapper/marking.tab.delete"
+msgstr "locd: Delete [X]"
+
+msgid "mapper/marking.tab.edit"
+msgstr "locd: Edit [C]"
+
+msgid "mapper/marking.create.prompt"
+msgstr "locd: create a..."
+
+msgid "mapper/marking.city"
+msgstr "locd: City"
+
+msgid "mapper/marking.fort"
+msgstr "locd: Fort"
+
+msgid "mapper/marking.color.prompt"
+msgstr "locd: with color..."
+
+msgid "mapper/marking.delete.nearby"
+msgstr "locd: delete nearby"
+
+msgid "mapper/marking.cities"
+msgstr "locd: cities"
+
+msgid "mapper/marking.forts"
+msgstr "locd: forts"
+
+msgid "mapper/marking.edit.select"
+msgstr "locd: Select a marking"
+
+msgid "mapper/marking.edit.format.city"
+msgstr "locd: Edit this city"
+
+msgid "mapper/marking.edit.format.fort"
+msgstr "locd: Edit this fort"
+
+msgid "mapper/marking.name.generic"
+msgstr "locd: Name"
+
+msgid "mapper/marking.name.format.city"
+msgstr "locd: City name"
+
+msgid "mapper/marking.name.format.fort"
+msgstr "locd: Fort name"
+
+msgid "mapper/marking.name.placeholder.city"
+msgstr "locd: City name..."
+
+msgid "mapper/marking.name.placeholder.fort"
+msgstr "locd: Fort name..."
+
+msgid "mapper/resyncing"
+msgstr "locd: Resyncing..."
+
+msgid "mapper/camera.locked"
+msgstr "locd: Your camera is locked, press Shift+B to unlock"
+
+msgid "mapper/pause.back"
+msgstr "locd: Back to game"
+
+msgid "mapper/pause.exit"
+msgstr "locd: Exit the room"
+
+msgid "mapper/modtools.title"
+msgstr "locd: Moderator Tools"
+
+msgid "mapper/modtools.roomblock_creator"
+msgstr "locd: Roomblock Room Creator"
+
+msgid "mapper/modtools.more_soon"
+msgstr "locd: (More will be provided soon)"
+
+msgid "mapper/name_prompt.title"
+msgstr "locd: Set your RP name"
+
+msgid "mapper/player.purge.confirm"
+msgstr "locd: Purge this player's paint?"
+
+msgid "mapper/player.purge"
+msgstr "locd: Purge paint"
+
+msgid "mapper/player.ban.confirm"
+msgstr "locd: Ban this player?"
+
+msgid "mapper/player.ban"
+msgstr "locd: Ban"
+
+msgid "mapper/player.ban_and_purge"
+msgstr "locd: Ban and clear paint"
+
+msgid "mapper/player.kick.confirm"
+msgstr "locd: Kick this player?"
+
+msgid "mapper/player.kick"
+msgstr "locd: Kick"
+
+msgid "mapper/player.kick_and_purge"
+msgstr "locd: Kick and clear paint"
+
+msgid "mapper/player.unmute"
+msgstr "locd: Unmute"
+
+msgid "mapper/player.mute"
+msgstr "locd: Mute"
+
+msgid "mapper/player.remove_operator"
+msgstr "locd: Remove operator"
+
+msgid "mapper/player.make_operator"
+msgstr "locd: Make operator"
+
+msgid "mapper/rank.player"
+msgstr "locd: Player"
+
+msgid "mapper/rank.operator"
+msgstr "locd: Room operator"
+
+msgid "mapper/rank.logged_in"
+msgstr "locd: Logged in"
+
+msgid "mapper/rank.moderator"
+msgstr "locd: Moderator"
+
+msgid "mapper/rank.admin"
+msgstr "locd: Admin"
+
+msgid "mapper/rank.developer"
+msgstr "locd: Developer"
+
+msgid "mapper/map.save"
+msgstr "locd: Save this map"
+
+msgid "mapper/map.export"
+msgstr "locd: Export this map"
+
+msgid "mapper/map.load"
+msgstr "locd: Load a map"
+
+msgid "mapper/overlay.load"
+msgstr "locd: Load an overlay"
+
+msgid "mapper/overlay.load_local"
+msgstr "locd: Load an overlay locally"
+
+msgid "settings/category/input"
+msgstr "locd: Input"
+
+msgid "settings/category/display"
+msgstr "locd: Display"
+
+msgid "settings/category/chat"
+msgstr "locd: Chat"
+
+msgid "settings/label/camera_sensitivity"
+msgstr "locd: Camera sensitivity"
+
+msgid "settings/label/enable_blurred_ui"
+msgstr "locd: Blur background of UIs"
+
+msgid "settings/label/enable_seconds"
+msgstr "locd: Enable seconds on clock"
+
+msgid "settings/label/filter_mode"
+msgstr "locd: Filter"
+
+msgid "settings/label/map_brightness"
+msgstr "locd: Map brightness"
+
+msgid "settings/label/mouse_sensitivity"
+msgstr "locd: Mouse sensitivity"
+
+msgid "settings/label/ssao_enabled"
+msgstr "locd: Ambient occlusion (SSAO)"
+
+msgid "settings/label/ui_scale"
+msgstr "locd: UI scale"
+
+msgid "settings/label/unfocus_on_chat_submission"
+msgstr "locd: Unfocus on chat submission"
+
+msgid "settings/option/filter_mode/off"
+msgstr "locd: Off"
+
+msgid "settings/option/filter_mode/offensive"
+msgstr "locd: Offensive"
+
+msgid "settings/option/filter_mode/full"
+msgstr "locd: Full"
+
+msgid "roomcreate/name.empty"
+msgstr "locd: Cannot create a room with an empty name!"
+
+msgid "roomlist/loading.progress"
+msgstr "locd: Loading..."
+
+msgid "login/error.timeout"
+msgstr "locd: Server took too long to respond"
+
+msgid "login/error.invalidcredentials"
+msgstr "locd: Invalid username or password"
+
+msgid "login/error.servererror.short"
+msgstr "locd: Server error (try again later)"
+
+msgid "network/close.request_rejected"
+msgstr "locd: The server rejected the request."
+
+msgid "network/close.password_attempts"
+msgstr "locd: Too many password attempts."
+
+msgid "network/close.username_invalid"
+msgstr "locd: Invalid username."
+
+msgid "network/close.username_in_use"
+msgstr "locd: That username is already in use."
+
+msgid "network/close.token_invalid"
+msgstr "locd: Your account token is invalid."
+
+msgid "network/close.banned"
+msgstr "locd: You are banned from this room."
+
+msgid "network/close.kicked"
+msgstr "locd: You were kicked from this room."
+
+msgid "network/close.capacity"
+msgstr "locd: The room is at maximum capacity."
+
+msgid "network/close.room_not_found"
+msgstr "locd: This room does not exist."
+
+msgid "roomcreate/gallery.defaultmap"
+msgstr "locd: Default"
+
+msgid "network/status.map_size"
+msgstr "locd: {message} ({size} KiB)"
