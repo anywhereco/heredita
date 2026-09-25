@@ -1,6 +1,6 @@
 extends Button
 
-@onready var chat := get_parent().get_parent().get_parent().get_parent()
+@onready var chat: VBoxContainer = $"../../../Bottom/ChatSplit/RightItems/ChatPanel/ChatBox"
 
 func _pressed() -> void:
 	var chat_log: String = chat.messages_text_full
