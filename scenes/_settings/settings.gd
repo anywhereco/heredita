@@ -81,7 +81,8 @@ func _ready() -> void:
 				tab_add_setting(tab_node, setting, setting_data)
 		
 		if tab_node.get_child_count() > 0:
-			tab_node.name = tr("settings/category/" + String(tab).to_lower())
+			var tab_title := tr("settings/category/" + String(tab).to_lower())
 			add_child(tab_node)
+			set_tab_title(get_tab_idx_from_control(tab_node), tab_title)
 		else:
 			tab_node.queue_free()
