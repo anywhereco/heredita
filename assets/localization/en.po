@@ -352,10 +352,10 @@ msgid "calendar/month.december"
 msgstr "December"
 
 msgid "calendar/date"
-msgstr "%s %s"
+msgstr "{month} {date}"
 
 msgid "calendar/date_year"
-msgstr "%s, %s"
+msgstr "{date}, {year}"
 
 msgid "calendar/era.ad"
 msgstr "AD"

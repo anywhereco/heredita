@@ -114,7 +114,9 @@ static func get_ordinal(number: int) -> String:
 	return TranslationServer.translate("calendar/ordinal." + ordinal_key) % number
 
 
+@warning_ignore("shadowed_variable")
 static func month_string(month: Month) -> String:
+	@warning_ignore("unsafe_call_argument")
 	return TranslationServer.translate("calendar/month." + Month.keys()[month].to_lower())
 
 
@@ -152,6 +154,7 @@ static func days_in_month_static(month: Month, year: int) -> int:
 
 ## Returns Month.MAXIMUM if no valid month could be determined
 static func str_to_month(string: String) -> Month:
+	@warning_ignore("shadowed_variable")
 	for month: int in range(Month.MAXIMUM):
 		if string.to_lower() == month_string(month as Month).to_lower():
 			return month as Month
@@ -245,7 +248,10 @@ func process(delta: float) -> void:
 
 
 func date_string() -> String:
-	return tr("calendar/date") % [month_string(month), get_ordinal(day)]
+	return tr("calendar/date").format({
+		"month": month_string(month),
+		"date": get_ordinal(day),
+	})
 
 
 func year_string() -> String:
@@ -266,7 +272,10 @@ func time_string() -> String:
 func primary_string() -> String:
 	if minutes_per_year < 0.1:
 		return year_string()
-	return tr("calendar/date_year") % [date_string(), year_string()]
+	return tr("calendar/date_year").format({
+		"date": date_string(),
+		"year": year_string(),
+	})
 	
 	
 func to_json() -> Dictionary:

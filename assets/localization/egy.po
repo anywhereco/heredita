@@ -352,10 +352,10 @@ msgid "calendar/month.december"
 msgstr "locd: December"
 
 msgid "calendar/date"
-msgstr "locd: %s %s"
+msgstr "locd: {month} {date}"
 
 msgid "calendar/date_year"
-msgstr "locd: %s, %s"
+msgstr "locd: {date}, {year}"
 
 msgid "calendar/era.ad"
 msgstr "locd: AD"
