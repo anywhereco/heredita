@@ -25,7 +25,6 @@ var chunks: Array[Array] = []
 var chunk_images: Array[Array] = []
 
 var original_map: Image = preload("uid://do2qcumlvx0lo")
-var preview_texture: Image = preload("uid://bug42uo2av8i2")
 var original_map_size: Vector2
 var original_map_size_exclusive: Vector2
 
@@ -34,6 +33,11 @@ var map_world_bounds: Rect2
 var map_pos: ReactiveVector2 = ReactiveVector2.new(Vector2.INF)
 
 var brush_shape_map: BrushShapeMap = BrushShapeMap.new()
+var brush_preview_material: ShaderMaterial
+var brush_preview_mask_texture: ImageTexture
+var brush_preview_fallback_texture: ImageTexture
+var _brush_preview_mask_size := -1
+var _brush_preview_chunk_origin := Vector2i(-999999, -999999)
 
 var _dirty_chunks: Dictionary = {}
 var _last_mouse_pos := Vector2(-1, -1)
@@ -253,7 +257,6 @@ func _init() -> void:
 
 
 func load_from_original() -> void:
-	preview_plane.texture.set_image(preview_texture)
 	reset_chunks()
 	water.mesh.size = map_space_to_world_space(Vector2.ZERO).abs() * 2
 	map_world_bounds = Rect2(
@@ -266,6 +269,7 @@ func reset_chunks() -> void:
 	chunk_creation_mutexes.clear()
 	chunks.clear()
 	chunk_images.clear()
+	_brush_preview_chunk_origin = Vector2i(-999999, -999999)
 	if chunk_container_node.get_children().size() > 0:
 		for child in chunk_container_node.get_children():
 			child.queue_free()
@@ -288,6 +292,7 @@ func reset_chunks() -> void:
 	@warning_ignore("unsafe_call_argument")
 	brightness_change(Settings.get_reactive("map_brightness"))
 	loaded = true
+	_update_brush_preview_shader_map()
 
 
 func initialize_chunk(index: int, row_size: int) -> void:
@@ -325,6 +330,7 @@ func add_chunks() -> void:
 
 
 func _ready() -> void:
+	_setup_brush_preview_shader()
 	Settings.get_reactive("map_brightness").value_changed.connect(brightness_change)
 	if not pending_markings.is_empty():
 		map_markings.set_markings(pending_markings)
@@ -372,6 +378,91 @@ func update_brush_preview() -> void:
 	clipped = clipped + Vector2(pixel_size * 1 / 2, pixel_size * 1 / 2)
 	preview_plane.position = Vector3(clipped.x, 0, clipped.y)
 	MapperRoot._instance.brush._update_brush()
+
+
+func update_brush_preview_material(
+	brush_size: int, brush_mask: Image, target: Color, targeted: bool, preview_color: Color
+) -> void:
+	if brush_preview_material == null:
+		return
+	if _brush_preview_mask_size != brush_size:
+		brush_preview_mask_texture.update(brush_mask)
+		_brush_preview_mask_size = brush_size
+	brush_preview_material.set_shader_parameter("target_color", target)
+	brush_preview_material.set_shader_parameter("targeted", targeted)
+	brush_preview_material.set_shader_parameter("preview_color", preview_color)
+	_update_brush_preview_shader_map()
+
+
+func _get_brush_preview_pixel_origin() -> Vector2i:
+	var float_base_pos: Vector2 = map_pos.value - brush_shape_map.image_pixel_offset
+	var base_pos := Vector2i(float_base_pos.floor())
+	if float_base_pos.x < -(brush_shape_map.BRUSH_SIZE_MAX - 1):
+		base_pos.x += 1
+	if float_base_pos.y < -(brush_shape_map.BRUSH_SIZE_MAX - 1):
+		base_pos.y += 1
+	return base_pos
+
+
+func _update_brush_preview_shader_map() -> void:
+	if brush_preview_material == null:
+		return
+	if not is_finite(map_pos.value.x) or not is_finite(map_pos.value.y):
+		brush_preview_material.set_shader_parameter("preview_enabled", false)
+		return
+
+	var pixel_origin := _get_brush_preview_pixel_origin()
+	var first_chunk := Vector2i(
+		floori(pixel_origin.x / Statics.CHUNK_SIZE_FLOAT),
+		floori(pixel_origin.y / Statics.CHUNK_SIZE_FLOAT)
+	)
+	brush_preview_material.set_shader_parameter("brush_pixel_origin", pixel_origin)
+	brush_preview_material.set_shader_parameter("map_size", Vector2i(original_map_size))
+	brush_preview_material.set_shader_parameter("preview_enabled", loaded)
+	if first_chunk == _brush_preview_chunk_origin:
+		return
+
+	_brush_preview_chunk_origin = first_chunk
+	brush_preview_material.set_shader_parameter("first_chunk", first_chunk)
+	brush_preview_material.set_shader_parameter(
+		"map_00", _get_map_chunk_texture(first_chunk.x, first_chunk.y)
+	)
+	brush_preview_material.set_shader_parameter(
+		"map_10", _get_map_chunk_texture(first_chunk.x + 1, first_chunk.y)
+	)
+	brush_preview_material.set_shader_parameter(
+		"map_01", _get_map_chunk_texture(first_chunk.x, first_chunk.y + 1)
+	)
+	brush_preview_material.set_shader_parameter(
+		"map_11", _get_map_chunk_texture(first_chunk.x + 1, first_chunk.y + 1)
+	)
+
+
+func _get_map_chunk_texture(x: int, y: int) -> Texture2D:
+	if x < 0 or y < 0 or x >= chunks.size() or y >= chunks[x].size():
+		return brush_preview_fallback_texture
+	var chunk := chunks[x][y] as Sprite3D
+	if chunk == null:
+		return brush_preview_fallback_texture
+	return chunk.texture
+
+
+func _setup_brush_preview_shader() -> void:
+	var fallback_image := Image.create_empty(1, 1, false, Image.FORMAT_RGBA8)
+	fallback_image.fill(Color.TRANSPARENT)
+	brush_preview_fallback_texture = ImageTexture.create_from_image(fallback_image)
+	brush_preview_mask_texture = ImageTexture.create_from_image(brush_shape_map.get_as_image(1))
+	brush_preview_material = preview_plane.material_override as ShaderMaterial
+	if brush_preview_material == null:
+		push_error("PreviewPlane needs a ShaderMaterial for the brush preview")
+		return
+	brush_preview_material.set_shader_parameter("brush_mask", brush_preview_mask_texture)
+	brush_preview_material.set_shader_parameter("map_00", brush_preview_fallback_texture)
+	brush_preview_material.set_shader_parameter("map_10", brush_preview_fallback_texture)
+	brush_preview_material.set_shader_parameter("map_01", brush_preview_fallback_texture)
+	brush_preview_material.set_shader_parameter("map_11", brush_preview_fallback_texture)
+	preview_plane.texture = brush_preview_mask_texture
+	preview_plane.modulate = Color.WHITE
 
 
 func resync() -> void:

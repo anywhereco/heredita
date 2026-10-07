@@ -40,30 +40,6 @@ func _map_ready() -> void:
 	)
 
 
-func get_image_for_brush() -> Image:
-	var cached := shape.get_as_image(size)
-	var image := Image.create(cached.get_width(), cached.get_height(), false, cached.get_format())
-	image.fill(Color.TRANSPARENT)
-	var float_base_pos: Vector2 = Map._instance.map_pos.value - shape.image_pixel_offset
-	var base_pos := Vector2i(float_base_pos.floor())
-	if float_base_pos.x < -(shape.BRUSH_SIZE_MAX - 1):
-		base_pos.x += 1
-	if float_base_pos.y < -(shape.BRUSH_SIZE_MAX - 1):
-		base_pos.y += 1
-	var targeted := is_targeted.value
-	var target := target_color.value
-	for vec in shape.get_vec2s(size):
-		var image_coords := Vector2i(vec + shape.image_pixel_offset)
-		var color := Map._instance.get_pixel_at(base_pos + image_coords)
-		if not targeted:
-			if color.a > 0:
-				image.set_pixelv(image_coords, Color.WHITE)
-		else:
-			if color.is_equal_approx(target):
-				image.set_pixelv(image_coords, Color.WHITE)
-	return image
-
-
 func brush_events(event: InputEvent) -> void:
 	if event.is_action_pressed("pick_paint"):
 		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
@@ -108,10 +84,11 @@ func _brush_size_changed() -> void:
 
 
 func _update_brush() -> void:
-	Map._instance.preview_plane.texture.update(get_image_for_brush())
 	var mod: Color = paint_color.value * (Settings.getv("map_brightness") as float)
 	mod.a = 0.5
-	Map._instance.preview_plane.modulate = mod
+	Map._instance.update_brush_preview_material(
+		size, shape.get_as_image(size), target_color.value, is_targeted.value, mod
+	)
 	_last_painted_pos = Vector2(-INF, -INF)
 
 
