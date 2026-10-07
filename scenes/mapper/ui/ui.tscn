@@ -192,6 +192,7 @@ script = ExtResource("7_r38pq")
 metadata/_custom_type_script = "uid://ctyqma3at8ji8"
 
 [node name="Overlays" type="MenuButton" parent="MenubarContainer/Menubar/HBoxContainer" unique_id=1973521505]
+visible = false
 layout_mode = 2
 size_flags_vertical = 0
 theme_type_variation = &"FlatMenuButton"
