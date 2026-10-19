@@ -257,7 +257,7 @@ layout_mode = 2
 text = "Discord"
 uri = "https://app.heredita.net/discord"
 
-[node name="Seperator" type="Panel" parent="HBoxContainer" unique_id=958075999]
+[node name="Separator" type="Panel" parent="HBoxContainer" unique_id=958075999]
 custom_minimum_size = Vector2(3, 12)
 layout_mode = 2
 size_flags_horizontal = 4
