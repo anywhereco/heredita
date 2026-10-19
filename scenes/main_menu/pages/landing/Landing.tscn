@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://cmvjksu4axhu4" path="res://scenes/main_menu/pages/landing/right_side_handler.gd" id="6_5jq1k"]
 [ext_resource type="Script" uid="uid://c63d0wosfculu" path="res://scenes/main_menu/pages/landing/account_button.gd" id="6_m7tep"]
 [ext_resource type="FontVariation" uid="uid://cyxhummrwgoly" path="res://assets/font/_variants/proitalics650.tres" id="6_v3lsn"]
+[ext_resource type="Script" uid="uid://clnrsnytu2rew" path="res://scenes/main_menu/pages/landing/credits_button.gd" id="9_dvdc6"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ikikv"]
 font = ExtResource("2_2ejkv")
@@ -27,7 +28,15 @@ font_color = Color(1, 1, 1, 0.8156863)
 font = ExtResource("6_v3lsn")
 font_size = 20
 
-[node name="Landing" type="HBoxContainer" unique_id=765128468]
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_dvdc6"]
+color = Color(1, 1, 1, 0.6117647)
+grow_begin = -4.0
+grow_end = -1.0
+vertical = true
+
+[node name="Node" type="Node" unique_id=1612109566]
+
+[node name="Landing" type="HBoxContainer" parent="." unique_id=765128468]
 anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
@@ -39,82 +48,82 @@ offset_bottom = 228.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LeftSide" type="VBoxContainer" parent="." unique_id=358220585]
+[node name="LeftSide" type="VBoxContainer" parent="Landing" unique_id=358220585]
 custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="TopPadding" type="Control" parent="LeftSide" unique_id=681656552]
+[node name="TopPadding" type="Control" parent="Landing/LeftSide" unique_id=681656552]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="LeftSide" unique_id=960159341]
+[node name="MarginContainer" type="MarginContainer" parent="Landing/LeftSide" unique_id=960159341]
 layout_mode = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LeftSide/MarginContainer" unique_id=716140611]
+[node name="VBoxContainer" type="VBoxContainer" parent="Landing/LeftSide/MarginContainer" unique_id=716140611]
 layout_mode = 2
 
-[node name="Control" type="VBoxContainer" parent="LeftSide/MarginContainer/VBoxContainer" unique_id=1691751320]
+[node name="Control" type="VBoxContainer" parent="Landing/LeftSide/MarginContainer/VBoxContainer" unique_id=1691751320]
 custom_minimum_size = Vector2(250, 150)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="TextureRect" type="TextureRect" parent="LeftSide/MarginContainer/VBoxContainer/Control" unique_id=1336802522]
+[node name="TextureRect" type="TextureRect" parent="Landing/LeftSide/MarginContainer/VBoxContainer/Control" unique_id=1336802522]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("1_e06ia")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="LeftSide/MarginContainer/VBoxContainer/Control" unique_id=2055185515]
+[node name="Label" type="Label" parent="Landing/LeftSide/MarginContainer/VBoxContainer/Control" unique_id=2055185515]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_ikikv")
 horizontal_alignment = 1
 script = ExtResource("3_ecxkw")
 
-[node name="Control2" type="Control" parent="LeftSide/MarginContainer/VBoxContainer" unique_id=699994116]
+[node name="Control2" type="Control" parent="Landing/LeftSide/MarginContainer/VBoxContainer" unique_id=699994116]
 custom_minimum_size = Vector2(0, 13)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Panel" type="Panel" parent="LeftSide/MarginContainer/VBoxContainer" unique_id=118839431]
+[node name="Panel" type="Panel" parent="Landing/LeftSide/MarginContainer/VBoxContainer" unique_id=118839431]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxLine_8pexo")
 
-[node name="Control3" type="Control" parent="LeftSide/MarginContainer/VBoxContainer" unique_id=894650559]
+[node name="Control3" type="Control" parent="Landing/LeftSide/MarginContainer/VBoxContainer" unique_id=894650559]
 custom_minimum_size = Vector2(0, 13)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LeftSide" unique_id=628192137]
+[node name="VBoxContainer" type="VBoxContainer" parent="Landing/LeftSide" unique_id=628192137]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="Play" type="Button" parent="LeftSide/VBoxContainer" unique_id=844459140]
+[node name="Play" type="Button" parent="Landing/LeftSide/VBoxContainer" unique_id=844459140]
 layout_mode = 2
 theme_type_variation = &"PrimaryButtons"
 text = "mainmenu/play"
 alignment = 2
 script = ExtResource("1_ymk45")
 
-[node name="MarginContainer2" type="MarginContainer" parent="LeftSide/VBoxContainer" unique_id=891343100]
+[node name="MarginContainer2" type="MarginContainer" parent="Landing/LeftSide/VBoxContainer" unique_id=891343100]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 0
 
-[node name="Settings" type="Button" parent="LeftSide/VBoxContainer/MarginContainer2" unique_id=459984409]
+[node name="Settings" type="Button" parent="Landing/LeftSide/VBoxContainer/MarginContainer2" unique_id=459984409]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButtons"
@@ -122,14 +131,14 @@ text = "mainmenu/settings"
 alignment = 2
 script = ExtResource("5_ecxkw")
 
-[node name="MarginContainer" type="MarginContainer" parent="LeftSide/VBoxContainer" unique_id=2005875016]
+[node name="MarginContainer" type="MarginContainer" parent="Landing/LeftSide/VBoxContainer" unique_id=2005875016]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 64
 theme_override_constants/margin_bottom = 0
 
-[node name="Account" type="Button" parent="LeftSide/VBoxContainer/MarginContainer" unique_id=498418007]
+[node name="Account" type="Button" parent="Landing/LeftSide/VBoxContainer/MarginContainer" unique_id=498418007]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButtons"
@@ -138,24 +147,24 @@ alignment = 2
 clip_text = true
 script = ExtResource("6_m7tep")
 
-[node name="MarginContainer3" type="MarginContainer" parent="LeftSide/VBoxContainer" unique_id=760489623]
+[node name="MarginContainer3" type="MarginContainer" parent="Landing/LeftSide/VBoxContainer" unique_id=760489623]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 96
 theme_override_constants/margin_bottom = 0
 
-[node name="BottomPadding" type="Control" parent="LeftSide" unique_id=253687138]
+[node name="BottomPadding" type="Control" parent="Landing/LeftSide" unique_id=253687138]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="CentralPadding" type="Control" parent="." unique_id=181480223]
+[node name="CentralPadding" type="Control" parent="Landing" unique_id=181480223]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="RightSide" type="VBoxContainer" parent="." unique_id=419028360]
+[node name="RightSide" type="VBoxContainer" parent="Landing" unique_id=419028360]
 custom_minimum_size = Vector2(310, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -163,71 +172,99 @@ theme_override_constants/separation = 12
 alignment = 1
 script = ExtResource("6_5jq1k")
 
-[node name="TopPadding" type="Control" parent="RightSide" unique_id=1343107391]
+[node name="TopPadding" type="Control" parent="Landing/RightSide" unique_id=1343107391]
 visible = false
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="RightSide" unique_id=275901380]
+[node name="MarginContainer" type="MarginContainer" parent="Landing/RightSide" unique_id=275901380]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 35
 theme_override_constants/margin_bottom = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="RightSide/MarginContainer" unique_id=1070536292]
+[node name="HBoxContainer" type="HBoxContainer" parent="Landing/RightSide/MarginContainer" unique_id=1070536292]
 layout_mode = 2
 alignment = 1
 
-[node name="Greeting" type="Label" parent="RightSide/MarginContainer/HBoxContainer" unique_id=1873842505]
+[node name="Greeting" type="Label" parent="Landing/RightSide/MarginContainer/HBoxContainer" unique_id=1873842505]
 layout_mode = 2
 size_flags_vertical = 8
 text = "mainmenu/greeting"
 label_settings = SubResource("LabelSettings_5jq1k")
 
-[node name="Name" type="Label" parent="RightSide/MarginContainer/HBoxContainer" unique_id=919867489]
+[node name="Name" type="Label" parent="Landing/RightSide/MarginContainer/HBoxContainer" unique_id=919867489]
 layout_mode = 2
 label_settings = SubResource("LabelSettings_dvdc6")
 
-[node name="PanelContainer" type="PanelContainer" parent="RightSide" unique_id=443360954]
+[node name="PanelContainer" type="PanelContainer" parent="Landing/RightSide" unique_id=443360954]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="RightSide/PanelContainer" unique_id=1923243102]
+[node name="MarginContainer" type="MarginContainer" parent="Landing/RightSide/PanelContainer" unique_id=1923243102]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 35
 theme_override_constants/margin_bottom = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="RightSide/PanelContainer/MarginContainer" unique_id=1131771556]
+[node name="VBoxContainer" type="VBoxContainer" parent="Landing/RightSide/PanelContainer/MarginContainer" unique_id=1131771556]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer" unique_id=1236979174]
+[node name="ScrollContainer" type="ScrollContainer" parent="Landing/RightSide/PanelContainer/MarginContainer/VBoxContainer" unique_id=1236979174]
 custom_minimum_size = Vector2(0, 44.735)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="UserList" type="VBoxContainer" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer" unique_id=1005260650]
+[node name="UserList" type="VBoxContainer" parent="Landing/RightSide/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer" unique_id=1005260650]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer" unique_id=555765736]
+[node name="HBoxContainer" type="HBoxContainer" parent="Landing/RightSide/PanelContainer/MarginContainer/VBoxContainer" unique_id=555765736]
 layout_mode = 2
 
-[node name="LineEdit" type="LineEdit" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=818308122]
+[node name="LineEdit" type="LineEdit" parent="Landing/RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=818308122]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "mainmenu/friends.comingsoon"
 max_length = 20
 editable = false
 
-[node name="Button" type="Button" parent="RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=954121561]
+[node name="Button" type="Button" parent="Landing/RightSide/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=954121561]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 disabled = true
 text = "mainmenu/friends.add"
 
-[node name="BottomPadding" type="Control" parent="RightSide" unique_id=1430361985]
+[node name="BottomPadding" type="Control" parent="Landing/RightSide" unique_id=1430361985]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1774807065]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+
+[node name="DiscordButton" type="LinkButton" parent="HBoxContainer" unique_id=796359937]
+layout_mode = 2
+text = "Discord"
+uri = "https://app.heredita.net/discord"
+
+[node name="Seperator" type="Panel" parent="HBoxContainer" unique_id=958075999]
+custom_minimum_size = Vector2(3, 12)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxLine_dvdc6")
+
+[node name="CreditsButton" type="LinkButton" parent="HBoxContainer" unique_id=1409000214]
+layout_mode = 2
+text = "© 2026 Anywhere Connection Corporation"
+script = ExtResource("9_dvdc6")
