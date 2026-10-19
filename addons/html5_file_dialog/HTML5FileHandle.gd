@@ -16,13 +16,15 @@ signal buffer_loaded(buffer: PackedByteArray)
 @export var path: String
 ## Filename
 @export var name: String
+## MIME type
+@export var mime_type: String
 ## Unix epoch
 @export var last_modified: float
 
-## Wether or not to cache the contents when as_text() or as_bufffer() was called, for use in subsequent calls.
+## Whether or not to cache the contents when as_text() or as_bufffer() was called, for use in subsequent calls.
 @export var cache_contents: bool = true
 
-var js_file: JavaScriptObject
+var js_file: JavaScriptObject # https://developer.mozilla.org/en-US/docs/Web/API/File
 
 var _js_text_callback: JavaScriptObject
 var _js_buffer_callback: JavaScriptObject
@@ -41,6 +43,7 @@ func _init(JSFile: JavaScriptObject):
 	name = js_file.name
 	last_modified = js_file.lastModified
 	path = js_file.webkitRelativePath
+	mime_type = js_file.type
 
 
 ## Returns the file's contents as a utf8 string [br]

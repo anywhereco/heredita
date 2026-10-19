@@ -135,11 +135,11 @@ func show():
 	assert(is_web, "HTML5FileDialog node only works in web exports!")
 	assert(
 		is_node_ready(),
-		"HTML5FileDialog cannot be shown before its _ready! did you forget to call add_child()?"
+		"HTML5FileDialog cannot be shown before its _ready function was called! Did you forget to call add_child()?"
 	)
 	assert(
 		interface != null,
-		"HTML5FileDialog JS interface is null! This is probably a bug, please report it at https://gitlab.com/mocchapi/godot-4-html5-file-dialogs/-/issues"
+		"HTML5FileDialog JS interface is null! This is probably a bug, please report it to the "
 	)
 	interface.prompt_dialog(get_instance_id())
 	shown.emit()
