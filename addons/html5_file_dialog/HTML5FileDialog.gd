@@ -139,7 +139,7 @@ func show():
 	)
 	assert(
 		interface != null,
-		"HTML5FileDialog JS interface is null! This is probably a bug, please report it to the "
+		"HTML5FileDialog JS interface is null! This is probably a bug, please report it to the Heredita developers."
 	)
 	interface.prompt_dialog(get_instance_id())
 	shown.emit()
