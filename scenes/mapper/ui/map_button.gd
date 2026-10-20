@@ -30,7 +30,9 @@ func _ready() -> void:
 
 func load_map() -> void:
 	var map_file := await FilePrompter.load_file(self, ImagePickerButton.NO_SVG_MAP_FILTER, ImagePickerButton.NO_SVG_MAP_FILTER_WEB, "map")
-	var map := await MapData.create_from_buffer(map_file)
+	var map_buffer: PackedByteArray = map_file["buffer"]
+	var map_ext: String = map_file["extension"]
+	var map := await MapData.create_from_buffer(map_buffer, map_ext)
 	if map.is_ok():
 		State.client.send("load_map")
 		@warning_ignore("unsafe_call_argument")

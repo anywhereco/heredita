@@ -69,7 +69,7 @@ static func read_from_file(path: String) -> Result:
 	var data := file.get_buffer(file.get_length())
 	return read_from_buffer(data)
 	
-static func create_from_buffer(data: PackedByteArray) -> Result:
+static func create_from_buffer(data: PackedByteArray, format: String) -> Result:
 	var _map: MapData
 	var is_map := data.decode_u64(0) == _MAGIC_FILE_HEADER
 	if is_map:
@@ -77,7 +77,7 @@ static func create_from_buffer(data: PackedByteArray) -> Result:
 		if result.is_ok():
 			_map = result.val()
 	else:
-		var get_image := await _bytes_to_image("png", data) #TODO: fix this heaping mess
+		var get_image := _bytes_to_image(format, data)
 		if get_image.is_ok():
 			_map = MapData.new()
 			_map.image = get_image.val()
