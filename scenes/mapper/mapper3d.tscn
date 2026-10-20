@@ -9,11 +9,16 @@
 [ext_resource type="Script" uid="uid://bsiv8ukmfm4wg" path="res://scenes/mapper/map_markings.gd" id="9_l0uxc"]
 [ext_resource type="ArrayMesh" uid="uid://dtef8pb44sygw" path="res://assets/map/markings/city_mesh.tres" id="10_0kc0x"]
 [ext_resource type="ArrayMesh" uid="uid://tw8id7844a8w" path="res://assets/map/markings/fort_mesh.tres" id="11_fort"]
+[ext_resource type="Shader" uid="uid://d1sxeoujfohum" path="res://scenes/mapper/map/brush_preview.gdshader" id="12_brush_preview"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wvm7y"]
 plane = Plane(0, 1, 0, -0.5)
 
 [sub_resource type="ImageTexture" id="ImageTexture_wvm7y"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_brush_preview"]
+render_priority = 1
+shader = ExtResource("12_brush_preview")
 
 [sub_resource type="MultiMesh" id="MultiMesh_kx3ff"]
 transform_format = 1
@@ -81,13 +86,14 @@ shape = SubResource("WorldBoundaryShape3D_wvm7y")
 [node name="MapChunks" type="Node3D" parent="Map" unique_id=1379700471]
 
 [node name="PreviewPlane" type="Sprite3D" parent="Map" unique_id=2086171068]
-modulate = Color(1, 1, 1, 0.5019608)
+modulate = Color(1, 1, 1, 1)
 pixel_size = 0.0625
 axis = 1
 double_sided = false
 texture_filter = 0
 render_priority = 1
 texture = SubResource("ImageTexture_wvm7y")
+material_override = SubResource("ShaderMaterial_brush_preview")
 
 [node name="MapMarkings" type="Node3D" parent="Map" unique_id=1797148079]
 script = ExtResource("9_l0uxc")

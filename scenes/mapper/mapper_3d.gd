@@ -26,11 +26,6 @@ var map_data_compressed: PackedByteArray
 var map_data_uncompr_size: int
 
 
-func _brush_size_changed(_reactive: ReactiveInt) -> void:
-	brush.size = UIRoot._instance.brush_ui.size_controller.brush_size.value
-	Map._instance.preview_plane.texture.update(brush.get_image_for_brush())
-
-
 func _ssao_toggled(reactive: ReactiveBool) -> void:
 	var env: WorldEnvironment = $Environment
 	if env and env.environment:
