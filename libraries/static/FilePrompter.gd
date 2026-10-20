@@ -26,7 +26,7 @@ static func _on_save_file_selected(path: String, buffer: PackedByteArray, type: 
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_buffer(buffer)
 
-static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedStringArray, type: String = "") -> PackedByteArray:
+static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedStringArray, type: String = "") -> Dictionary:
 	if OS.has_feature("web"):
 		var web_file_dialog := HTML5FileDialog.new()
 		web_file_dialog.file_mode = HTML5FileDialog.FileMode.OPEN_FILE
@@ -35,7 +35,7 @@ static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedS
 		web_file_dialog.register()
 		web_file_dialog.show()
 		var handle: HTML5FileHandle = await web_file_dialog.file_selected
-		return await handle.as_buffer()
+		return { buffer = await handle.as_buffer(), extension = convert_mime(handle.mime_type)}
 	else:
 		var file_dialog := FileDialog.new()
 		file_dialog.use_native_dialog = true
@@ -49,4 +49,8 @@ static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedS
 		root.add_child(file_dialog, false, root.INTERNAL_MODE_BACK)
 		file_dialog.popup_centered(file_dialog.min_size)
 		var path: String = await file_dialog.file_selected
-		return FileAccess.get_file_as_bytes(path)
+		return { buffer = FileAccess.get_file_as_bytes(path), extension = path.get_extension()}
+
+static func convert_mime(mime_type: String) -> String:
+	# Converts a MIME type to an extension 
+	return mime_type.rsplit("/", true, 1)[1]
