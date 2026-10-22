@@ -34,9 +34,13 @@ grow_begin = -4.0
 grow_end = -1.0
 vertical = true
 
-[node name="Node" type="Node" unique_id=1612109566]
+[node name="Node" type="Control" unique_id=304530702]
+layout_mode = 3
+anchors_preset = 0
 
 [node name="Landing" type="HBoxContainer" parent="." unique_id=765128468]
+top_level = true
+layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
@@ -242,6 +246,8 @@ custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1774807065]
+top_level = true
+layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
