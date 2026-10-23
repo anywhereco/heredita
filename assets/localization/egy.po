@@ -715,3 +715,42 @@ msgstr "locd: Default"
 
 msgid "network/status.map_size"
 msgstr "locd: {message} ({size} KiB)"
+
+msgid "mapper/tool.text"
+msgstr "locd: Text"
+
+msgid "mapper/text.content"
+msgstr "locd: Label text"
+
+msgid "mapper/text.placeholder"
+msgstr "locd: Enter map text..."
+
+msgid "mapper/text.size"
+msgstr "locd: Font size"
+
+msgid "mapper/text.new"
+msgstr "locd: New label"
+
+msgid "mapper/text.delete"
+msgstr "locd: Delete"
+
+msgid "mapper/text.straighten"
+msgstr "locd: Straighten"
+
+msgid "mapper/text.tab.create"
+msgstr "locd: Create [Z]"
+
+msgid "mapper/text.tab.delete"
+msgstr "locd: Delete [X]"
+
+msgid "mapper/text.tab.edit"
+msgstr "locd: Edit [C]"
+
+msgid "mapper/text.create.hint"
+msgstr "locd: Click and drag to add text"
+
+msgid "mapper/text.delete.hint"
+msgstr "locd: Click text to delete it"
+
+msgid "mapper/text.edit.title"
+msgstr "locd: Edit selected text"

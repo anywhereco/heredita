@@ -715,3 +715,42 @@ msgstr "Default"
 
 msgid "network/status.map_size"
 msgstr "{message} ({size} KiB)"
+
+msgid "mapper/tool.text"
+msgstr "Text"
+
+msgid "mapper/text.content"
+msgstr "Label text"
+
+msgid "mapper/text.placeholder"
+msgstr "Enter map text..."
+
+msgid "mapper/text.size"
+msgstr "Font size"
+
+msgid "mapper/text.new"
+msgstr "New label"
+
+msgid "mapper/text.delete"
+msgstr "Delete"
+
+msgid "mapper/text.straighten"
+msgstr "Straighten"
+
+msgid "mapper/text.tab.create"
+msgstr "Create [Z]"
+
+msgid "mapper/text.tab.delete"
+msgstr "Delete [X]"
+
+msgid "mapper/text.tab.edit"
+msgstr "Edit [C]"
+
+msgid "mapper/text.create.hint"
+msgstr "Click and drag to add text"
+
+msgid "mapper/text.delete.hint"
+msgstr "Click text to delete it"
+
+msgid "mapper/text.edit.title"
+msgstr "Edit selected text"

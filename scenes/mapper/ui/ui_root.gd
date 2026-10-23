@@ -7,6 +7,7 @@ static var _instance: UIRoot
 @onready var brush_ui: BrushUI = find_child("ToolUIContainer").find_child("brush", false)
 @onready var dice_ui: DiceUI = find_child("ToolUIContainer").find_child("dice", false)
 @onready var marking_ui: MarkingUI = find_child("ToolUIContainer").find_child("marking", false)
+@onready var text_ui: MapTextUI = find_child("ToolUIContainer").find_child("text", false)
 
 
 func _init() -> void:
