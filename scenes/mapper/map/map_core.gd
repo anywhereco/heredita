@@ -12,6 +12,7 @@ static var _instance: Map
 @onready var chunk_container_node: Node3D = $MapChunks
 @onready var preview_plane: Sprite3D = $PreviewPlane
 @onready var map_markings: MapMarkings = $MapMarkings
+@onready var map_text: MapText = $MapText
 
 var default_target_color: Color = Color(1, 1, 1)
 
@@ -50,6 +51,7 @@ var pending_resync := ReactiveBool.new(false)
 
 var queued_changes: Array[Dictionary] = []
 var pending_markings: Array[Dictionary] = []
+var pending_texts := MapTextData.new()
 var _data_pending_init := false
 
 
@@ -225,8 +227,11 @@ func get_data() -> MapData:
 	data.image = get_map_as_image()
 	if is_node_ready():
 		data.markings = map_markings.serialize_markings()
+		data.texts = map_text.data
 	else:
 		data.markings = pending_markings
+		data.texts = pending_texts
+	data.pixel_size = pixel_size
 	data.calendar = TimekeepingUI._inst.calendar.dupe()
 	return data
 
@@ -234,6 +239,8 @@ func get_data() -> MapData:
 func set_data(data: MapData) -> void:
 	original_map = data.image
 	pixel_size = data.pixel_size
+	original_map_size = original_map.get_size()
+	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	if TimekeepingUI._inst.get("calendar") != null:
 		TimekeepingUI._inst.calendar = data.calendar.dupe()
 	else:
@@ -241,11 +248,11 @@ func set_data(data: MapData) -> void:
 	
 	if is_node_ready():
 		map_markings.set_markings(data.markings)
+		map_text.set_texts(data.texts)
 	else:
 		pending_markings = data.markings
+		pending_texts = data.texts
 		_data_pending_init = true
-	original_map_size = original_map.get_size()
-	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	if is_node_ready() and (not State.client.operator or loaded):
 		load_from_original()
 	if pending_resync.value:
@@ -262,6 +269,7 @@ func load_from_original() -> void:
 	map_world_bounds = Rect2(
 		map_space_to_world_space(Vector2.ZERO), map_space_to_world_space(Vector2.ZERO).abs() * 2
 	)
+	map_text.rebuild()
 
 
 func reset_chunks() -> void:
@@ -341,6 +349,7 @@ func _ready() -> void:
 		load_from_original()
 		_data_pending_init = false
 	preview_plane.pixel_size = pixel_size
+	map_text.set_texts(pending_texts)
 
 
 func brightness_change(brightness: ReactiveFloat) -> void:
@@ -472,7 +481,9 @@ func resync() -> void:
 
 func finish_resync() -> void:
 	pending_resync.value = false
-	for event in queued_changes:
+	var changes := queued_changes
+	queued_changes = []
+	for event in changes:
 		get_map_update(event)
 
 
@@ -505,6 +516,8 @@ func get_map_update(details: Dictionary) -> void:
 		)
 	elif type == "marking":
 		map_markings.apply_update(details)
+	elif type == "text":
+		map_text.apply_update(details)
 
 
 func _process(_delta: float) -> void:

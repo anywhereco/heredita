@@ -15,12 +15,13 @@ var map_last_color := PackedColorArray()
 var map_player_pixels: Dictionary[int, PackedInt32Array] = {}
 var map_width := -1
 var markings: Array[Dictionary] = []
+var texts := MapTextData.new()
 
 var calendar: Calendar = DEFAULT_CALENDAR
 
 var pixel_size: float = DEFAULT_PIXEL_SIZE 
 
-const PACKAGE_VERSION = 4
+const PACKAGE_VERSION = 5
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -36,6 +37,7 @@ func package() -> Dictionary[String, Variant]:
 		"image": image.get_data(),
 		"image_size": image.get_size(),
 		"markings": markings,
+		"texts": texts.serialize(),
 		"calendar": calendar.to_json(),
 		"pixel_size": pixel_size
 	}
@@ -152,6 +154,8 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.pixel_size = map_data["pixel_size"]
 		if md.pixel_size == null:
 			md.pixel_size = DEFAULT_PIXEL_SIZE
+	if map_data.get("texts") is Array:
+		md.texts.load_labels(map_data["texts"] as Array, Vector2(md.image.get_size()))
 	return md
 
 
@@ -186,6 +190,16 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 		return true
 	elif type == "marking":
 		return apply_marking_update(details)
+	elif type == "text":
+		if not texts.apply_update(details, Vector2(image.get_size())):
+			return false
+		var id: String = details["id"]
+		var sanitized := {"type": "text", "op": details["op"], "id": id}
+		if details["op"] != "delete":
+			sanitized.merge(texts.labels[id])
+		details.clear()
+		details.merge(sanitized)
+		return true
 	return false
 
 
