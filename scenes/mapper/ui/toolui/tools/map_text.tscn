@@ -1,0 +1,134 @@
+[gd_scene format=3 uid="uid://mr0ixo8hecdn"]
+
+[ext_resource type="Script" uid="uid://bamq4ydilxm51" path="res://scenes/mapper/ui/toolui/tools/map_text.gd" id="1_umt76"]
+[ext_resource type="FontVariation" uid="uid://buqkj6hkhmhax" path="res://assets/font/_variants/proitalics450.tres" id="2_gluyy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_8agdi"]
+font = ExtResource("2_gluyy")
+font_color = Color(1, 1, 1, 0.5764706)
+
+[sub_resource type="LabelSettings" id="LabelSettings_gluyy"]
+font = ExtResource("2_gluyy")
+font_color = Color(1, 1, 1, 0.5764706)
+
+[sub_resource type="LabelSettings" id="LabelSettings_avnc4"]
+font = ExtResource("2_gluyy")
+font_color = Color(1, 1, 1, 0.5764706)
+
+[node name="text" type="TabContainer" unique_id=1946319134]
+custom_minimum_size = Vector2(240, 160)
+offset_right = 240.0
+offset_bottom = 114.0
+current_tab = 0
+clip_tabs = false
+script = ExtResource("1_umt76")
+
+[node name="Create" type="VBoxContainer" parent="." unique_id=1667414714]
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 0
+
+[node name="Hint" type="Label" parent="Create" unique_id=443961118]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+text = "mapper/text.create.hint"
+label_settings = SubResource("LabelSettings_8agdi")
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Content" type="LineEdit" parent="Create" unique_id=158686330]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+placeholder_text = "mapper/text.placeholder"
+max_length = 256
+
+[node name="Style" type="HBoxContainer" parent="Create" unique_id=728586987]
+layout_mode = 2
+alignment = 1
+
+[node name="SizeLabel" type="Label" parent="Create/Style" unique_id=743984121]
+layout_mode = 2
+text = "mapper/text.size"
+
+[node name="Size" type="SpinBox" parent="Create/Style" unique_id=1353121009]
+layout_mode = 2
+min_value = 1.0
+max_value = 8.0
+step = 0.25
+value = 4.0
+suffix = "px"
+
+[node name="Color" type="ColorPickerButton" parent="Create/Style" unique_id=721644392]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+tooltip_text = "mapper/marking.color.prompt"
+edit_intensity = false
+
+[node name="Delete" type="VBoxContainer" parent="." unique_id=278182182]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+metadata/_tab_index = 1
+
+[node name="Hint" type="Label" parent="Delete" unique_id=1081296372]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_vertical = 3
+text = "mapper/text.delete.hint"
+label_settings = SubResource("LabelSettings_gluyy")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Edit" type="VBoxContainer" parent="." unique_id=146761635]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+metadata/_tab_index = 2
+
+[node name="Title" type="Label" parent="Edit" unique_id=1117014324]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+text = "mapper/text.edit.select"
+label_settings = SubResource("LabelSettings_avnc4")
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ContentStraightenBox" type="HBoxContainer" parent="Edit" unique_id=490140854]
+layout_mode = 2
+alignment = 1
+
+[node name="Content" type="LineEdit" parent="Edit/ContentStraightenBox" unique_id=1560997932]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+placeholder_text = "mapper/text.placeholder"
+max_length = 256
+
+[node name="Straighten" type="Button" parent="Edit/ContentStraightenBox" unique_id=529365782]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "mapper/text.straighten"
+
+[node name="Style" type="HBoxContainer" parent="Edit" unique_id=318273406]
+layout_mode = 2
+alignment = 1
+
+[node name="SizeLabel" type="Label" parent="Edit/Style" unique_id=1439447599]
+layout_mode = 2
+text = "mapper/text.size"
+
+[node name="Size" type="SpinBox" parent="Edit/Style" unique_id=1107664059]
+layout_mode = 2
+min_value = 1.0
+max_value = 8.0
+step = 0.25
+value = 4.0
+suffix = "px"
+
+[node name="Color" type="ColorPickerButton" parent="Edit/Style" unique_id=130930341]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+tooltip_text = "mapper/marking.color.prompt"
+edit_intensity = false

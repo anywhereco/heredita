@@ -11,6 +11,7 @@ enum Tool {
 	INSPECT,
 	PAN,
 	MARKING,
+	TEXT,
 }
 
 static var _instance: MapperRoot
@@ -20,6 +21,7 @@ var tool := ReactiveInt.new(Tool.NONE)
 var brush: BrushTool = BrushTool.new()
 var dice: DiceTool = DiceTool.new()
 var marking: MarkingTool = MarkingTool.new()
+var map_text: MapTextTool = MapTextTool.new()
 
 # May be empty
 var map_data_compressed: PackedByteArray
@@ -33,6 +35,8 @@ func _ssao_toggled(reactive: ReactiveBool) -> void:
 
 
 func _tool_changed(reactive: ReactiveInt) -> void:
+	if reactive.value != Tool.TEXT:
+		map_text.finish_drag()
 	if reactive.value == Tool.NONE:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
 		pass
@@ -45,6 +49,8 @@ func _tool_changed(reactive: ReactiveInt) -> void:
 	elif reactive.value == Tool.MARKING:
 		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
 		pass
+	elif reactive.value == Tool.TEXT:
+		VirtualMouse._instance.set_action_tool(VirtualMouse.Action.DEFAULT)
 
 
 func _init() -> void:
@@ -58,6 +64,7 @@ func _ready() -> void:
 	brush._map_ready()
 	dice._map_ready()
 	marking._map_ready()
+	map_text._map_ready()
 	Settings.get_reactive("ssao_enabled").value_changed.connect(_ssao_toggled)
 	_ssao_toggled(Settings.get_reactive("ssao_enabled"))
 	if State.client:
@@ -70,6 +77,14 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	brush._process(delta)
 	dice._process(delta)
+	if map_text.is_dragging and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		map_text.finish_drag()
+
+
+func _input(event: InputEvent) -> void:
+	# Keep a text drag captured when the pointer crosses the tool panel.
+	if tool.value == Tool.TEXT and map_text.is_dragging:
+		map_text.text_events(event)
 
 
 func process_tool_use(event: InputEvent) -> void:
@@ -82,6 +97,8 @@ func process_tool_use(event: InputEvent) -> void:
 			dice.dice_events(event)
 		Tool.MARKING:
 			marking.marking_events(event)
+		Tool.TEXT:
+			map_text.text_events(event)
 		_:
 			push_error(
 				(

@@ -15,12 +15,13 @@ var map_last_color := PackedColorArray()
 var map_player_pixels: Dictionary[int, PackedInt32Array] = {}
 var map_width := -1
 var markings: Array[Dictionary] = []
+var texts := MapTextData.new()
 
 var calendar: Calendar = DEFAULT_CALENDAR
 
 var pixel_size: float = DEFAULT_PIXEL_SIZE 
 
-const PACKAGE_VERSION = 4
+const PACKAGE_VERSION = 5
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -36,6 +37,7 @@ func package() -> Dictionary[String, Variant]:
 		"image": image.get_data(),
 		"image_size": image.get_size(),
 		"markings": markings,
+		"texts": texts.serialize(),
 		"calendar": calendar.to_json(),
 		"pixel_size": pixel_size
 	}
@@ -152,20 +154,30 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.pixel_size = map_data["pixel_size"]
 		if md.pixel_size == null:
 			md.pixel_size = DEFAULT_PIXEL_SIZE
+	if map_data.get("texts") is Array:
+		md.texts.load_labels(map_data["texts"] as Array, Vector2(md.image.get_size()))
 	return md
 
 
-func get_map_update(details: Dictionary, peer: int) -> void:
+func get_map_update(details: Dictionary, peer: int) -> bool:
+	if details.get("type") is not String:
+		return false
 	var type: String = details["type"]
 	if type == "brush":
 		if (
-			typeof(details["size"]) != TYPE_FLOAT
-			or typeof(details["targeted"]) != TYPE_BOOL
-			or not Verify.array_is_type(details["paint_color"], TYPE_FLOAT)
-			or not Verify.array_is_type(details["target_color"], TYPE_FLOAT)
-			or not Verify.array_is_type(details["pos"], TYPE_FLOAT)
+			typeof(details.get("size")) != TYPE_FLOAT
+			or not _valid_number(details.get("size"))
+			or details["size"] < 1
+			or details["size"] > BrushShapeMap.BRUSH_SIZE_MAX
+			or typeof(details.get("targeted")) != TYPE_BOOL
+			or not Verify.array_is_type(details.get("paint_color"), TYPE_FLOAT)
+			or not Verify.array_is_type(details.get("target_color"), TYPE_FLOAT)
+			or not Verify.array_is_type(details.get("pos"), TYPE_FLOAT)
+			or not _valid_color_array(details.get("paint_color"))
+			or not _valid_color_array(details.get("target_color"))
+			or not _valid_vec2_array(details.get("pos"))
 		):
-			return
+			return false
 		@warning_ignore("unsafe_call_argument")
 		set_pixels_at_maybe_targeted(
 			State.brush_shape_map.get_vec2s(details["size"]),
@@ -175,8 +187,20 @@ func get_map_update(details: Dictionary, peer: int) -> void:
 			ISUtil.to_vec2(details["pos"]),
 			peer
 		)
+		return true
 	elif type == "marking":
-		apply_marking_update(details)
+		return apply_marking_update(details)
+	elif type == "text":
+		if not texts.apply_update(details, Vector2(image.get_size())):
+			return false
+		var id: String = details["id"]
+		var sanitized := {"type": "text", "op": details["op"], "id": id}
+		if details["op"] != "delete":
+			sanitized.merge(texts.labels[id])
+		details.clear()
+		details.merge(sanitized)
+		return true
+	return false
 
 
 static func _valid_marking_type(marking_type: Variant) -> bool:
@@ -229,15 +253,15 @@ func _marking_index(id: String) -> int:
 	return -1
 
 
-func apply_marking_update(details: Dictionary) -> void:
+func apply_marking_update(details: Dictionary) -> bool:
 	var op: Variant = details.get("op")
 	var id: Variant = details.get("id")
-	if not _valid_marking_id(id):
-		return
+	if op is not String or not _valid_marking_id(id):
+		return false
 
 	if op == "create":
 		if not _valid_serialized_marking(details):
-			return
+			return false
 		@warning_ignore("unsafe_call_argument")
 		var marking := {
 			"id": details["id"],
@@ -254,26 +278,30 @@ func apply_marking_update(details: Dictionary) -> void:
 			markings.append(marking)
 		else:
 			markings[existing_idx] = marking
+		return true
 	elif op == "delete":
 		@warning_ignore("unsafe_call_argument")
 		var idx := _marking_index(id)
 		if idx != -1:
 			markings.remove_at(idx)
+			return true
 	elif op == "edit":
 		@warning_ignore("unsafe_call_argument")
 		var idx := _marking_index(id)
 		if idx == -1:
-			return
+			return false
 		var marking := markings[idx].duplicate()
 		if details.has("color"):
 			if not _valid_color_array(details["color"]):
-				return
+				return false
 			marking["color"] = details["color"]
 		if details.has("name"):
 			if not _valid_marking_name(details["name"]):
-				return
+				return false
 			marking["name"] = details["name"]
 		markings[idx] = marking
+		return true
+	return false
 
 
 func is_in_bounding_box(test_point: Vector2, min_corner: Vector2, max_corner: Vector2) -> bool:

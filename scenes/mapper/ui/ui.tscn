@@ -39,6 +39,8 @@
 [ext_resource type="Script" uid="uid://b2582bma1womo" path="res://scenes/mapper/ui/toolui/dice.gd" id="33_m62g0"]
 [ext_resource type="Script" uid="uid://df12i6ly675lm" path="res://scenes/mapper/ui/alerts.gd" id="34_v8jk4"]
 [ext_resource type="Script" uid="uid://cf0q0aplu0by6" path="res://scenes/mapper/ui/toolui/marking.gd" id="35_marking"]
+[ext_resource type="PackedScene" uid="uid://mr0ixo8hecdn" path="res://scenes/mapper/ui/toolui/tools/map_text.tscn" id="36_text_ui"]
+[ext_resource type="Texture2D" uid="uid://coycuyasgn8bd" path="res://assets/icons/tools/text.svg" id="37_text_icon"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_c8yws"]
 
@@ -482,12 +484,21 @@ button_group = SubResource("ButtonGroup_grkin")
 icon = ExtResource("25_v8jk4")
 
 [node name="Pan" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=761931475]
+visible = false
 layout_mode = 2
 theme_type_variation = &"ToolButton"
 disabled = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_grkin")
 icon = ExtResource("8_tv71d")
+
+[node name="Text" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=1206544374]
+layout_mode = 2
+tooltip_text = "mapper/tool.text"
+theme_type_variation = &"ToolButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_grkin")
+icon = ExtResource("37_text_icon")
 
 [node name="Fill" type="Button" parent="MenubarContainer/Bottom/LeftItems/Toolkit/VBoxContainer/MenuItems" unique_id=1011704533]
 layout_mode = 2
@@ -705,17 +716,22 @@ size_flags_horizontal = 4
 theme = SubResource("Theme_c8yws")
 value = 20.0
 
+[node name="text" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1870294575 instance=ExtResource("36_text_ui")]
+visible = false
+layout_mode = 2
+
 [node name="marking" type="TabContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1268714854]
 visible = false
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_5rjrm")
-current_tab = 0
+current_tab = 1
 clip_tabs = false
 script = ExtResource("35_marking")
 
 [node name="Create [Z]" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=789611511]
+visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 0
@@ -749,7 +765,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 
 [node name="Delete [X]" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/marking" unique_id=163959722]
-visible = false
 layout_mode = 2
 alignment = 1
 metadata/_tab_index = 1
