@@ -239,7 +239,7 @@ func parse_player_id(data: Variant) -> int:
 
 
 func parse_event(data: Dictionary, peer_id: int) -> bool:
-	if data["event"] is not String:
+	if data.get("event") is not String:
 		return false
 	var event: String = data["event"]
 	if event.begins_with("mod:"):
@@ -259,8 +259,9 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				send_binary_event(ISUtil.BinaryEvents.FORCE_RESYNC_MAP, msg["data"])
 			return false
 		"map_update":
-			@warning_ignore("unsafe_call_argument")
-			room.map.get_map_update(data["details"], peer_id)
+			if not data.get("details") is Dictionary:
+				return false
+			return room.map.get_map_update(data["details"] as Dictionary, peer_id)
 		"typing_status":
 			var id := peer_player_id(peer_id)
 			room.players.getv(id).status["typing"] = data["details"]
@@ -407,8 +408,8 @@ func _binary_message(
 		var brush_data := ISUtil.decode_brush_update(details)
 		if brush_data.is_empty():
 			return
-		room.map.get_map_update(brush_data, peer_id)
-		_broadcast_binary_to_others(peer_id, event, details)
+		if room.map.get_map_update(brush_data, peer_id):
+			_broadcast_binary_to_others(peer_id, event, details)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		_broadcast_binary_to_others(peer_id, event, details)
 
