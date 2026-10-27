@@ -57,7 +57,7 @@ static func from_color(color: Color) -> Array:
 static func to_color(color: Array) -> Color:
 	if color.size() >= 3:
 		@warning_ignore("unsafe_call_argument")
-		return Color(color[0], color[1], color[2])
+		return Color(color[0], color[1], color[2], color[3] if color.size() >= 4 else 1.0)
 	else:
 		assert(false, "Color is too small")
 		return Color.WHITE
@@ -89,12 +89,13 @@ static func to_vec3(vec: Array) -> Vector3:
 		return Vector3.ZERO
 
 
-## layout: pos_x(f32) + pos_y(f32) + size(u8) + paint_rgb(3*u8) + target_rgb(3*u8) + targeted(u8)
+## layout: pos_x(f32) + pos_y(f32) + size(u8) + paint_rgb(3*u8) + target_rgb(3*u8)
+## + targeted(u8) + paint_alpha(u8) + target_alpha(u8)
 static func encode_brush_update(
 	pos: Vector2, size: int, paint_color: Color, target_color: Color, targeted: bool
 ) -> PackedByteArray:
 	var bytes := PackedByteArray()
-	bytes.resize(16)
+	bytes.resize(18)
 	bytes.encode_float(0, pos.x)
 	bytes.encode_float(4, pos.y)
 	bytes.encode_u8(8, size)
@@ -105,6 +106,8 @@ static func encode_brush_update(
 	bytes.encode_u8(13, int(target_color.g * 255))
 	bytes.encode_u8(14, int(target_color.b * 255))
 	bytes.encode_u8(15, 1 if targeted else 0)
+	bytes.encode_u8(16, int(paint_color.a * 255))
+	bytes.encode_u8(17, int(target_color.a * 255))
 	return bytes
 
 
@@ -117,9 +120,15 @@ static func decode_brush_update(data: PackedByteArray) -> Dictionary:
 		"pos": [data.decode_float(0), data.decode_float(4)],
 		"size": float(data.decode_u8(8)),
 		"paint_color":
-		[data.decode_u8(9) / 255.0, data.decode_u8(10) / 255.0, data.decode_u8(11) / 255.0],
+		[
+			data.decode_u8(9) / 255.0, data.decode_u8(10) / 255.0, data.decode_u8(11) / 255.0,
+			data.decode_u8(16) / 255.0 if data.size() >= 18 else 1.0
+		],
 		"target_color":
-		[data.decode_u8(12) / 255.0, data.decode_u8(13) / 255.0, data.decode_u8(14) / 255.0],
+		[
+			data.decode_u8(12) / 255.0, data.decode_u8(13) / 255.0, data.decode_u8(14) / 255.0,
+			data.decode_u8(17) / 255.0 if data.size() >= 18 else 1.0
+		],
 		"targeted": data.decode_u8(15) != 0
 	}
 

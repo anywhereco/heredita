@@ -261,7 +261,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		"map_update":
 			if not data.get("details") is Dictionary:
 				return false
-			return room.map.get_map_update(data["details"] as Dictionary, peer_id)
+			return _apply_map_update(data["details"] as Dictionary, peer_id)
 		"typing_status":
 			var id := peer_player_id(peer_id)
 			room.players.getv(id).status["typing"] = data["details"]
@@ -398,6 +398,26 @@ func _text_data(peer_id: int, data: Dictionary) -> void:
 				)
 
 
+func _apply_map_update(details: Dictionary, peer_id: int) -> bool:
+	if details.get("type") is String and details["type"] == "brush":
+		var player_id := peer_player_id(peer_id)
+		if not room.players.has(player_id):
+			return false
+		if (
+			not MapData._valid_color_array(details.get("paint_color"))
+			or not MapData._valid_color_array(details.get("target_color"))
+			or details.get("targeted") is not bool
+		):
+			return false
+		var player: Player = room.players.getv(player_id)
+		if not player.privileged():
+			var paint := ISUtil.to_color(details["paint_color"])
+			var target := ISUtil.to_color(details["target_color"])
+			if paint.a != 1.0 or (details["targeted"] and target.a != 1.0):
+				return false
+	return room.map.get_map_update(details, peer_id)
+
+
 @warning_ignore("unused_parameter")
 func _binary_message(
 	peer_id: int, event: int, player_id: int, flags: int, details: PackedByteArray
@@ -408,7 +428,7 @@ func _binary_message(
 		var brush_data := ISUtil.decode_brush_update(details)
 		if brush_data.is_empty():
 			return
-		if room.map.get_map_update(brush_data, peer_id):
+		if _apply_map_update(brush_data, peer_id):
 			_broadcast_binary_to_others(peer_id, event, details)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		_broadcast_binary_to_others(peer_id, event, details)
