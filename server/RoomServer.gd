@@ -403,14 +403,14 @@ func _apply_map_update(details: Dictionary, peer_id: int) -> bool:
 		var player_id := peer_player_id(peer_id)
 		if not room.players.has(player_id):
 			return false
+		if (
+			not MapData._valid_color_array(details.get("paint_color"))
+			or not MapData._valid_color_array(details.get("target_color"))
+			or details.get("targeted") is not bool
+		):
+			return false
 		var player: Player = room.players.getv(player_id)
 		if not player.privileged():
-			if (
-				not MapData._valid_color_array(details.get("paint_color"))
-				or not MapData._valid_color_array(details.get("target_color"))
-				or details.get("targeted") is not bool
-			):
-				return false
 			var paint := ISUtil.to_color(details["paint_color"])
 			var target := ISUtil.to_color(details["target_color"])
 			if paint.a != 1.0 or (details["targeted"] and target.a != 1.0):
