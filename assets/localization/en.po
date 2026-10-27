@@ -453,13 +453,19 @@ msgid "mapper/free_camera.stats"
 msgstr "Speed: {move_speed}  Cam Smooth: {camera_smoothing}  Move Smooth: {movement_smoothing}  Cam Speed: {camera_speed}\nijkl to move, u/o up and down\n(hide this with alt-shift-x)"
 
 msgid "mapper/brush.size"
-msgstr "Brush size"
+msgstr "Size"
 
 msgid "mapper/brush.paint"
 msgstr "Paint [Q]"
 
 msgid "mapper/brush.target"
 msgstr "Target [E]"
+
+msgid "mapper/brush.paint_water"
+msgstr "Paint water"
+
+msgid "mapper/brush.target_water"
+msgstr "Target water"
 
 msgid "mapper/color.hsv"
 msgstr "HSV"

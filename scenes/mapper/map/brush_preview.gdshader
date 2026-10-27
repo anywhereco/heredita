@@ -54,6 +54,9 @@ bool is_preview_pixel(ivec2 brush_pixel, ivec2 mask_size) {
 		return false;
 	}
 	if (targeted) {
+		if (target_color.a == 0.0) {
+			return map_color.a == 0.0;
+		}
 		return all(lessThanEqual(abs(map_color - target_color), vec4(COLOR_EPSILON)));
 	}
 	return map_color.a > 0.0;

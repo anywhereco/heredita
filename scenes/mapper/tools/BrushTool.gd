@@ -15,6 +15,15 @@ func _init() -> void:
 	pass
 
 
+static func can_paint_water() -> bool:
+	var player := State.player
+	return player != null and player.privileged()
+
+
+func _can_paint(paint: Color, target: Color) -> bool:
+	return (paint.a == 1.0 and (not is_targeted.value or target.a == 1.0)) or can_paint_water()
+
+
 func _map_ready() -> void:
 	UIRoot._instance.brush_ui.size_controller.brush_size.value_changed.connect(
 		_brush_size_changed.unbind(1)
@@ -43,11 +52,11 @@ func _map_ready() -> void:
 func brush_events(event: InputEvent) -> void:
 	if event.is_action_pressed("pick_paint"):
 		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
-		if color.a == 1:
+		if color.a == 1 or (color.a == 0 and can_paint_water()):
 			UIRoot._instance.brush_ui.paint_picker.color.value = color
 	if event.is_action_pressed("pick_target"):
 		var color := Map._instance.get_pixel_at(Map._instance.map_pos.value)
-		if color.a == 1:
+		if color.a == 1 or (color.a == 0 and can_paint_water()):
 			UIRoot._instance.brush_ui.target_picker.color.value = color
 			is_targeted.value = true
 	if event.is_action_pressed("switch_targeting_status"):
@@ -68,6 +77,8 @@ func brush_events(event: InputEvent) -> void:
 func brush_action(
 	brush_size: int, paint: Color, target: Color, offset: Vector2 = Vector2.ZERO
 ) -> void:
+	if not _can_paint(paint, target):
+		return
 	if offset:
 		Map._instance.set_pixels_at_maybe_targeted(
 			shape.get_vec2s(brush_size), paint, target, is_targeted.value, offset
@@ -85,7 +96,12 @@ func _brush_size_changed() -> void:
 
 func _update_brush() -> void:
 	var mod: Color = paint_color.value * (Settings.getv("map_brightness") as float)
+	if paint_color.value.a == 0.0:
+		# Transparency has no visible color of its own; preview it using the water color.
+		mod = (Map._instance.water.material_override as BaseMaterial3D).albedo_color
 	mod.a = 0.5
+	if not _can_paint(paint_color.value, target_color.value):
+		mod.a = 0.0
 	Map._instance.update_brush_preview_material(
 		size, shape.get_as_image(size), target_color.value, is_targeted.value, mod
 	)
@@ -103,7 +119,7 @@ func _send_brush_update(pos: Vector2) -> void:
 
 
 func _process(_delta: float) -> void:
-	if is_painting:
+	if is_painting and _can_paint(paint_color.value, target_color.value):
 		var cur_pos := Map._instance.map_pos.value
 		if cur_pos != _last_painted_pos:
 			_last_painted_pos = cur_pos

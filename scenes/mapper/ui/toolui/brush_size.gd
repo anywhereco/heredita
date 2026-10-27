@@ -5,8 +5,8 @@ const DEBOUNCE_START := 0.500
 const DEBOUNCE_MAX_RESET := 0.350
 const DEBOUNCE_MIN_RESET := 0.075
 
-@onready var size_label: Label = $"../Size"
-@onready var h_slider: HSlider = $HSlider
+@onready var size_label: Label = $Size
+@onready var slider: VSlider = $Slider
 
 var brush_size: ReactiveInt = ReactiveInt.new(1)
 
@@ -32,9 +32,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 
 	if event.is_action_pressed("brush_increase"):
-		h_slider.value += 1
+		slider.value += 1
 	if event.is_action_pressed("brush_decrease"):
-		h_slider.value -= 1
+		slider.value -= 1
 
 
 func _size_modify_check(delta: float) -> void:
@@ -52,4 +52,4 @@ func _size_modify_check(delta: float) -> void:
 			size_modify_debounce += maxf(DEBOUNCE_MIN_RESET, (
 				DEBOUNCE_MAX_RESET / ((held_size_change_count + 2) * 0.5)
 			))
-			h_slider.value += direction
+			slider.value += direction

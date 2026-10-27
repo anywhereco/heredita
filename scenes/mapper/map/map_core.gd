@@ -158,7 +158,8 @@ func set_pixels_at_targeted(
 		var chunk: Image = chunk_images[cx][cy]
 		var lx := px % Statics.CHUNK_SIZE
 		var ly := py % Statics.CHUNK_SIZE
-		if chunk.get_pixel(lx, ly).is_equal_approx(target):
+		var current := chunk.get_pixel(lx, ly)
+		if (target.a == 0.0 and current.a == 0.0) or current.is_equal_approx(target):
 			chunk.set_pixel(lx, ly, color)
 			_dirty_chunks[Vector2i(cx, cy)] = true
 

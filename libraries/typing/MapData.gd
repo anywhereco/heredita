@@ -227,6 +227,7 @@ static func _valid_color_array(color: Variant) -> bool:
 		and _valid_number(color[0])
 		and _valid_number(color[1])
 		and _valid_number(color[2])
+		and (color.size() < 4 or _valid_number(color[3]))
 	)
 
 
@@ -321,7 +322,7 @@ func set_pixels_at_targeted(
 		if not is_in_bounding_box(pos, Vector2.ZERO, image.get_size() - Vector2i(1, 1)):
 			continue
 		var img_color := image.get_pixelv(pos)
-		if img_color.is_equal_approx(target):
+		if (target.a == 0.0 and img_color.a == 0.0) or img_color.is_equal_approx(target):
 			var index := int(pos.y * map_width + pos.x)
 			map_last_color[index] = img_color
 			map_last_painter[index] = peer

@@ -111,11 +111,11 @@ font_color = Color(0.69965345, 0.69965345, 0.69965345, 1)
 font = ExtResource("6_wbt2f")
 font_size = 24
 
-[sub_resource type="LabelSettings" id="LabelSettings_rh4gq"]
-
 [sub_resource type="LabelSettings" id="LabelSettings_0sgq1"]
 font = ExtResource("12_wbt2f")
 font_size = 18
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_17bel"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2eddf"]
 font = ExtResource("12_wbt2f")
@@ -591,7 +591,7 @@ autowrap_mode = 2
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="brush" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=1833390638]
+[node name="brush" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=266185943]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -600,7 +600,19 @@ script = ExtResource("12_2eddf")
 [node name="HBoxContainer" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush" unique_id=330020651]
 layout_mode = 2
 
-[node name="Size" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer" unique_id=1500706807]
+[node name="BrushSize" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer" unique_id=1617937403]
+layout_mode = 2
+script = ExtResource("12_0sgq1")
+
+[node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" unique_id=1552818025]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "mapper/brush.size"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Size" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" unique_id=1500706807]
 custom_minimum_size = Vector2(27, 28)
 layout_mode = 2
 text = "1"
@@ -608,22 +620,10 @@ label_settings = SubResource("LabelSettings_em4te")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BrushSize" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer" unique_id=1617937403]
+[node name="Slider" type="VSlider" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" unique_id=641635226]
 layout_mode = 2
-size_flags_horizontal = 3
-script = ExtResource("12_0sgq1")
-
-[node name="Label" type="Label" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" unique_id=1552818025]
-layout_mode = 2
-text = "mapper/brush.size"
-label_settings = SubResource("LabelSettings_rh4gq")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="HSlider" type="HSlider" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" unique_id=1821294573]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
+size_flags_horizontal = 4
+size_flags_vertical = 3
 min_value = 1.0
 max_value = 25.0
 value = 1.0
@@ -632,7 +632,6 @@ ticks_position = 3
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush" unique_id=1231593372]
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_constants/separation = 8
 alignment = 1
 
@@ -647,8 +646,42 @@ label_settings = SubResource("LabelSettings_0sgq1")
 horizontal_alignment = 1
 
 [node name="ColorPicker" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint" unique_id=918839116 instance=ExtResource("11_mey8b")]
+custom_minimum_size = Vector2(100, 100)
+custom_maximum_size = Vector2(120, 999)
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 4
+
+[node name="PaintWater" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint" unique_id=505745224]
+layout_mode = 2
+theme_override_constants/icon_max_width = 16
+text = "mapper/brush.paint_water"
+
+[node name="Button4" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint" unique_id=1411445771]
+visible = false
+layout_mode = 2
+text = "Preset"
+
+[node name="ColorModes" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint" unique_id=1517812591]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes" unique_id=864971231]
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_17bel")
+text = "mapper/color.hsv"
+
+[node name="Button2" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes" unique_id=1255581329]
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_17bel")
+text = "mapper/color.rgb"
+
+[node name="Button3" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes" unique_id=1269357231]
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_17bel")
+text = "mapper/color.hex"
 
 [node name="Target" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2" unique_id=427869213]
 layout_mode = 2
@@ -661,41 +694,22 @@ label_settings = SubResource("LabelSettings_2eddf")
 horizontal_alignment = 1
 
 [node name="ColorPicker" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target" unique_id=46435735 instance=ExtResource("11_mey8b")]
+custom_minimum_size = Vector2(100, 100)
+custom_maximum_size = Vector2(120, 999)
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 4
+alignment = 2
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush" unique_id=1508038446]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=864971231]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "mapper/color.hsv"
-
-[node name="Button2" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1255581329]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "mapper/color.rgb"
-
-[node name="Button3" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1269357231]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "mapper/color.hex"
-
-[node name="Button4" type="Button" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1411445771]
-visible = false
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Preset"
-
-[node name="Control" type="Control" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=1350587308]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="UntargetedCheckbox" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3" unique_id=107558011]
+[node name="TargetWater" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target" unique_id=196656575]
 layout_mode = 2
 theme_override_constants/icon_max_width = 16
-theme_override_font_sizes/font_size = 12
+text = "mapper/brush.target_water"
+
+[node name="UntargetedCheckbox" type="CheckBox" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target" unique_id=107558011]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_constants/icon_max_width = 16
+theme_override_font_sizes/font_size = 16
 text = "mapper/brush.untargeted"
 
 [node name="dice" type="VBoxContainer" parent="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer" unique_id=889499975]
@@ -853,10 +867,10 @@ label_settings = SubResource("LabelSettings_5rjrm")
 
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/PauseMargin/Pause" to="MenubarContainer/Menubar/Time" method="_on_pause_pressed"]
 [connection signal="pressed" from="MenubarContainer/Menubar/Time/ConfMargin/Configure" to="MenubarContainer/Menubar/Time" method="_on_configure_pressed"]
-[connection signal="value_changed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize/HSlider" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" method="_on_slider_changed"]
-[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [0]]
-[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [0]]
-[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button2" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [1]]
-[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button2" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [1]]
-[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button3" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [2]]
-[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer3/Button3" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [2]]
+[connection signal="value_changed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize/Slider" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer/BrushSize" method="_on_slider_changed"]
+[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes/Button" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [0]]
+[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes/Button" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [0]]
+[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes/Button2" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [1]]
+[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes/Button2" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [1]]
+[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes/Button3" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorPicker" method="set_mode" binds= [2]]
+[connection signal="pressed" from="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Paint/ColorModes/Button3" to="MenubarContainer/Bottom/LeftItems/ToolUI/VBoxContainer/ToolUIContainer/brush/HBoxContainer2/Target/ColorPicker" method="set_mode" binds= [2]]
