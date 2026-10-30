@@ -166,6 +166,12 @@ msgstr ""
 "locd: For reference, the polandball has a diameter of 1 unit,\n"
 "so a pixel size of 0.1 would make the polandball 10 pixels wide."
 
+msgid "roomcreate/hwrap"
+msgstr "locd: Wrap left-right"
+
+msgid "roomcreate/vwrap"
+msgstr "locd: Wrap up-down"
+
 msgid "roomcreate/mapconfig"
 msgstr "locd: Map configuration..."
 

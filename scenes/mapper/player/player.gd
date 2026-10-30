@@ -155,12 +155,17 @@ func _physics_process(delta: float) -> void:
 		var pos2: Vector2 = Vector2(position.x, position.z)
 
 		if not map.map_world_bounds.has_point(pos2):
-			if not map.map_world_bounds.has_point(Vector2(position.x, 0)):
-				position.x = -position.x * 0.99
+			var map_size := map.map_world_bounds.size
+			if map.hwrap and not map.map_world_bounds.has_point(Vector2(position.x, 0)):
+				var old_position := position
+				position.x = fposmod(position.x + map_size.x/2, map_size.x) - map_size.x/2 #wrap position
 				if local:
-					camera_pivot.position = position
-			#if not map.map_world_bounds.has_point(Vector2(0, position.z)):
-			#	position.z = -position.z
+					camera_pivot.move_with(old_position, position)
+			if map.vwrap and not map.map_world_bounds.has_point(Vector2(0, position.z)):
+				var old_position := position
+				position.z = fposmod(position.z + map_size.y/2, map_size.y) - map_size.y/2 #wrap position
+				if local:
+					camera_pivot.move_with(old_position, position)
 
 		move_and_slide()
 		if local:

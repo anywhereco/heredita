@@ -4,7 +4,8 @@ extends Node3D
 static var _instance: Map
 
 @export_range(1.0 / 20, 1, 1.0 / 20, "suffix:units/px") var pixel_size: float = 1.0 / 10
-
+var hwrap: bool = true
+var vwrap: bool = false
 
 @onready var player_camera: Camera3D = $"../LocalPlayer/CameraPivot/CameraArm/PlayerCamera"
 @onready var water: MeshInstance3D = $"../Water"
@@ -233,6 +234,8 @@ func get_data() -> MapData:
 		data.markings = pending_markings
 		data.texts = pending_texts
 	data.pixel_size = pixel_size
+	data.hwrap = hwrap
+	data.vwrap = vwrap
 	data.calendar = TimekeepingUI._inst.calendar.dupe()
 	return data
 
@@ -240,6 +243,8 @@ func get_data() -> MapData:
 func set_data(data: MapData) -> void:
 	original_map = data.image
 	pixel_size = data.pixel_size
+	hwrap = data.hwrap
+	vwrap = data.vwrap
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
 	if TimekeepingUI._inst.get("calendar") != null:
