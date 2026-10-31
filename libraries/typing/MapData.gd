@@ -21,6 +21,9 @@ var calendar: Calendar = DEFAULT_CALENDAR
 
 var pixel_size: float = DEFAULT_PIXEL_SIZE 
 
+var hwrap: bool = true
+var vwrap: bool = false
+
 const PACKAGE_VERSION = 5
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
@@ -39,7 +42,9 @@ func package() -> Dictionary[String, Variant]:
 		"markings": markings,
 		"texts": texts.serialize(),
 		"calendar": calendar.to_json(),
-		"pixel_size": pixel_size
+		"pixel_size": pixel_size,
+		"hwrap": hwrap,
+		"vwrap": vwrap,
 	}
 
 
@@ -154,6 +159,17 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.pixel_size = map_data["pixel_size"]
 		if md.pixel_size == null:
 			md.pixel_size = DEFAULT_PIXEL_SIZE
+	if package_version >= 6:
+		if map_data.has("hwrap") and map_data["hwrap"] is bool:
+			@warning_ignore("unsafe_call_argument")
+			md.hwrap = map_data["hwrap"]
+		if md.hwrap == null:
+			md.hwrap = true
+		if map_data.has("vwrap") and map_data["vwrap"] is bool:
+			@warning_ignore("unsafe_call_argument")
+			md.vwrap = map_data["vwrap"]
+		if md.vwrap == null:
+			md.vwrap = false
 	if map_data.get("texts") is Array:
 		md.texts.load_labels(map_data["texts"] as Array, Vector2(md.image.get_size()))
 	return md

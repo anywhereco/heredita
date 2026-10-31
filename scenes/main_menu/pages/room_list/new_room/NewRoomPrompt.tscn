@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://covlkxs45jfxm" path="res://libraries/ui/ControlPopupButton.gd" id="3_bkpt7"]
 [ext_resource type="Script" uid="uid://ba5en04q703k5" path="res://libraries/ui/TextDisplayButton.gd" id="3_t4kyh"]
 [ext_resource type="Script" uid="uid://d0mmgk3mhkoqq" path="res://scenes/main_menu/pages/room_list/new_room/nrp_ppuslider.gd" id="4_m4wmb"]
+[ext_resource type="Script" uid="uid://dkgabou6sil7j" path="res://scenes/main_menu/pages/room_list/new_room/nrp_wrapboxes.gd" id="6_yej4r"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fgy55"]
 font = ExtResource("1_5vjh0")
@@ -229,7 +230,6 @@ persistence_time = 9999999.0
 metadata/_custom_type_script = "uid://covlkxs45jfxm"
 
 [node name="ConfigItems" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig" unique_id=1652765633]
-visible = false
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 0
 offset_right = 40.0
@@ -276,6 +276,31 @@ tick_count = 10
 ticks_on_borders = true
 ticks_position = 3
 
+[node name="WrapValue" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems" unique_id=1276731941]
+layout_mode = 2
+script = ExtResource("6_yej4r")
+
+[node name="HWrapContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue" unique_id=1505623431]
+layout_mode = 2
+
+[node name="HWrapCheck" type="CheckBox" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue/HWrapContainer" unique_id=1956160338]
+layout_mode = 2
+button_pressed = true
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue/HWrapContainer" unique_id=749992061]
+layout_mode = 2
+text = "roomcreate/hwrap"
+
+[node name="VWrapContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue" unique_id=891940095]
+layout_mode = 2
+
+[node name="VWrapCheck" type="CheckBox" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue/VWrapContainer" unique_id=1078312962]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue/VWrapContainer" unique_id=1217111690]
+layout_mode = 2
+text = "roomcreate/vwrap"
+
 [node name="Buttons" type="HBoxContainer" parent="." unique_id=789915965]
 layout_mode = 2
 alignment = 1
@@ -295,3 +320,5 @@ layout_mode = 2
 text = "roomcreate/finish"
 
 [connection signal="value_changed" from="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/PPUValue/PPUSlider" to="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/PPUValue" method="_on_ppu_slider_value_changed"]
+[connection signal="toggled" from="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue/HWrapContainer/HWrapCheck" to="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue" method="_on_hwrap_value_changed"]
+[connection signal="toggled" from="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue/VWrapContainer/VWrapCheck" to="HBoxContainer/VBoxContainer/CenterContainer/Map/MapConfig/ConfigItems/WrapValue" method="_on_vwrap_value_changed"]

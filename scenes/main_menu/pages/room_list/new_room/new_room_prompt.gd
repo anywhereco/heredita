@@ -25,6 +25,9 @@ func _ready() -> void:
 	var ppu := find_child("PPUValue", true, false)
 	if ppu != null:
 		ppu.setup(map)
+	var wrap := find_child("WrapValue", true, false)
+	if wrap != null:
+		wrap.setup(map)
 
 
 func change_map() -> void:
