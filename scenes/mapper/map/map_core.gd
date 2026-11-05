@@ -14,6 +14,7 @@ var vwrap: bool = false
 @onready var preview_plane: Sprite3D = $PreviewPlane
 @onready var map_markings: MapMarkings = $MapMarkings
 @onready var map_text: MapText = $MapText
+@onready var map_overlays: MapOverlays = $MapOverlays
 
 var default_target_color: Color = Color(1, 1, 1)
 
@@ -53,6 +54,7 @@ var pending_resync := ReactiveBool.new(false)
 var queued_changes: Array[Dictionary] = []
 var pending_markings: Array[Dictionary] = []
 var pending_texts := MapTextData.new()
+var pending_overlays := MapOverlayData.new()
 var _data_pending_init := false
 
 
@@ -230,9 +232,11 @@ func get_data() -> MapData:
 	if is_node_ready():
 		data.markings = map_markings.serialize_markings()
 		data.texts = map_text.data
+		data.overlays = map_overlays.global_data
 	else:
 		data.markings = pending_markings
 		data.texts = pending_texts
+		data.overlays = pending_overlays
 	data.pixel_size = pixel_size
 	data.hwrap = hwrap
 	data.vwrap = vwrap
@@ -255,9 +259,11 @@ func set_data(data: MapData) -> void:
 	if is_node_ready():
 		map_markings.set_markings(data.markings)
 		map_text.set_texts(data.texts)
+		map_overlays.set_globals(data.overlays)
 	else:
 		pending_markings = data.markings
 		pending_texts = data.texts
+		pending_overlays = data.overlays
 		_data_pending_init = true
 	if is_node_ready() and (not State.client.operator or loaded):
 		load_from_original()
@@ -276,6 +282,7 @@ func load_from_original() -> void:
 		map_space_to_world_space(Vector2.ZERO), map_space_to_world_space(Vector2.ZERO).abs() * 2
 	)
 	map_text.rebuild()
+	map_overlays.rebuild()
 
 
 func reset_chunks() -> void:
@@ -356,6 +363,7 @@ func _ready() -> void:
 		_data_pending_init = false
 	preview_plane.pixel_size = pixel_size
 	map_text.set_texts(pending_texts)
+	map_overlays.set_globals(pending_overlays)
 
 
 func brightness_change(brightness: ReactiveFloat) -> void:
@@ -524,6 +532,8 @@ func get_map_update(details: Dictionary) -> void:
 		map_markings.apply_update(details)
 	elif type == "text":
 		map_text.apply_update(details)
+	elif type == "overlay":
+		map_overlays.apply_update(details)
 
 
 func _process(_delta: float) -> void:
