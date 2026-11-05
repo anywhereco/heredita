@@ -11,12 +11,13 @@
 [ext_resource type="ArrayMesh" uid="uid://tw8id7844a8w" path="res://assets/map/markings/fort_mesh.tres" id="11_fort"]
 [ext_resource type="Shader" uid="uid://d1sxeoujfohum" path="res://scenes/mapper/map/brush_preview.gdshader" id="12_brush_preview"]
 [ext_resource type="Script" uid="uid://dcuwjmp7lxu3o" path="res://scenes/mapper/map/map_text.gd" id="13_map_text"]
+[ext_resource type="Script" uid="uid://bo5tyj6h5tbj4" path="res://scenes/mapper/map/map_overlays.gd" id="14_q9gzl"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_wvm7y"]
 plane = Plane(0, 1, 0, -0.5)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_brush_preview"]
-render_priority = 1
+render_priority = 2
 shader = ExtResource("12_brush_preview")
 shader_parameter/map_size = Vector2i(1, 1)
 shader_parameter/brush_pixel_origin = Vector2i(0, 0)
@@ -99,7 +100,7 @@ pixel_size = 0.0625
 axis = 1
 double_sided = false
 texture_filter = 0
-render_priority = 1
+render_priority = 2
 texture = SubResource("ImageTexture_wvm7y")
 
 [node name="MapMarkings" type="Node3D" parent="Map" unique_id=1797148079]
@@ -115,6 +116,9 @@ multimesh = SubResource("MultiMesh_fort")
 
 [node name="MapText" type="Node3D" parent="Map" unique_id=248349078]
 script = ExtResource("13_map_text")
+
+[node name="MapOverlays" type="Node3D" parent="Map" unique_id=1683361874]
+script = ExtResource("14_q9gzl")
 
 [node name="Water" type="MeshInstance3D" parent="." unique_id=855186101]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)

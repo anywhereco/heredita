@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://ch1gwqrjjmk1q"]
+
+[node name="RemoveOverlayConfirmation" type="VBoxContainer" unique_id=1430511105]
+custom_minimum_size = Vector2(300, 0)
+
+[node name="Label" type="Label" parent="." unique_id=921122947]
+layout_mode = 2
+text = "mapper/overlay.remove.confirm"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="." unique_id=380985431]
+layout_mode = 2
+
+[node name="Remove" type="Button" parent="Buttons" unique_id=55315788]
+modulate = Color(1, 0.54901963, 0.54901963, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "mapper/overlay.remove"
+
+[node name="Cancel" type="Button" parent="Buttons" unique_id=1314465734]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "common/cancel"

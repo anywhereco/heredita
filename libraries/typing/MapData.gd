@@ -16,6 +16,7 @@ var map_player_pixels: Dictionary[int, PackedInt32Array] = {}
 var map_width := -1
 var markings: Array[Dictionary] = []
 var texts := MapTextData.new()
+var overlays := MapOverlayData.new()
 
 var calendar: Calendar = DEFAULT_CALENDAR
 
@@ -38,6 +39,7 @@ func package() -> Dictionary[String, Variant]:
 		"image_size": image.get_size(),
 		"markings": markings,
 		"texts": texts.serialize(),
+		"overlays": overlays.serialize(),
 		"calendar": calendar.to_json(),
 		"pixel_size": pixel_size
 	}
@@ -156,6 +158,8 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			md.pixel_size = DEFAULT_PIXEL_SIZE
 	if map_data.get("texts") is Array:
 		md.texts.load_labels(map_data["texts"] as Array, Vector2(md.image.get_size()))
+	if map_data.get("overlays") is Array:
+		md.overlays.load_overlays(map_data["overlays"] as Array)
 	return md
 
 
@@ -190,6 +194,13 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 		return true
 	elif type == "marking":
 		return apply_marking_update(details)
+	elif type == "overlay":
+		if not overlays.apply_update(details):
+			return false
+		var sanitized := overlays.canonical_update(details)
+		details.clear()
+		details.merge(sanitized)
+		return true
 	elif type == "text":
 		if not texts.apply_update(details, Vector2(image.get_size())):
 			return false

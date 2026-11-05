@@ -35,7 +35,7 @@ static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedS
 		web_file_dialog.register()
 		web_file_dialog.show()
 		var handle: HTML5FileHandle = await web_file_dialog.file_selected
-		return { buffer = await handle.as_buffer(), extension = convert_mime(handle.mime_type)}
+		return { buffer = await handle.as_buffer(), extension = convert_mime(handle.mime_type), filename = handle.name }
 	else:
 		var file_dialog := FileDialog.new()
 		file_dialog.use_native_dialog = true
@@ -49,7 +49,7 @@ static func load_file(root: Node, filter: PackedStringArray, filter_web: PackedS
 		root.add_child(file_dialog, false, root.INTERNAL_MODE_BACK)
 		file_dialog.popup_centered(file_dialog.min_size)
 		var path: String = await file_dialog.file_selected
-		return { buffer = FileAccess.get_file_as_bytes(path), extension = path.get_extension()}
+		return { buffer = FileAccess.get_file_as_bytes(path), extension = path.get_extension(), filename = path.get_file() }
 
 static func convert_mime(mime_type: String) -> String:
 	# Converts a MIME type to an extension 
