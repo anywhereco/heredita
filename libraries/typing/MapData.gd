@@ -179,9 +179,11 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 	return md
 
 
-func get_map_update(details: Dictionary, peer: int) -> bool:
+## Returns an empty dictionary if invalid, or a canonical representation otherwise.
+func apply_update(request: Dictionary, peer: int) -> Dictionary:
+	var details := request.duplicate(true)
 	if details.get("type") is not String:
-		return false
+		return {}
 	var type: String = details["type"]
 	if type == "brush":
 		if (
@@ -197,7 +199,7 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 			or not _valid_color_array(details.get("target_color"))
 			or not _valid_vec2_array(details.get("pos"))
 		):
-			return false
+			return {}
 		@warning_ignore("unsafe_call_argument")
 		set_pixels_at_maybe_targeted(
 			BrushShapes.circle(int(details["size"])),
@@ -207,27 +209,27 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 			ISUtil.to_vec2(details["pos"]),
 			peer
 		)
-		return true
+		return details
 	elif type == "marking":
-		return apply_marking_update(details)
+		if not apply_marking_update(details):
+			return {}
+		var sanitized := {"type": "marking", "op": details["op"], "id": details["id"]}
+		if details["op"] != "delete":
+			sanitized.merge(markings[_marking_index(details["id"])].duplicate(true))
+		return sanitized
 	elif type == "overlay":
 		if not overlays.apply_update(details):
-			return false
-		var sanitized := overlays.canonical_update(details)
-		details.clear()
-		details.merge(sanitized)
-		return true
+			return {}
+		return overlays.canonical_update(details)
 	elif type == "text":
 		if not texts.apply_update(details, Vector2(image.get_size())):
-			return false
+			return {}
 		var id: String = details["id"]
 		var sanitized := {"type": "text", "op": details["op"], "id": id}
 		if details["op"] != "delete":
-			sanitized.merge(texts.labels[id])
-		details.clear()
-		details.merge(sanitized)
-		return true
-	return false
+			sanitized.merge(texts.labels[id].duplicate(true))
+		return sanitized
+	return {}
 
 
 static func _valid_marking_type(marking_type: Variant) -> bool:

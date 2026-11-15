@@ -280,7 +280,10 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			if data["details"].get("type") == "overlay":
 				_dispatch_overlay_update(data["details"] as Dictionary, peer_id)
 				return false
-			return _apply_map_update(data["details"] as Dictionary, peer_id)
+			var update := _apply_map_update(data["details"] as Dictionary, peer_id)
+			if not update.is_empty():
+				send_event("map_update", update, peer_player_id(peer_id))
+			return false
 		"typing_status":
 			var id := peer_player_id(peer_id)
 			room.players.getv(id).status["typing"] = data["details"]
@@ -417,28 +420,28 @@ func _text_data(peer_id: int, data: Dictionary) -> void:
 				)
 
 
-func _apply_map_update(details: Dictionary, peer_id: int) -> bool:
+func _apply_map_update(details: Dictionary, peer_id: int) -> Dictionary:
 	if details.get("type") == "overlay":
 		var player_id := peer_player_id(peer_id)
 		if not room.players.has(player_id) or not room.players.getv(player_id).privileged():
-			return false
+			return {}
 	if details.get("type") is String and details["type"] == "brush":
 		var player_id := peer_player_id(peer_id)
 		if not room.players.has(player_id):
-			return false
+			return {}
 		if (
 			not MapData._valid_color_array(details.get("paint_color"))
 			or not MapData._valid_color_array(details.get("target_color"))
 			or details.get("targeted") is not bool
 		):
-			return false
+			return {}
 		var player: Player = room.players.getv(player_id)
 		if not player.privileged():
 			var paint := ISUtil.to_color(details["paint_color"])
 			var target := ISUtil.to_color(details["target_color"])
 			if paint.a != 1.0 or (details["targeted"] and target.a != 1.0):
-				return false
-	return room.map.get_map_update(details, peer_id)
+				return {}
+	return room.map.apply_update(details, peer_id)
 
 
 @warning_ignore("unused_parameter")
@@ -451,7 +454,7 @@ func _binary_message(
 		var brush_data := ISUtil.decode_brush_update(details)
 		if brush_data.is_empty():
 			return
-		if _apply_map_update(brush_data, peer_id):
+		if not _apply_map_update(brush_data, peer_id).is_empty():
 			_broadcast_binary_to_others(peer_id, event, details)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		_broadcast_binary_to_others(peer_id, event, details)
@@ -466,10 +469,11 @@ func _binary_message(
 
 
 func _dispatch_overlay_update(update: Dictionary, peer_id: int) -> void:
-	if not _apply_map_update(update, peer_id):
+	var applied := _apply_map_update(update, peer_id)
+	if applied.is_empty():
 		ws_server.send_targeted_event(peer_id, "overlay_rejected")
 		return
-	var canonical := var_to_bytes(update)
+	var canonical := var_to_bytes(applied)
 	for id: int in room.players.keys():
 		_queue_map_event(room.players.getv(id).peer_id, ISUtil.BinaryEvents.OVERLAY_UPDATE, canonical)
 

@@ -498,10 +498,10 @@ func finish_resync() -> void:
 	var changes := queued_changes
 	queued_changes = []
 	for event in changes:
-		get_map_update(event)
+		apply_update(event)
 
 
-func get_map_update(details: Dictionary) -> void:
+func apply_update(details: Dictionary) -> void:
 	var type: String = details["type"]
 	if pending_resync.value:
 		queued_changes.append(details)
