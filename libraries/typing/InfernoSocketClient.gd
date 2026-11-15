@@ -24,8 +24,6 @@ var player_id: int = -2  # -1 is reserved for the server, so we default to -2
 
 var operator: bool = false
 
-var _prompt: PromptInstance
-var _prompt_instance: Node
 var _attempts := 5
 
 var room: Room
@@ -43,6 +41,9 @@ signal connection_closed
 
 signal handshake_complete
 signal loading_status_updated(details: Dictionary)
+signal password_requested
+signal password_rejected(attempts_remaining: int)
+signal password_accepted
 
 signal message_received(event: String, player_id: int, details: Variant)
 
@@ -117,6 +118,10 @@ func send(event: String, message: Variant = null) -> int:
 		}
 	)
 	return socket.send_text(data)
+
+
+func submit_password(password: String) -> void:
+	send("_is2_password_attempt", password)
 
 
 func send_binary(
@@ -263,42 +268,18 @@ func _poll_string(message: Dictionary) -> void:
 			"_is2_login":
 				if creating_room.has("password") and not (creating_room["password"] as String).is_empty():
 					loading_status_updated.emit({"message": tr("network/status.confirming_password")})
-					send("_is2_password_attempt", creating_room["password"])
+					submit_password(creating_room["password"])
 					return
 				loading_status_updated.emit({"message": tr("network/password.required")})
-				_prompt_instance = load("res://libraries/ui/infernosocket/PasswordPrompt.tscn").instantiate()
-				(_prompt_instance.find_child("PasswordEdit") as LineEdit).text_submitted.connect(
-					func password_attempt(pwd: String) -> void: send("_is2_password_attempt", pwd)
-				)
-				var _prompt_res := Prompts.new_fullscreen_prompt()
-				if _prompt_res.is_err():
-					close(1006, "Could not create login prompt, aborting")
-				_prompt = _prompt_res.val()
-				_prompt.add_child(_prompt_instance)
+				password_requested.emit()
 				return
 			"_is2_login_valid_password":
 				loading_status_updated.emit({"message": tr("network/password.accepted")})
+				password_accepted.emit()
 				return
 			"_is2_login_invalid_password":
 				_attempts -= 1
-				if _attempts == 0:
-					if is_instance_valid(_prompt):
-						_prompt.close()
-					socket.close()
-					return
-				if not is_instance_valid(_prompt_instance):
-					loading_status_updated.emit(
-						{"failed": true, "message": tr("network/password.rejected")}
-					)
-					socket.close()
-					return
-				var attempts_label: Label = _prompt_instance.find_child("AttemptsLabel")
-				attempts_label.show()
-				attempts_label.text = TranslationServer.translate_plural(
-					"network/password.attempt_remaining",
-					"network/password.attempts_remaining",
-					_attempts
-				)
+				password_rejected.emit(_attempts)
 				return
 			"_is2_username":
 				print("username")

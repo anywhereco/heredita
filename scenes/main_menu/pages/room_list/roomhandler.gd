@@ -2,6 +2,7 @@ class_name RoomHandler
 extends VBoxContainer
 
 const MAPPER_3D_PATH := "res://scenes/mapper/mapper3d.tscn"
+const PASSWORD_PROMPT := preload("res://libraries/ui/infernosocket/PasswordPrompt.tscn")
 
 @onready var loading_placeholder: CenterContainer = $LoadingPlaceholder
 @onready var loading_placeholder_label: Label = $LoadingPlaceholder/Label
@@ -19,6 +20,8 @@ var _pending_map: MapData
 var _loading_prompt: PromptInstance
 var _loading_prompt_spinner: Spinner
 var _loading_prompt_label: Label
+var _password_prompt: PromptInstance
+var _password_content: RoomPasswordPrompt
 
 var _buffered_map_data: PackedByteArray = PackedByteArray()
 var _mapper_ready := false
@@ -252,6 +255,45 @@ func _client_loading_status_updated(details: Dictionary) -> void:
 	_set_game_load_detail(message)
 
 
+func _request_password() -> void:
+	if is_instance_valid(_password_prompt):
+		return
+	var result := Prompts.new_fullscreen_prompt()
+	if result.is_err():
+		State.client.close(1000, "Could not create login prompt")
+		return
+	_password_prompt = result.val()
+	_password_content = PASSWORD_PROMPT.instantiate()
+	_password_content.password_submitted.connect(State.client.submit_password)
+	_password_prompt.prompt_closed.connect(_password_prompt_closed)
+	_password_prompt.add_child(_password_content)
+
+
+func _password_rejected(attempts_remaining: int) -> void:
+	if attempts_remaining <= 0:
+		_close_password_prompt()
+		State.client.close()
+	elif is_instance_valid(_password_content):
+		_password_content.show_attempts(attempts_remaining)
+	else:
+		_fail_game_load(tr("network/password.rejected"))
+		State.client.close()
+
+
+func _password_prompt_closed() -> void:
+	_password_prompt = null
+	_password_content = null
+	State.client.close()
+
+
+func _close_password_prompt() -> void:
+	if is_instance_valid(_password_prompt):
+		_password_prompt.prompt_closed.disconnect(_password_prompt_closed)
+		_password_prompt.close()
+	_password_prompt = null
+	_password_content = null
+
+
 func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> void:
 	if _game_loading:
 		return
@@ -265,6 +307,9 @@ func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> v
 		_set_game_load_detail.bind(tr("network/status.connected_waiting"))
 	)
 	State.client.loading_status_updated.connect(_client_loading_status_updated)
+	State.client.password_requested.connect(_request_password)
+	State.client.password_rejected.connect(_password_rejected)
+	State.client.password_accepted.connect(_close_password_prompt)
 	State.client.connection_closed.connect(premature_close)
 	State.client.handshake_complete.connect(enter_mapper.bind(map))
 	State.client.binary_message_received.connect(_buffer_binary_data)
@@ -278,6 +323,7 @@ func _buffer_binary_data(event: int, _player_id: int, _flags: int, details: Pack
 
 
 func premature_close() -> void:
+	_close_password_prompt()
 	var reason := State.client.socket.get_close_code()
 	var reason_text := State.client.socket.get_close_reason()
 	print("Failed to join room: %d" % reason)
