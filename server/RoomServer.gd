@@ -446,11 +446,12 @@ func _dispatch_overlay_update(update: Dictionary, peer_id: int) -> void:
 
 ## overwrites the uid with the real sender's player_id so receivers can't be spoofed
 func _broadcast_binary_to_others(sender_peer_id: int, event: int, details: PackedByteArray) -> void:
+	var should_compress := details.size() > 64
 	var sender_player_id := peer_player_id(sender_peer_id)
 	for player_id: int in room.players.keys():
 		var peer_id: int = room.players.getv(player_id).peer_id
 		if peer_id != sender_peer_id:
-			ws_server.send_targeted_binary(peer_id, event, details, true, sender_player_id)
+			ws_server.send_targeted_binary(peer_id, event, details, should_compress, sender_player_id)
 
 
 func _ready() -> void:
