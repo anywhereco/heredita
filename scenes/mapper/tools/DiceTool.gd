@@ -36,7 +36,7 @@ func dice_events(event: InputEvent) -> void:
 			cooldown = COOLDOWN
 		else:
 			display_result(
-				MapperRoot._instance.get_node("LocalPlayer").position as Vector3, -2, roll(settings)
+				MapperRoot._instance.get_node("LocalPlayer").position as Vector3, -2, Dice.roll(settings)
 			)
 
 
@@ -52,7 +52,7 @@ func message_received(event: String, player_id: int, details: Variant) -> void:
 
 func display_result(position: Vector3, player_id: int, result: DiceResult) -> void:
 	var result_string: String
-	if result["outcome"] is float:
+	if result["outcome"] is float or result["outcome"] is int:
 		@warning_ignore("unsafe_call_argument")
 		result_string = str(int(result["outcome"]))
 	elif result["outcome"] is Array:
@@ -65,17 +65,6 @@ func display_result(position: Vector3, player_id: int, result: DiceResult) -> vo
 	var dice_bubble := DiceBubble.create(result["die_string"] as String, result_string, roller)
 	MapperRoot._instance.add_child(dice_bubble)
 	dice_bubble.position = position
-
-
-static func roll(settings: Dictionary) -> DiceResult:  #only used by SERVER if not in singleplayer
-	var die_string: String
-	if settings["min"] == 1:
-		die_string = "d%d" % settings["max"]
-	else:
-		die_string = "%d⋯%d" % [settings["min"], settings["max"]]
-	return DiceResult.new(
-		randi_range(settings.get("min", 1) as int, settings.get("max", 20) as int), die_string
-	)
 
 
 func _process(delta: float) -> void:

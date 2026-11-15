@@ -1,5 +1,5 @@
 class_name DiceResult
-extends Node
+extends RefCounted
 
 var outcome: Variant
 var die_string: String

@@ -305,7 +305,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				{
 					"player_id": peer_player_id(peer_id),
 					"position": data["details"]["position"],
-					"result": DiceTool.roll(data["details"]["settings"] as Dictionary).to_data()
+					"result": Dice.roll(data["details"]["settings"] as Dictionary).to_data()
 				}
 			)
 			return false

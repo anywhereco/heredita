@@ -188,7 +188,7 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 			typeof(details.get("size")) != TYPE_FLOAT
 			or not _valid_number(details.get("size"))
 			or details["size"] < 1
-			or details["size"] > BrushShapeMap.BRUSH_SIZE_MAX
+			or details["size"] > BrushShapes.SIZE_MAX
 			or typeof(details.get("targeted")) != TYPE_BOOL
 			or not Verify.array_is_type(details.get("paint_color"), TYPE_FLOAT)
 			or not Verify.array_is_type(details.get("target_color"), TYPE_FLOAT)
@@ -200,7 +200,7 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 			return false
 		@warning_ignore("unsafe_call_argument")
 		set_pixels_at_maybe_targeted(
-			State.brush_shape_map.get_vec2s(details["size"]),
+			BrushShapes.circle(int(details["size"])),
 			ISUtil.to_color(details["paint_color"]),
 			ISUtil.to_color(details["target_color"]),
 			details["targeted"],
