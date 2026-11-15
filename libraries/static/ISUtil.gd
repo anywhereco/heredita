@@ -13,7 +13,7 @@ enum BinaryFlags {
 	CHUNK_PART_LAST = 1 << 3,
 }
 
-enum BinaryEvents {SYNC_MAP = 0x0, FORCE_RESYNC_MAP = 0x1, BRUSH_UPDATE = 0x2, AVATAR_UPDATE = 0x3}
+enum BinaryEvents {SYNC_MAP = 0x0, FORCE_RESYNC_MAP = 0x1, BRUSH_UPDATE = 0x2, AVATAR_UPDATE = 0x3, OVERLAY_UPDATE = 0x4}
 
 
 static func validate_rp_name(name: String) -> bool:  #might be used for more things later idk

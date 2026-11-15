@@ -130,6 +130,10 @@ func binary_message_recieved(
 		var brush_data := ISUtil.decode_brush_update(details)
 		if not brush_data.is_empty():
 			Map._instance.get_map_update(brush_data)
+	elif event == ISUtil.BinaryEvents.OVERLAY_UPDATE:
+		var update: Variant = bytes_to_var(details)
+		if update is Dictionary and update.get("type") == "overlay":
+			Map._instance.get_map_update(update)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		var avatar_data := ISUtil.decode_avatar_update(details)
 		if not avatar_data.is_empty():

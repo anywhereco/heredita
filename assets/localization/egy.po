@@ -766,3 +766,75 @@ msgstr "locd: Click text to delete it"
 
 msgid "mapper/text.edit.title"
 msgstr "locd: Edit selected text"
+
+msgid "mapper/overlay.load_global"
+msgstr "locd: Load global overlay"
+
+msgid "mapper/overlay.global"
+msgstr "locd: Global"
+
+msgid "mapper/overlay.local"
+msgstr "locd: Local"
+
+msgid "mapper/overlay.empty"
+msgstr "locd: No overlays yet."
+
+msgid "mapper/overlay.personal_hint"
+msgstr "locd: Your settings"
+
+msgid "mapper/overlay.shown"
+msgstr "locd: Show overlay"
+
+msgid "mapper/overlay.opacity"
+msgstr "locd: Opacity"
+
+msgid "mapper/overlay.reset"
+msgstr "locd: Restore base settings"
+
+msgid "mapper/overlay.global_hint"
+msgstr "locd: Global defaults"
+
+msgid "mapper/overlay.name"
+msgstr "locd: Name"
+
+msgid "mapper/overlay.base_opacity"
+msgstr "locd: Base opacity"
+
+msgid "mapper/overlay.filter"
+msgstr "locd: Filtering"
+
+msgid "mapper/overlay.filter.nearest"
+msgstr "locd: Nearest neighbor"
+
+msgid "mapper/overlay.filter.linear"
+msgstr "locd: Linear"
+
+msgid "mapper/overlay.apply"
+msgstr "locd: Apply settings"
+
+msgid "mapper/overlay.remove"
+msgstr "locd: Remove overlay"
+
+msgid "mapper/overlay.remove.confirm"
+msgstr "locd: Remove overlay “%s”?"
+
+msgid "mapper/overlay.remove.confirm_global"
+msgstr "locd: Remove global overlay “%s” for everyone?"
+
+msgid "mapper/overlay.default_name"
+msgstr "locd: Overlay"
+
+msgid "mapper/overlay.invalid_image"
+msgstr "locd: Cannot load this image. Use PNG, JPEG, WebP or BMP, up to 16 million pixels [or 16MB]."
+
+msgid "mapper/overlay.rejected"
+msgstr "locd: Overlay update rejected by server (You may be at the limit of 32 overlays or 64 MB of images)"
+
+msgid "mapper/overlay.send_failed"
+msgstr "locd: Could not send the overlay. Please try again."
+
+msgid "mapper/overlay.modify"
+msgstr "locd: More details..."
+
+msgid "common/close"
+msgstr "locd: Close"

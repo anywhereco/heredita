@@ -12,6 +12,7 @@ var room: Room = null
 var connected_peers := []  #peers that have finished making a connection
 
 var tasks: Array[Task] = []
+var _map_send_queues: Dictionary[int, Array] = {}
 
 
 func get_text_data(peer_id: int) -> Dictionary:
@@ -68,6 +69,7 @@ func peer_player_id(peer_id: int) -> int:
 
 
 func _on_peer_close(peer_id: int) -> void:
+	_map_send_queues.erase(peer_id)
 	var player_id := peer_player_id(peer_id)
 	room.players.erase(player_id)
 	send_event("_is2_player_exit", player_id)
@@ -94,10 +96,24 @@ func send_event(event: String, details: Variant, origin_id := -1) -> Error:
 func send_binary_event(event: int, details: PackedByteArray) -> Error:
 	for player_id: int in room.players.keys():
 		var peer_id: int = room.players.getv(player_id).peer_id
+		if event in [ISUtil.BinaryEvents.SYNC_MAP, ISUtil.BinaryEvents.FORCE_RESYNC_MAP]:
+			_queue_map_event(peer_id, event, details)
+			continue
 		var error := ws_server.send_targeted_binary(peer_id, event, details)
 		if error:
 			return error
 	return OK
+
+
+func _queue_map_event(peer_id: int, event: int, details: PackedByteArray) -> void:
+	if _map_send_queues.has(peer_id):
+		_map_send_queues[peer_id].append([event, details])
+		return
+	_map_send_queues[peer_id] = [[event, details]]
+	while _map_send_queues.has(peer_id) and not _map_send_queues[peer_id].is_empty():
+		var packet: Array = _map_send_queues[peer_id].pop_front()
+		await ws_server.send_targeted_chunk_data(peer_id, int(packet[0]), packet[1] as PackedByteArray)
+	_map_send_queues.erase(peer_id)
 
 
 func update_player_status(player_id: int) -> void:
@@ -220,7 +236,7 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 		server_controller.bridge.new_server(room, rid)
 	else:
 		var serialized := room.map.serialize()
-		ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
+		_queue_map_event(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
 	
 	
 	room.map.calendar.update_from_lpt = true
@@ -261,6 +277,9 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 		"map_update":
 			if not data.get("details") is Dictionary:
 				return false
+			if data["details"].get("type") == "overlay":
+				_dispatch_overlay_update(data["details"] as Dictionary, peer_id)
+				return false
 			return _apply_map_update(data["details"] as Dictionary, peer_id)
 		"typing_status":
 			var id := peer_player_id(peer_id)
@@ -273,7 +292,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				update_player_status(id)
 		"map_resync":
 			var serialized := room.map.serialize()
-			ws_server.send_targeted_chunk_data(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
+			_queue_map_event(peer_id, ISUtil.BinaryEvents.SYNC_MAP, serialized)
 		"dice":
 			if (
 				typeof(data["details"]["settings"]["min"]) != TYPE_FLOAT
@@ -399,6 +418,10 @@ func _text_data(peer_id: int, data: Dictionary) -> void:
 
 
 func _apply_map_update(details: Dictionary, peer_id: int) -> bool:
+	if details.get("type") == "overlay":
+		var player_id := peer_player_id(peer_id)
+		if not room.players.has(player_id) or not room.players.getv(player_id).privileged():
+			return false
 	if details.get("type") is String and details["type"] == "brush":
 		var player_id := peer_player_id(peer_id)
 		if not room.players.has(player_id):
@@ -432,6 +455,23 @@ func _binary_message(
 			_broadcast_binary_to_others(peer_id, event, details)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		_broadcast_binary_to_others(peer_id, event, details)
+	elif event == ISUtil.BinaryEvents.OVERLAY_UPDATE:
+		if details.size() > MapOverlayData.MAX_IMAGE_BYTES + 4096:
+			ws_server.send_targeted_event(peer_id, "overlay_rejected")
+			return
+		var update: Variant = bytes_to_var(details)
+		if not update is Dictionary or update.get("type") != "overlay":
+			return
+		_dispatch_overlay_update(update, peer_id)
+
+
+func _dispatch_overlay_update(update: Dictionary, peer_id: int) -> void:
+	if not _apply_map_update(update, peer_id):
+		ws_server.send_targeted_event(peer_id, "overlay_rejected")
+		return
+	var canonical := var_to_bytes(update)
+	for id: int in room.players.keys():
+		_queue_map_event(room.players.getv(id).peer_id, ISUtil.BinaryEvents.OVERLAY_UPDATE, canonical)
 
 
 ## overwrites the uid with the real sender's player_id so receivers can't be spoofed
