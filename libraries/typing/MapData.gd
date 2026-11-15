@@ -371,8 +371,9 @@ func set_pixels_at(
 		var img_color := image.get_pixelv(pos)
 		if img_color.a > 0:
 			var index := int(pos.y * map_width + pos.x)
-			map_last_color[index] = img_color
-			map_last_painter[index] = peer
+			if map_last_painter[index] != peer:
+				map_last_color[index] = img_color
+				map_last_painter[index] = peer
 			if not map_player_pixels.has(peer):
 				map_player_pixels[peer] = PackedInt32Array()
 			map_player_pixels[peer].append(index)
