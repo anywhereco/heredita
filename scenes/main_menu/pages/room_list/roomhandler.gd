@@ -2,6 +2,7 @@ class_name RoomHandler
 extends VBoxContainer
 
 const MAPPER_3D_PATH := "res://scenes/mapper/mapper3d.tscn"
+const GAME_LOADING := preload("res://scenes/main_menu/pages/room_list/game_loading.tscn")
 const PASSWORD_PROMPT := preload("res://libraries/ui/infernosocket/PasswordPrompt.tscn")
 
 @onready var loading_placeholder: CenterContainer = $LoadingPlaceholder
@@ -185,31 +186,10 @@ func _show_game_loading_prompt() -> void:
 	_loading_prompt = prompt_res.val()
 	_loading_prompt.make_uncloseable()
 
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 20)
-	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_right", 20)
-	margin.add_theme_constant_override("margin_bottom", 16)
-
-	var content := VBoxContainer.new()
-	content.alignment = BoxContainer.ALIGNMENT_CENTER
-	content.add_theme_constant_override("separation", 12)
-
-	_loading_prompt_spinner = Spinner.new()
-	_loading_prompt_spinner.custom_minimum_size = Vector2(48, 48)
-	_loading_prompt_spinner.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_loading_prompt_spinner.status = Spinner.Status.SPINNING
-
-	_loading_prompt_label = Label.new()
-	_loading_prompt_label.custom_minimum_size = Vector2(280, 0)
-	_loading_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_loading_prompt_label.text = tr("roomlist/loading.progress")
-	_loading_prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
-	content.add_child(_loading_prompt_spinner)
-	content.add_child(_loading_prompt_label)
-	margin.add_child(content)
-	_loading_prompt.add_child(margin)
+	var content := GAME_LOADING.instantiate()
+	_loading_prompt_spinner = content.get_node("Content/Spinner")
+	_loading_prompt_label = content.get_node("Content/Status")
+	_loading_prompt.add_child(content)
 
 
 func _close_game_loading_prompt() -> void:
