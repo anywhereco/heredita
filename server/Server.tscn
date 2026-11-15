@@ -2,39 +2,5 @@
 
 [ext_resource type="Script" uid="uid://dai60gxu0allx" path="res://server/ServerController.gd" id="1_tov25"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oxt17"]
-content_margin_left = 5.0
-content_margin_top = 5.0
-content_margin_right = 5.0
-content_margin_bottom = 5.0
-bg_color = Color(0, 0, 0, 0.19215687)
-border_color = Color(1, 1, 1, 0.54509807)
-corner_radius_bottom_right = 15
-corner_radius_bottom_left = 15
-corner_detail = 1
-anti_aliasing = false
-anti_aliasing_size = 0.01
-
 [node name="Server" type="Node" unique_id=627931563]
-
-[node name="LocalServerOverlay" type="CanvasLayer" parent="." unique_id=262584767]
-
-[node name="PulldownPanel" type="PanelContainer" parent="LocalServerOverlay" unique_id=1977410502]
-custom_minimum_size = Vector2(185, 0)
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 40.0
-grow_horizontal = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oxt17")
-
-[node name="OptionsButton" type="Button" parent="LocalServerOverlay/PulldownPanel" unique_id=1095306010]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Local server options"
-
-[node name="Node" type="Node" parent="." unique_id=1978784216]
 script = ExtResource("1_tov25")
