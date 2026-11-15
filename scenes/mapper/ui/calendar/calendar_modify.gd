@@ -13,7 +13,7 @@ var calendar: Calendar
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	calendar = Calendar.from_json(TimekeepingUI._inst.calendar.to_json())
+	calendar = Map._instance.calendar.dupe()
 	month_edit.text = Calendar.month_string(calendar.month)
 	day_edit.text = Calendar.get_ordinal(calendar.day)
 	year_edit.text = calendar.year_string()
@@ -39,7 +39,7 @@ func _complete() -> void:
 	calendar.update_from_lpt = true
 	State.client.send("calendar_sync", calendar.to_json())
 	calendar.update_from_lpt = false
-	TimekeepingUI._inst.calendar = Calendar.from_json(calendar.to_json())
+	Map._instance.calendar = calendar.dupe()
 	(get_parent() as PromptInstance).close()
 
 

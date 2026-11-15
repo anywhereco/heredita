@@ -18,8 +18,7 @@ var vwrap: bool = false
 
 var default_target_color: Color = Color(1, 1, 1)
 
-## null if no calendar is specified by the map, otherwise timekeeperui will look for this when it inits
-var timekeeper_calendar_default: Calendar = null
+var calendar: Calendar = MapData.DEFAULT_CALENDAR.dupe()
 
 var chunk_creation_mutexes: Array[Mutex] = []
 ## Array[Array[Sprite3D]], x,y/z order
@@ -240,7 +239,7 @@ func get_data() -> MapData:
 	data.pixel_size = pixel_size
 	data.hwrap = hwrap
 	data.vwrap = vwrap
-	data.calendar = TimekeepingUI._inst.calendar.dupe()
+	data.calendar = calendar.dupe()
 	return data
 
 
@@ -251,10 +250,7 @@ func set_data(data: MapData) -> void:
 	vwrap = data.vwrap
 	original_map_size = original_map.get_size()
 	original_map_size_exclusive = original_map_size - Vector2(1, 1)
-	if TimekeepingUI._inst.get("calendar") != null:
-		TimekeepingUI._inst.calendar = data.calendar.dupe()
-	else:
-		timekeeper_calendar_default = data.calendar.dupe()
+	calendar = data.calendar.dupe()
 	
 	if is_node_ready():
 		map_markings.set_markings(data.markings)
@@ -493,6 +489,12 @@ func resync() -> void:
 	State.client.send("map_resync")
 
 
+func sync_calendar(details: Dictionary) -> void:
+	var updated := Calendar.from_json_safe(details)
+	if updated != null:
+		calendar = updated
+
+
 func finish_resync() -> void:
 	pending_resync.value = false
 	var changes := queued_changes
@@ -536,7 +538,8 @@ func apply_update(details: Dictionary) -> void:
 		map_overlays.apply_update(details)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	calendar.process(delta)
 	var mouse_pos := get_viewport().get_mouse_position()
 	var cam := player_camera
 	var cam_changed := (

@@ -265,8 +265,8 @@ func year_string() -> String:
 	return str(year)
 
 
-func time_string() -> String:
-	if Settings.getv("enable_seconds", true):
+func time_string(show_seconds: bool = true) -> String:
+	if show_seconds:
 		return "%02d:%02d:%02d" % [hour, minute, second]
 	else:
 		return "%02d:%02d" % [hour, minute]
