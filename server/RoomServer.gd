@@ -1,7 +1,7 @@
 extends Node
 class_name RoomServer
 
-const TIMEOUT: int = 10000  #ms
+const TIMEOUT: int = 60000  #ms
 const NOT_VALID_PLAYER_ID = -3
 
 var rid: int = -1
@@ -27,7 +27,7 @@ func get_binary_data(peer_id: int) -> Dictionary:
 	var peer := 0x7fffffffffffffff
 	var ret: Array
 	while peer != peer_id:
-		var timer := get_tree().create_timer(TIMEOUT)
+		var timer := get_tree().create_timer(TIMEOUT/1000.0)
 		ret = await TimedPromise.new(timer, ws_server.binary_message).done
 		if not ret:  #timed out
 			return {}

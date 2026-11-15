@@ -3,7 +3,7 @@ class_name MapData
 const DEFAULT_PIXEL_SIZE := 0.1
 
 static var DEFAULT_CALENDAR := Calendar.new(12, 1984): # heh
-	set(v): 
+	set(v):
 		assert(false, "This is a constant!")
 
 ## This should always be in RGBA8 format, since deserialize expects this to be the case
@@ -25,7 +25,7 @@ var pixel_size: float = DEFAULT_PIXEL_SIZE
 var hwrap: bool = true
 var vwrap: bool = false
 
-const PACKAGE_VERSION = 5
+const PACKAGE_VERSION = 6
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -154,7 +154,7 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			@warning_ignore("unsafe_call_argument")
 			md.calendar = Calendar.from_json_safe(map_data.get("calendar"))
 		if md.calendar == null:
-			md.calendar = DEFAULT_CALENDAR
+			md.calendar = DEFAULT_CALENDAR.dupe()
 	if package_version >= 3: # Pixel size
 		if map_data.has("pixel_size") and Verify.is_numeric(map_data["pixel_size"]):
 			@warning_ignore("unsafe_call_argument")
@@ -351,8 +351,9 @@ func set_pixels_at_targeted(
 		var img_color := image.get_pixelv(pos)
 		if (target.a == 0.0 and img_color.a == 0.0) or img_color.is_equal_approx(target):
 			var index := int(pos.y * map_width + pos.x)
-			map_last_color[index] = img_color
-			map_last_painter[index] = peer
+			if map_last_painter[index] != peer:
+				map_last_color[index] = img_color
+				map_last_painter[index] = peer
 			if not map_player_pixels.has(peer):
 				map_player_pixels[peer] = PackedInt32Array()
 			map_player_pixels[peer].append(index)

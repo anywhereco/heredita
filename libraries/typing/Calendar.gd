@@ -231,6 +231,9 @@ func process(delta: float) -> void:
 		if year == 0:
 			year = 1
 		days_in_year = 366 if is_leap_year(year) else 365
+		if month > Month.FEBRUARY and is_leap_year(year):
+			# we need to compensate since we calculated 365 days but have simulated 366
+			day -= 1
 
 	while day > days_in_month():
 		day -= days_in_month()
