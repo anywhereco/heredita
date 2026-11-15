@@ -1,11 +1,11 @@
 extends Node
 class_name ServerController
 
-const TIMEOUT: int = 10000  #ms
 
 var rooms: Dictionary[int, RoomServer]
 var peer_rooms: Dictionary[int, int]
 var ws_server := WSServer.new()
+@onready var _peer_messages := PeerMessages.new(ws_server)
 
 var bridge: Server2ServerBridge
 
@@ -71,55 +71,9 @@ func _room_find_id(room: RoomServer) -> int:
 	return rooms.find_key(room)
 
 
-func get_text_data(peer_id: int) -> Dictionary:
-	var peer := 0x7fffffffffffffff
-	var ret: Array
-	while peer != peer_id:
-		var timer := get_tree().create_timer(TIMEOUT)
-		ret = await TimedPromise.new(timer, ws_server.text_data).done
-		if not ret:  #timed out
-			return {}
-		peer = ret[0]
-	return ret[1]
-
-
-func parse_binary(data: PackedByteArray) -> Dictionary:
-	var event := ISUtil._parse_binary(data)
-	return {"event": event.event, "target": event.uid, "data": event.data}
-
-
-func get_binary_data(peer_id: int) -> Dictionary:
-	var peer := 0x7fffffffffffffff
-	var ret: Array
-	while peer != peer_id:
-		var timer := get_tree().create_timer(TIMEOUT)
-		ret = await TimedPromise.new(timer, ws_server.binary_message).done
-		if not ret:  #timed out
-			return {}
-		peer = ret[0]
-	return {
-		"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]
-	}
-
-
-func parse_json(text: String) -> Result:
-	var json := JSON.new()
-	var error := json.parse(text)
-	if error != OK:
-		return Result.err(error)
-	return Result.ok(json.data)
-
-
-func get_json_data(peer_id: int) -> Result:
-	var data := await get_text_data(peer_id)
-	if data.is_empty():
-		return Result.err(FAILED)
-	return Result.ok(data)
-
-
 func _connected(peer_id: int) -> void:
 	ws_server.send_targeted_event(peer_id, "_is2_handshake")
-	var json := await get_json_data(peer_id)
+	var json := await _peer_messages.text(peer_id)
 	if ISUtil.valid_event_is(json, "_is2_room_info"):
 		@warning_ignore("unsafe_call_argument")
 		var rid := int(json.val()["details"])
@@ -134,8 +88,8 @@ func _connected(peer_id: int) -> void:
 		if ws_server.peer_ip(peer_id) in roomblocked_ips:
 			ws_server.close(peer_id, 4096, "Unable to create room")
 			return
-		var msg := await get_binary_data(peer_id)
-		if msg["event"] != ISUtil.BinaryEvents.SYNC_MAP:
+		var msg := await _peer_messages.binary(peer_id)
+		if msg.get("event") != ISUtil.BinaryEvents.SYNC_MAP:
 			ws_server.close(peer_id, 4096, "Expected a map")
 			return
 		@warning_ignore("unsafe_call_argument")

@@ -1,7 +1,6 @@
 extends Node
 class_name RoomServer
 
-const TIMEOUT: int = 60000  #ms
 const NOT_VALID_PLAYER_ID = -3
 
 var rid: int = -1
@@ -9,46 +8,11 @@ var rid: int = -1
 var room: Room = null
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
+@onready var _peer_messages := PeerMessages.new(ws_server)
 var connected_peers := []  #peers that have finished making a connection
 
 var tasks: Array[Task] = []
 var _map_send_queues: Dictionary[int, Array] = {}
-
-
-func get_text_data(peer_id: int) -> Dictionary:
-	var peer := 0x7fffffffffffffff
-	var ret: Array
-	while peer != peer_id:
-		ret = await ws_server.text_data
-		peer = ret[0]
-	return ret[1]
-
-func get_binary_data(peer_id: int) -> Dictionary:
-	var peer := 0x7fffffffffffffff
-	var ret: Array
-	while peer != peer_id:
-		var timer := get_tree().create_timer(TIMEOUT/1000.0)
-		ret = await TimedPromise.new(timer, ws_server.binary_message).done
-		if not ret:  #timed out
-			return {}
-		peer = ret[0]
-	return {
-		"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]
-	}
-
-func parse_json(text: String) -> Result:
-	var json := JSON.new()
-	var error := json.parse(text)
-	if error != OK:
-		return Result.err(error)
-	return Result.ok(json.data)
-
-
-func get_json_data(peer_id: int) -> Result:
-	var data := await get_text_data(peer_id)
-	if data.is_empty():
-		return Result.err(FAILED)
-	return Result.ok(data)
 
 
 func _get_verification(target_eid: int) -> Result:
@@ -168,7 +132,7 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 		ws_server.send_targeted_event(peer_id, "_is2_login")
 		var attempts := 1
 		while attempts <= 5:
-			var password_json := await get_json_data(peer_id)
+			var password_json := await _peer_messages.text(peer_id)
 			if not ISUtil.valid_event_is(password_json, "_is2_password_attempt"):
 				ws_server.close(peer_id, 4096, "Protocol failurea")
 				return
@@ -185,7 +149,7 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 			return
 
 	ws_server.send_targeted_event(peer_id, "_is2_username")
-	var username_json := await get_json_data(peer_id)
+	var username_json := await _peer_messages.text(peer_id)
 	var player: Player
 	if not ISUtil.valid_event_is(username_json, "_is2_username"):
 		ws_server.close(peer_id, 4096, "Protocol failureb")
@@ -202,22 +166,24 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 		return
 
 	ws_server.send_targeted_event(peer_id, "_is2_token")
-	var token_json := await get_json_data(peer_id)
-	if ISUtil.valid_event_is(token_json, "_is2_token"):
-		var token: Variant = token_json.val()["details"]
-		if token == "" or token == null:
-			player.logged_in = false
+	var token_json := await _peer_messages.text(peer_id)
+	if not ISUtil.valid_event_is(token_json, "_is2_token"):
+		ws_server.close(peer_id, 4096, "Expected a token")
+		return
+	var token: Variant = token_json.val()["details"]
+	if token == "" or token == null:
+		player.logged_in = false
+	else:
+		var eid := server_controller.bridge.validate_token_request(token as String)
+		var result := await _get_verification(eid)
+		if result.is_err():
+			ws_server.close(peer_id, 4101, "Invalid token")
+			return
 		else:
-			var eid := server_controller.bridge.validate_token_request(token as String)
-			var result := await _get_verification(eid)
-			if result.is_err():
-				ws_server.close(peer_id, 4101, "Invalid token")
-				return
-			else:
-				player.logged_in = true
-				player.username = result.val().username
-				@warning_ignore("unsafe_call_argument")
-				player.rank = UserEnums.variant_to_rank(result.val().rank)
+			player.logged_in = true
+			player.username = result.val().username
+			@warning_ignore("unsafe_call_argument")
+			player.rank = UserEnums.variant_to_rank(result.val().rank)
 
 	if created:
 		player.operator = true
@@ -267,8 +233,8 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			server_controller.roomblock(ip)
 		"load_map":
 			if room.players.getv(peer_player_id(peer_id)).privileged():
-				var msg := await get_binary_data(peer_id)
-				if msg["event"] != ISUtil.BinaryEvents.FORCE_RESYNC_MAP:
+				var msg := await _peer_messages.binary(peer_id)
+				if msg.get("event") != ISUtil.BinaryEvents.FORCE_RESYNC_MAP:
 					return false #Dude. Uncool
 				@warning_ignore("unsafe_call_argument")
 				room.map = MapData.deserialize(msg["data"], true)
