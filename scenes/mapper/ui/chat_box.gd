@@ -104,11 +104,10 @@ func add_chat_message(sender_id: int, message: String) -> void:
 		log_message("%s: %s" % [player.username, message])
 
 func add_message(message: String) -> void:
-	var newline := "\n" if messages.text else ""
-	@warning_ignore("unsafe_call_argument")
-	messages.text += newline + message
-	if messages.text.get_slice_count("\n") > MAX_LINES:
-		messages.text = messages.text.substr(messages.text.find("\n")+1)
+	var newline := "\n" if messages.get_total_character_count() > 0 else ""
+	messages.append_text(newline + message)
+	while messages.get_paragraph_count() > MAX_LINES:
+		messages.remove_paragraph(0)
 		
 func log_message(message: String) -> void:
 	var newline := "\n" if messages_text_full else ""

@@ -111,9 +111,9 @@ func process_tool_use(event: InputEvent) -> void:
 
 func message_recieved(event: String, _player_id: int, details: Variant) -> void:
 	if event == "map_update":
-		Map._instance.get_map_update(details as Dictionary)
+		Map._instance.apply_update(details as Dictionary)
 	if event == "calendar_sync":
-		TimekeepingUI._inst.calendar_sync(details as Dictionary)
+		Map._instance.sync_calendar(details as Dictionary)
 
 
 func binary_message_recieved(
@@ -129,11 +129,11 @@ func binary_message_recieved(
 	elif event == ISUtil.BinaryEvents.BRUSH_UPDATE:
 		var brush_data := ISUtil.decode_brush_update(details)
 		if not brush_data.is_empty():
-			Map._instance.get_map_update(brush_data)
+			Map._instance.apply_update(brush_data)
 	elif event == ISUtil.BinaryEvents.OVERLAY_UPDATE:
 		var update: Variant = bytes_to_var(details)
 		if update is Dictionary and update.get("type") == "overlay":
-			Map._instance.get_map_update(update)
+				Map._instance.apply_update(update)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		var avatar_data := ISUtil.decode_avatar_update(details)
 		if not avatar_data.is_empty():

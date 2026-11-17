@@ -1,7 +1,6 @@
 extends Node
 class_name RoomServer
 
-const TIMEOUT: int = 10000  #ms
 const NOT_VALID_PLAYER_ID = -3
 
 var rid: int = -1
@@ -9,46 +8,11 @@ var rid: int = -1
 var room: Room = null
 @onready var server_controller: ServerController = get_parent()
 @onready var ws_server: WSServer = get_parent().ws_server
+@onready var _peer_messages := PeerMessages.new(ws_server)
 var connected_peers := []  #peers that have finished making a connection
 
 var tasks: Array[Task] = []
 var _map_send_queues: Dictionary[int, Array] = {}
-
-
-func get_text_data(peer_id: int) -> Dictionary:
-	var peer := 0x7fffffffffffffff
-	var ret: Array
-	while peer != peer_id:
-		ret = await ws_server.text_data
-		peer = ret[0]
-	return ret[1]
-
-func get_binary_data(peer_id: int) -> Dictionary:
-	var peer := 0x7fffffffffffffff
-	var ret: Array
-	while peer != peer_id:
-		var timer := get_tree().create_timer(TIMEOUT)
-		ret = await TimedPromise.new(timer, ws_server.binary_message).done
-		if not ret:  #timed out
-			return {}
-		peer = ret[0]
-	return {
-		"peer_id": ret[0], "event": ret[1], "player_id": ret[2], "flags": ret[3], "data": ret[4]
-	}
-
-func parse_json(text: String) -> Result:
-	var json := JSON.new()
-	var error := json.parse(text)
-	if error != OK:
-		return Result.err(error)
-	return Result.ok(json.data)
-
-
-func get_json_data(peer_id: int) -> Result:
-	var data := await get_text_data(peer_id)
-	if data.is_empty():
-		return Result.err(FAILED)
-	return Result.ok(data)
 
 
 func _get_verification(target_eid: int) -> Result:
@@ -168,7 +132,7 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 		ws_server.send_targeted_event(peer_id, "_is2_login")
 		var attempts := 1
 		while attempts <= 5:
-			var password_json := await get_json_data(peer_id)
+			var password_json := await _peer_messages.text(peer_id)
 			if not ISUtil.valid_event_is(password_json, "_is2_password_attempt"):
 				ws_server.close(peer_id, 4096, "Protocol failurea")
 				return
@@ -185,7 +149,7 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 			return
 
 	ws_server.send_targeted_event(peer_id, "_is2_username")
-	var username_json := await get_json_data(peer_id)
+	var username_json := await _peer_messages.text(peer_id)
 	var player: Player
 	if not ISUtil.valid_event_is(username_json, "_is2_username"):
 		ws_server.close(peer_id, 4096, "Protocol failureb")
@@ -202,22 +166,24 @@ func _connected(peer_id: int, created: bool = false, _rid: int = -1) -> void:
 		return
 
 	ws_server.send_targeted_event(peer_id, "_is2_token")
-	var token_json := await get_json_data(peer_id)
-	if ISUtil.valid_event_is(token_json, "_is2_token"):
-		var token: Variant = token_json.val()["details"]
-		if token == "" or token == null:
-			player.logged_in = false
+	var token_json := await _peer_messages.text(peer_id)
+	if not ISUtil.valid_event_is(token_json, "_is2_token"):
+		ws_server.close(peer_id, 4096, "Expected a token")
+		return
+	var token: Variant = token_json.val()["details"]
+	if token == "" or token == null:
+		player.logged_in = false
+	else:
+		var eid := server_controller.bridge.validate_token_request(token as String)
+		var result := await _get_verification(eid)
+		if result.is_err():
+			ws_server.close(peer_id, 4101, "Invalid token")
+			return
 		else:
-			var eid := server_controller.bridge.validate_token_request(token as String)
-			var result := await _get_verification(eid)
-			if result.is_err():
-				ws_server.close(peer_id, 4101, "Invalid token")
-				return
-			else:
-				player.logged_in = true
-				player.username = result.val().username
-				@warning_ignore("unsafe_call_argument")
-				player.rank = UserEnums.variant_to_rank(result.val().rank)
+			player.logged_in = true
+			player.username = result.val().username
+			@warning_ignore("unsafe_call_argument")
+			player.rank = UserEnums.variant_to_rank(result.val().rank)
 
 	if created:
 		player.operator = true
@@ -267,8 +233,8 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			server_controller.roomblock(ip)
 		"load_map":
 			if room.players.getv(peer_player_id(peer_id)).privileged():
-				var msg := await get_binary_data(peer_id)
-				if msg["event"] != ISUtil.BinaryEvents.FORCE_RESYNC_MAP:
+				var msg := await _peer_messages.binary(peer_id)
+				if msg.get("event") != ISUtil.BinaryEvents.FORCE_RESYNC_MAP:
 					return false #Dude. Uncool
 				@warning_ignore("unsafe_call_argument")
 				room.map = MapData.deserialize(msg["data"], true)
@@ -280,7 +246,10 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 			if data["details"].get("type") == "overlay":
 				_dispatch_overlay_update(data["details"] as Dictionary, peer_id)
 				return false
-			return _apply_map_update(data["details"] as Dictionary, peer_id)
+			var update := _apply_map_update(data["details"] as Dictionary, peer_id)
+			if not update.is_empty():
+				send_event("map_update", update, peer_player_id(peer_id))
+			return false
 		"typing_status":
 			var id := peer_player_id(peer_id)
 			room.players.getv(id).status["typing"] = data["details"]
@@ -305,7 +274,7 @@ func parse_event(data: Dictionary, peer_id: int) -> bool:
 				{
 					"player_id": peer_player_id(peer_id),
 					"position": data["details"]["position"],
-					"result": DiceTool.roll(data["details"]["settings"] as Dictionary).to_data()
+					"result": Dice.roll(data["details"]["settings"] as Dictionary).to_data()
 				}
 			)
 			return false
@@ -417,28 +386,28 @@ func _text_data(peer_id: int, data: Dictionary) -> void:
 				)
 
 
-func _apply_map_update(details: Dictionary, peer_id: int) -> bool:
+func _apply_map_update(details: Dictionary, peer_id: int) -> Dictionary:
 	if details.get("type") == "overlay":
 		var player_id := peer_player_id(peer_id)
 		if not room.players.has(player_id) or not room.players.getv(player_id).privileged():
-			return false
+			return {}
 	if details.get("type") is String and details["type"] == "brush":
 		var player_id := peer_player_id(peer_id)
 		if not room.players.has(player_id):
-			return false
+			return {}
 		if (
 			not MapData._valid_color_array(details.get("paint_color"))
 			or not MapData._valid_color_array(details.get("target_color"))
 			or details.get("targeted") is not bool
 		):
-			return false
+			return {}
 		var player: Player = room.players.getv(player_id)
 		if not player.privileged():
 			var paint := ISUtil.to_color(details["paint_color"])
 			var target := ISUtil.to_color(details["target_color"])
 			if paint.a != 1.0 or (details["targeted"] and target.a != 1.0):
-				return false
-	return room.map.get_map_update(details, peer_id)
+				return {}
+	return room.map.apply_update(details, peer_id)
 
 
 @warning_ignore("unused_parameter")
@@ -451,7 +420,7 @@ func _binary_message(
 		var brush_data := ISUtil.decode_brush_update(details)
 		if brush_data.is_empty():
 			return
-		if _apply_map_update(brush_data, peer_id):
+		if not _apply_map_update(brush_data, peer_id).is_empty():
 			_broadcast_binary_to_others(peer_id, event, details)
 	elif event == ISUtil.BinaryEvents.AVATAR_UPDATE:
 		_broadcast_binary_to_others(peer_id, event, details)
@@ -466,21 +435,23 @@ func _binary_message(
 
 
 func _dispatch_overlay_update(update: Dictionary, peer_id: int) -> void:
-	if not _apply_map_update(update, peer_id):
+	var applied := _apply_map_update(update, peer_id)
+	if applied.is_empty():
 		ws_server.send_targeted_event(peer_id, "overlay_rejected")
 		return
-	var canonical := var_to_bytes(update)
+	var canonical := var_to_bytes(applied)
 	for id: int in room.players.keys():
 		_queue_map_event(room.players.getv(id).peer_id, ISUtil.BinaryEvents.OVERLAY_UPDATE, canonical)
 
 
 ## overwrites the uid with the real sender's player_id so receivers can't be spoofed
 func _broadcast_binary_to_others(sender_peer_id: int, event: int, details: PackedByteArray) -> void:
+	var should_compress := details.size() > 64
 	var sender_player_id := peer_player_id(sender_peer_id)
 	for player_id: int in room.players.keys():
 		var peer_id: int = room.players.getv(player_id).peer_id
 		if peer_id != sender_peer_id:
-			ws_server.send_targeted_binary(peer_id, event, details, true, sender_player_id)
+			ws_server.send_targeted_binary(peer_id, event, details, should_compress, sender_player_id)
 
 
 func _ready() -> void:

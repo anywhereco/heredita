@@ -291,7 +291,8 @@ class ChunkSender:
 		var total_chunk_count := ceili(message.size() / (chunk_size as float))
 		var chunk_ids: Array[int] = []
 
-		chunk_recieved.connect(func(id: int) -> void: chunk_ids.erase(id))
+		var acknowledge_chunk := func(id: int) -> void: chunk_ids.erase(id)
+		chunk_recieved.connect(acknowledge_chunk)
 		send_to_socket.call(_create_chunk_header(event, target, uncompressed_size, channel))
 
 		for chunk_count in range(total_chunk_count):
@@ -309,6 +310,7 @@ class ChunkSender:
 			)
 			increment_chunk_id()
 
+		chunk_recieved.disconnect(acknowledge_chunk)
 		current_channel_count -= 1
 		return OK
 

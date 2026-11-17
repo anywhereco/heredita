@@ -3,7 +3,7 @@ class_name MapData
 const DEFAULT_PIXEL_SIZE := 0.1
 
 static var DEFAULT_CALENDAR := Calendar.new(12, 1984): # heh
-	set(v): 
+	set(v):
 		assert(false, "This is a constant!")
 
 ## This should always be in RGBA8 format, since deserialize expects this to be the case
@@ -25,7 +25,7 @@ var pixel_size: float = DEFAULT_PIXEL_SIZE
 var hwrap: bool = true
 var vwrap: bool = false
 
-const PACKAGE_VERSION = 5
+const PACKAGE_VERSION = 6
 
 const _MAGIC_FILE_HEADER = 0x70_61_4D_50_4D_03_02_01 # 1, 2, 3, MPMap!
 
@@ -154,7 +154,7 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 			@warning_ignore("unsafe_call_argument")
 			md.calendar = Calendar.from_json_safe(map_data.get("calendar"))
 		if md.calendar == null:
-			md.calendar = DEFAULT_CALENDAR
+			md.calendar = DEFAULT_CALENDAR.dupe()
 	if package_version >= 3: # Pixel size
 		if map_data.has("pixel_size") and Verify.is_numeric(map_data["pixel_size"]):
 			@warning_ignore("unsafe_call_argument")
@@ -179,16 +179,18 @@ static func deserialize(serialized: PackedByteArray, is_server: bool = false) ->
 	return md
 
 
-func get_map_update(details: Dictionary, peer: int) -> bool:
+## Returns an empty dictionary if invalid, or a canonical representation otherwise.
+func apply_update(request: Dictionary, peer: int) -> Dictionary:
+	var details := request.duplicate(true)
 	if details.get("type") is not String:
-		return false
+		return {}
 	var type: String = details["type"]
 	if type == "brush":
 		if (
 			typeof(details.get("size")) != TYPE_FLOAT
 			or not _valid_number(details.get("size"))
 			or details["size"] < 1
-			or details["size"] > BrushShapeMap.BRUSH_SIZE_MAX
+			or details["size"] > BrushShapes.SIZE_MAX
 			or typeof(details.get("targeted")) != TYPE_BOOL
 			or not Verify.array_is_type(details.get("paint_color"), TYPE_FLOAT)
 			or not Verify.array_is_type(details.get("target_color"), TYPE_FLOAT)
@@ -197,37 +199,37 @@ func get_map_update(details: Dictionary, peer: int) -> bool:
 			or not _valid_color_array(details.get("target_color"))
 			or not _valid_vec2_array(details.get("pos"))
 		):
-			return false
+			return {}
 		@warning_ignore("unsafe_call_argument")
 		set_pixels_at_maybe_targeted(
-			State.brush_shape_map.get_vec2s(details["size"]),
+			BrushShapes.circle(int(details["size"])),
 			ISUtil.to_color(details["paint_color"]),
 			ISUtil.to_color(details["target_color"]),
 			details["targeted"],
 			ISUtil.to_vec2(details["pos"]),
 			peer
 		)
-		return true
+		return details
 	elif type == "marking":
-		return apply_marking_update(details)
+		if not apply_marking_update(details):
+			return {}
+		var sanitized := {"type": "marking", "op": details["op"], "id": details["id"]}
+		if details["op"] != "delete":
+			sanitized.merge(markings[_marking_index(details["id"])].duplicate(true))
+		return sanitized
 	elif type == "overlay":
 		if not overlays.apply_update(details):
-			return false
-		var sanitized := overlays.canonical_update(details)
-		details.clear()
-		details.merge(sanitized)
-		return true
+			return {}
+		return overlays.canonical_update(details)
 	elif type == "text":
 		if not texts.apply_update(details, Vector2(image.get_size())):
-			return false
+			return {}
 		var id: String = details["id"]
 		var sanitized := {"type": "text", "op": details["op"], "id": id}
 		if details["op"] != "delete":
-			sanitized.merge(texts.labels[id])
-		details.clear()
-		details.merge(sanitized)
-		return true
-	return false
+			sanitized.merge(texts.labels[id].duplicate(true))
+		return sanitized
+	return {}
 
 
 static func _valid_marking_type(marking_type: Variant) -> bool:
@@ -351,8 +353,9 @@ func set_pixels_at_targeted(
 		var img_color := image.get_pixelv(pos)
 		if (target.a == 0.0 and img_color.a == 0.0) or img_color.is_equal_approx(target):
 			var index := int(pos.y * map_width + pos.x)
-			map_last_color[index] = img_color
-			map_last_painter[index] = peer
+			if map_last_painter[index] != peer:
+				map_last_color[index] = img_color
+				map_last_painter[index] = peer
 			if not map_player_pixels.has(peer):
 				map_player_pixels[peer] = PackedInt32Array()
 			map_player_pixels[peer].append(index)
@@ -368,8 +371,9 @@ func set_pixels_at(
 		var img_color := image.get_pixelv(pos)
 		if img_color.a > 0:
 			var index := int(pos.y * map_width + pos.x)
-			map_last_color[index] = img_color
-			map_last_painter[index] = peer
+			if map_last_painter[index] != peer:
+				map_last_color[index] = img_color
+				map_last_painter[index] = peer
 			if not map_player_pixels.has(peer):
 				map_player_pixels[peer] = PackedInt32Array()
 			map_player_pixels[peer].append(index)

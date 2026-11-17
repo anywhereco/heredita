@@ -231,6 +231,9 @@ func process(delta: float) -> void:
 		if year == 0:
 			year = 1
 		days_in_year = 366 if is_leap_year(year) else 365
+		if month > Month.FEBRUARY and is_leap_year(year):
+			# we need to compensate since we calculated 365 days but have simulated 366
+			day -= 1
 
 	while day > days_in_month():
 		day -= days_in_month()
@@ -262,8 +265,8 @@ func year_string() -> String:
 	return str(year)
 
 
-func time_string() -> String:
-	if Settings.getv("enable_seconds", true):
+func time_string(show_seconds: bool = true) -> String:
+	if show_seconds:
 		return "%02d:%02d:%02d" % [hour, minute, second]
 	else:
 		return "%02d:%02d" % [hour, minute]

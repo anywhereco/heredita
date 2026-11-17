@@ -7,8 +7,8 @@ var is_painting: bool = false
 var paint_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 var target_color: ReactiveColor = ReactiveColor.new(Color.WHITE)
 var is_targeted: ReactiveBool = ReactiveBool.new(true)
-var _last_sent_pos := Vector2(-INF, -INF)
-var _last_painted_pos := Vector2(-INF, -INF)
+var _last_sent_pos := Vector2i(-INF, -INF)
+var _last_painted_pos := Vector2i(-INF, -INF)
 
 
 func _init() -> void:
@@ -64,8 +64,8 @@ func brush_events(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		is_painting = true
-		_last_sent_pos = Vector2(-INF, -INF)
-		_last_painted_pos = Vector2(-INF, -INF)
+		_last_sent_pos = Vector2i(-INF, -INF)
+		_last_painted_pos = Vector2i(-INF, -INF)
 	if (
 		event is InputEventMouseButton
 		and not event.pressed
@@ -105,7 +105,7 @@ func _update_brush() -> void:
 	Map._instance.update_brush_preview_material(
 		size, shape.get_as_image(size), target_color.value, is_targeted.value, mod
 	)
-	_last_painted_pos = Vector2(-INF, -INF)
+	_last_painted_pos = Vector2i(-INF, -INF)
 
 
 func _send_brush_update(pos: Vector2) -> void:
@@ -120,7 +120,7 @@ func _send_brush_update(pos: Vector2) -> void:
 
 func _process(_delta: float) -> void:
 	if is_painting and _can_paint(paint_color.value, target_color.value):
-		var cur_pos := Map._instance.map_pos.value
+		var cur_pos := Vector2i(Map._instance.map_pos.value.floor())
 		if cur_pos != _last_painted_pos:
 			_last_painted_pos = cur_pos
 			brush_action(size, paint_color.value, target_color.value)

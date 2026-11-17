@@ -77,7 +77,7 @@ func _send_update(details: Dictionary) -> void:
 	if State.client:
 		State.client.send("map_update", details)
 	else:
-		Map._instance.get_map_update(details)
+		Map._instance.apply_update(details)
 
 
 func _new_marking_id() -> String:

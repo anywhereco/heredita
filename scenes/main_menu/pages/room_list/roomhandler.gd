@@ -2,6 +2,8 @@ class_name RoomHandler
 extends VBoxContainer
 
 const MAPPER_3D_PATH := "res://scenes/mapper/mapper3d.tscn"
+const GAME_LOADING := preload("res://scenes/main_menu/pages/room_list/game_loading.tscn")
+const PASSWORD_PROMPT := preload("res://libraries/ui/infernosocket/PasswordPrompt.tscn")
 
 @onready var loading_placeholder: CenterContainer = $LoadingPlaceholder
 @onready var loading_placeholder_label: Label = $LoadingPlaceholder/Label
@@ -19,6 +21,8 @@ var _pending_map: MapData
 var _loading_prompt: PromptInstance
 var _loading_prompt_spinner: Spinner
 var _loading_prompt_label: Label
+var _password_prompt: PromptInstance
+var _password_content: RoomPasswordPrompt
 
 var _buffered_map_data: PackedByteArray = PackedByteArray()
 var _mapper_ready := false
@@ -182,31 +186,10 @@ func _show_game_loading_prompt() -> void:
 	_loading_prompt = prompt_res.val()
 	_loading_prompt.make_uncloseable()
 
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 20)
-	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_right", 20)
-	margin.add_theme_constant_override("margin_bottom", 16)
-
-	var content := VBoxContainer.new()
-	content.alignment = BoxContainer.ALIGNMENT_CENTER
-	content.add_theme_constant_override("separation", 12)
-
-	_loading_prompt_spinner = Spinner.new()
-	_loading_prompt_spinner.custom_minimum_size = Vector2(48, 48)
-	_loading_prompt_spinner.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_loading_prompt_spinner.status = Spinner.Status.SPINNING
-
-	_loading_prompt_label = Label.new()
-	_loading_prompt_label.custom_minimum_size = Vector2(280, 0)
-	_loading_prompt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_loading_prompt_label.text = tr("roomlist/loading.progress")
-	_loading_prompt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
-	content.add_child(_loading_prompt_spinner)
-	content.add_child(_loading_prompt_label)
-	margin.add_child(content)
-	_loading_prompt.add_child(margin)
+	var content := GAME_LOADING.instantiate()
+	_loading_prompt_spinner = content.get_node("Content/Spinner")
+	_loading_prompt_label = content.get_node("Content/Status")
+	_loading_prompt.add_child(content)
 
 
 func _close_game_loading_prompt() -> void:
@@ -252,6 +235,45 @@ func _client_loading_status_updated(details: Dictionary) -> void:
 	_set_game_load_detail(message)
 
 
+func _request_password() -> void:
+	if is_instance_valid(_password_prompt):
+		return
+	var result := Prompts.new_fullscreen_prompt()
+	if result.is_err():
+		State.client.close(1000, "Could not create login prompt")
+		return
+	_password_prompt = result.val()
+	_password_content = PASSWORD_PROMPT.instantiate()
+	_password_content.password_submitted.connect(State.client.submit_password)
+	_password_prompt.prompt_closed.connect(_password_prompt_closed)
+	_password_prompt.add_child(_password_content)
+
+
+func _password_rejected(attempts_remaining: int) -> void:
+	if attempts_remaining <= 0:
+		_close_password_prompt()
+		State.client.close()
+	elif is_instance_valid(_password_content):
+		_password_content.show_attempts(attempts_remaining)
+	else:
+		_fail_game_load(tr("network/password.rejected"))
+		State.client.close()
+
+
+func _password_prompt_closed() -> void:
+	_password_prompt = null
+	_password_content = null
+	State.client.close()
+
+
+func _close_password_prompt() -> void:
+	if is_instance_valid(_password_prompt):
+		_password_prompt.prompt_closed.disconnect(_password_prompt_closed)
+		_password_prompt.close()
+	_password_prompt = null
+	_password_content = null
+
+
 func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> void:
 	if _game_loading:
 		return
@@ -265,6 +287,9 @@ func join_room(_id: String, creation: Dictionary = {}, map: MapData = null) -> v
 		_set_game_load_detail.bind(tr("network/status.connected_waiting"))
 	)
 	State.client.loading_status_updated.connect(_client_loading_status_updated)
+	State.client.password_requested.connect(_request_password)
+	State.client.password_rejected.connect(_password_rejected)
+	State.client.password_accepted.connect(_close_password_prompt)
 	State.client.connection_closed.connect(premature_close)
 	State.client.handshake_complete.connect(enter_mapper.bind(map))
 	State.client.binary_message_received.connect(_buffer_binary_data)
@@ -278,6 +303,7 @@ func _buffer_binary_data(event: int, _player_id: int, _flags: int, details: Pack
 
 
 func premature_close() -> void:
+	_close_password_prompt()
 	var reason := State.client.socket.get_close_code()
 	var reason_text := State.client.socket.get_close_reason()
 	print("Failed to join room: %d" % reason)
